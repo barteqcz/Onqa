@@ -171,17 +171,37 @@ class PlaybackService : MediaSessionService() {
 
     private fun checkCoverageAndSwitch(stations: List<RadioStation>) {
         val currentUrl = currentStationUrl ?: return
+        val currentName = currentStationName ?: return
         
         val normalizedCurrent = currentUrl.trimEnd('/')
-        val playingStation = stations.find { it.streamUrl?.trimEnd('/') == normalizedCurrent }
         
-        val isOutOfCoverage = playingStation == null || 
-                             (playingStation.coverageKm != null && playingStation.coverageKm <= 0.0) ||
-                             (playingStation.distance != null && playingStation.coverageKm != null && playingStation.distance > playingStation.coverageKm)
-        
-        if (isOutOfCoverage && (exoPlayer?.playWhenReady == true)) {
-            serviceScope.launch {
-                val favorites = settingsRepository.settingsFlow.first().favoriteStations
+        serviceScope.launch {
+            val settings = settingsRepository.settingsFlow.first()
+            val updatedStation = stations.find { it.name == currentName }
+            
+            if (updatedStation != null) {
+                val targetUrl = if (settings.useHqStream && !updatedStation.streamUrlHq.isNullOrBlank()) {
+                    updatedStation.streamUrlHq
+                } else {
+                    updatedStation.streamUrl
+                }
+                
+                if (targetUrl != null && targetUrl.trimEnd('/') != normalizedCurrent) {
+                    playInternal(updatedStation.name, targetUrl, updatedStation.logo, updatedStation.network, forceReload = true)
+                    return@launch
+                }
+            }
+
+            val playingStation = updatedStation ?: stations.find { 
+                it.streamUrl?.trimEnd('/') == normalizedCurrent || it.streamUrlHq?.trimEnd('/') == normalizedCurrent 
+            }
+            
+            val isOutOfCoverage = playingStation == null || 
+                                 (playingStation.coverageKm != null && playingStation.coverageKm <= 0.0) ||
+                                 (playingStation.distance != null && playingStation.coverageKm != null && playingStation.distance > playingStation.coverageKm)
+            
+            if (isOutOfCoverage && (exoPlayer?.playWhenReady == true)) {
+                val favorites = settings.favoriteStations
 
                 val nextStation = if (currentStationNetwork != null) {
                     stations.asSequence()
@@ -209,9 +229,12 @@ class PlaybackService : MediaSessionService() {
                     .firstOrNull()
 
                 if ((fallbackStation != null) && (fallbackStation.streamUrl != currentUrl)) {
-                    fallbackStation.streamUrl?.let { url ->
-                        playInternal(fallbackStation.name, url, fallbackStation.logo, fallbackStation.network)
+                    val url = if (settings.useHqStream && !fallbackStation.streamUrlHq.isNullOrBlank()) {
+                        fallbackStation.streamUrlHq
+                    } else {
+                        fallbackStation.streamUrl
                     }
+                    url?.let { playInternal(fallbackStation.name, it, fallbackStation.logo, fallbackStation.network) }
                 } else {
                     stopInternal()
                 }

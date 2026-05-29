@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.loqa.R
@@ -123,6 +124,31 @@ fun SettingsScreen(
                     )
                     .animateContentSize(),
             ) {
+                SettingCategory(title = stringResource(R.string.category_audio))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.hq_stream_title), color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.hq_stream_desc), color = TextGrey, style = MaterialTheme.typography.bodySmall)
+                    }
+                    Switch(
+                        checked = settings.useHqStream,
+                        onCheckedChange = { viewModel.updateUseHqStream(it) },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.primary,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(48.dp))
+                
+                SettingCategory(title = stringResource(R.string.category_appearance))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -151,8 +177,7 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(stringResource(R.string.accent_color_title), color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(4.dp))
                         
                         FlowRow(
                             modifier = Modifier
@@ -241,4 +266,16 @@ fun SettingsScreen(
             }
         }
     }
+}
+
+@Composable
+private fun SettingCategory(title: String) {
+    Text(
+        text = title.uppercase(),
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 1.5.sp,
+        modifier = Modifier.padding(bottom = 16.dp)
+    )
 }

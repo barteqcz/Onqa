@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class RadioStation(
     val name: String,
     val streamUrl: String? = null,
+    val streamUrlHq: String? = null,
     val logo: String? = null,
     val transmitterName: String? = null,
     val transmitterId: Int? = null,

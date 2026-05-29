@@ -2,6 +2,7 @@ package com.barteqcz.loqa.di
 
 import android.content.Context
 import com.barteqcz.loqa.data.RadioRepository
+import com.barteqcz.loqa.data.SettingsRepository
 import com.barteqcz.loqa.data.remote.RadioApiService
 import dagger.Module
 import dagger.Provides
@@ -19,8 +20,9 @@ object RepositoryModule {
     @Singleton
     fun provideRadioRepository(
         apiService: RadioApiService,
+        settingsRepository: SettingsRepository,
         @ApplicationContext context: Context
     ): RadioRepository {
-        return RadioRepository(apiService, context)
+        return RadioRepository(apiService, settingsRepository, context)
     }
 }

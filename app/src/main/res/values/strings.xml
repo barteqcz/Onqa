@@ -11,6 +11,8 @@
     <string name="back">Back</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Use system dynamic accent colors</string>
+    <string name="hq_stream_title">HQ streams</string>
+    <string name="hq_stream_desc">Prefer HQ streams when available\n(&#8805;192kbps)</string>
     <string name="accent_color_title">Accent Color</string>
     <string name="custom_hex_label">Custom HEX (#)</string>
     <string name="retry">Retry</string>
@@ -39,4 +41,6 @@
     <string name="error_find_coordinates">Failed to find city coordinates</string>
     <string name="playback_service_label">Loqa Radio Playback</string>
     <string name="hex_prefix"># </string>
+    <string name="category_audio">Audio</string>
+    <string name="category_appearance">Appearance</string>
 </resources>

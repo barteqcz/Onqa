@@ -165,7 +165,9 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.align(Alignment.BottomCenter),
                             ) {
                                 val stations = (viewState.uiState as? RadioUiState.Success)?.stations ?: emptyList()
-                                val selectedStation = stations.find { it.streamUrl == viewState.selectedUrl }
+                                val selectedStation = viewState.selectedUrl?.let { url ->
+                                    stations.find { it.streamUrl == url || it.streamUrlHq == url }
+                                }
                                 val displayStation = selectedStation ?: viewState.currentStation
 
                                 displayStation?.let {
@@ -175,7 +177,8 @@ class MainActivity : ComponentActivity() {
                                         isPlaying = viewState.isPlaying,
                                         isBuffering = viewState.isBuffering,
                                         metadata = viewState.metadata,
-                                        onToggle = { viewModel.toggleStation(it.streamUrl!!) },
+                                        showHqIcon = viewState.settings.useHqStream && !it.streamUrlHq.isNullOrBlank(),
+                                        onToggle = { viewModel.toggleStation(viewState.selectedUrl!!) },
                                         onNext = { viewModel.nextStation() },
                                         onPrevious = { viewModel.previousStation() }
                                     )

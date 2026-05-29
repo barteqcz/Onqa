@@ -26,6 +26,9 @@ class SettingsRepository @Inject constructor(
         val LAST_COUNTRY_CODE = stringPreferencesKey("last_country_code")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val FAVORITE_STATIONS = stringSetPreferencesKey("favorite_stations")
+        val USE_HQ_STREAM = booleanPreferencesKey("use_hq_stream")
+        val LAST_LATITUDE = doublePreferencesKey("last_latitude")
+        val LAST_LONGITUDE = doublePreferencesKey("last_longitude")
     }
 
     val settingsFlow: Flow<AppSettings> = context.dataStore.data
@@ -37,9 +40,18 @@ class SettingsRepository @Inject constructor(
                 lastCountryCode = preferences[PreferencesKeys.LAST_COUNTRY_CODE],
                 isOnboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
                 favoriteStations = preferences[PreferencesKeys.FAVORITE_STATIONS] ?: emptySet(),
+                useHqStream = preferences[PreferencesKeys.USE_HQ_STREAM] ?: false,
+                lastLatitude = preferences[PreferencesKeys.LAST_LATITUDE],
+                lastLongitude = preferences[PreferencesKeys.LAST_LONGITUDE],
                 isInitialValue = false
             )
         }
+
+    suspend fun updateUseHqStream(useHq: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.USE_HQ_STREAM] = useHq
+        }
+    }
 
     suspend fun updateOnboardingCompleted(completed: Boolean) {
         context.dataStore.edit { preferences ->
@@ -59,10 +71,12 @@ class SettingsRepository @Inject constructor(
         }
     }
 
-    suspend fun updateLastLocation(city: String?, code: String?) {
+    suspend fun updateLastLocation(city: String?, code: String?, latitude: Double? = null, longitude: Double? = null) {
         context.dataStore.edit { preferences ->
             city?.let { preferences[PreferencesKeys.LAST_CITY] = it }
             code?.let { preferences[PreferencesKeys.LAST_COUNTRY_CODE] = it }
+            latitude?.let { preferences[PreferencesKeys.LAST_LATITUDE] = it }
+            longitude?.let { preferences[PreferencesKeys.LAST_LONGITUDE] = it }
         }
     }
 
@@ -86,5 +100,8 @@ data class AppSettings(
     val lastCountryCode: String? = null,
     val isOnboardingCompleted: Boolean = false,
     val favoriteStations: Set<String> = emptySet(),
+    val useHqStream: Boolean = false,
+    val lastLatitude: Double? = null,
+    val lastLongitude: Double? = null,
     val isInitialValue: Boolean = true,
 )

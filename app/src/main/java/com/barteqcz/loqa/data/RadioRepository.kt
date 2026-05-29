@@ -15,19 +15,31 @@ import java.net.UnknownHostException
 
 class RadioRepository(
     private val apiService: RadioApiService,
+    private val settingsRepository: SettingsRepository,
     private val context: Context,
 ) {
     private val _stations = MutableStateFlow<NetworkResult<List<RadioStation>>>(NetworkResult.Loading)
     val stations: StateFlow<NetworkResult<List<RadioStation>>> = _stations.asStateFlow()
 
     private var lastFetchedLocation: Location? = null
+    private var lastFetchTime: Long = 0
     private var isFetching = false
 
     suspend fun updateNearbyStations(location: Location, force: Boolean = false) {
+        // Persist coordinates for app launch consistency
+        settingsRepository.updateLastLocation(null, null, location.latitude, location.longitude)
+
+        val currentTime = System.currentTimeMillis()
+        val timeDelta = currentTime - lastFetchTime
         val distance = lastFetchedLocation?.distanceTo(location) ?: Float.MAX_VALUE
         
-        if (!force && distance < MIN_REFRESH_DISTANCE_METERS && _stations.value is NetworkResult.Success) {
-            return
+        if (!force && _stations.value is NetworkResult.Success) {
+            val isTooClose = distance < MIN_REFRESH_DISTANCE_METERS
+            val isTooSoon = timeDelta < MIN_REFRESH_TIME_MS
+            
+            if (isTooSoon || isTooClose) {
+                return
+            }
         }
 
         if (isFetching) return
@@ -36,6 +48,7 @@ class RadioRepository(
         try {
             val result = apiService.getNearbyStations(location.latitude, location.longitude)
             lastFetchedLocation = location
+            lastFetchTime = currentTime
             _stations.value = NetworkResult.Success(result)
         } catch (e: IOException) {
             val isServerError = e !is UnknownHostException
@@ -53,5 +66,6 @@ class RadioRepository(
 
     companion object {
         private const val MIN_REFRESH_DISTANCE_METERS = 100f
+        private const val MIN_REFRESH_TIME_MS = 60000L
     }
 }

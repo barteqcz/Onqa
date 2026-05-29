@@ -139,7 +139,7 @@ fun RadioScreen(
                             stringResource(R.string.app_name),
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Black,
                             letterSpacing = (-0.5).sp,
                         )
                         IconButton(
@@ -268,12 +268,12 @@ fun RadioScreen(
                                                 ) {
                                                     StationCard(
                                                         station = station,
-                                                        isActive = station.streamUrl == viewState.selectedUrl,
-                                                        isPlaying = (station.streamUrl == viewState.selectedUrl) && viewState.isPlaying,
+                                                        isActive = viewState.selectedUrl != null && (station.streamUrl == viewState.selectedUrl || station.streamUrlHq == viewState.selectedUrl),
+                                                        isPlaying = viewState.selectedUrl != null && (station.streamUrl == viewState.selectedUrl || station.streamUrlHq == viewState.selectedUrl) && viewState.isPlaying,
+                                                        showHqIcon = !station.streamUrlHq.isNullOrBlank(),
                                                         onClick = {
-                                                            station.streamUrl?.let { url ->
-                                                                viewModel.toggleStation(url)
-                                                            }
+                                                            val url = station.streamUrl ?: station.streamUrlHq
+                                                            url?.let { viewModel.toggleStation(it) }
                                                         },
                                                         onLongClick = { viewModel.toggleFavorite(station) }
                                                     )
@@ -426,6 +426,7 @@ fun StationCard(
     station: RadioStation,
     isActive: Boolean,
     isPlaying: Boolean,
+    showHqIcon: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
@@ -482,14 +483,27 @@ fun StationCard(
             Spacer(modifier = Modifier.width(16.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = station.name,
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    modifier = Modifier.basicMarquee(),
+                val iconColor by animateColorAsState(
+                    targetValue = if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary,
+                    label = "stationIconColor",
                 )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = station.name,
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        modifier = Modifier.weight(1f, fill = false).basicMarquee(),
+                    )
+                    
+                    if (showHqIcon) {
+                        HqIcon(tint = iconColor)
+                    }
+                }
                 if ((station.transmitterName != null) || (station.distance != null)) {
                     val infoText = buildString {
                         station.transmitterName?.let { append(it) }
@@ -503,13 +517,10 @@ fun StationCard(
                             }
                         }
                     }
-                    val infoColor by animateColorAsState(
-                        targetValue = if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary,
-                        label = "stationInfoColor",
-                    )
+                    
                     Text(
                         text = infoText,
-                        color = infoColor,
+                        color = iconColor,
                         style = MaterialTheme.typography.labelSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -539,6 +550,7 @@ fun MiniPlayer(
     isPlaying: Boolean,
     isBuffering: Boolean,
     metadata: String?,
+    showHqIcon: Boolean,
     onToggle: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
@@ -597,8 +609,8 @@ fun MiniPlayer(
         AnimatedContent(
             targetState = station.streamUrl,
             transitionSpec = {
-                val initialIndex = stations.indexOfFirst { it.streamUrl == initialState }
-                val targetIndex = stations.indexOfFirst { it.streamUrl == targetState }
+                val initialIndex = stations.indexOfFirst { it.streamUrl == initialState || it.streamUrlHq == initialState }
+                val targetIndex = stations.indexOfFirst { it.streamUrl == targetState || it.streamUrlHq == targetState }
                 
                 val isNext = if ((initialIndex != -1) && (targetIndex != -1)) {
                     if (stations.size > 2) {
@@ -624,7 +636,7 @@ fun MiniPlayer(
             },
             label = "stationChange"
         ) { targetUrl ->
-            val targetStation = stations.find { it.streamUrl == targetUrl } ?: station
+            val targetStation = stations.find { it.streamUrl == targetUrl || it.streamUrlHq == targetUrl } ?: station
             Row(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -646,14 +658,27 @@ fun MiniPlayer(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = targetStation.name,
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        modifier = Modifier.basicMarquee()
+                    val iconColor by animateColorAsState(
+                        targetValue = if (targetStation.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary,
+                        label = "miniPlayerIconColor"
                     )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = targetStation.name,
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            modifier = Modifier.weight(1f, fill = false).basicMarquee()
+                        )
+                        
+                        if (showHqIcon) {
+                            HqIcon(tint = iconColor)
+                        }
+                    }
                     
                     AnimatedContent(
                         targetState = metadata,
@@ -664,13 +689,9 @@ fun MiniPlayer(
                         label = "metadataTransition"
                     ) { text ->
                         if (!text.isNullOrBlank()) {
-                            val infoColor by animateColorAsState(
-                                targetValue = if (targetStation.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary,
-                                label = "miniPlayerInfoColor"
-                            )
                             Text(
                                 text = text,
-                                color = infoColor,
+                                color = iconColor,
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium,
                                 maxLines = 1,
@@ -846,6 +867,35 @@ fun StatusContainer(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun HqIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.primary,
+) {
+    Surface(
+        color = tint.copy(alpha = 0.1f),
+        shape = RoundedCornerShape(3.dp),
+        border = androidx.compose.foundation.BorderStroke(
+            0.5.dp,
+            tint.copy(alpha = 0.5f)
+        ),
+        modifier = modifier.height(16.dp)
+    ) {
+        Box(
+            modifier = Modifier.padding(horizontal = 4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "HQ",
+                color = tint,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Black,
+                lineHeight = 10.sp
+            )
         }
     }
 }

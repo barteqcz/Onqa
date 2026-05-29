@@ -20,7 +20,10 @@ object StationProcessor {
                 }
 
                 val currentInGroup = if (normalizedActive != null) {
-                    networkStations.find { it.streamUrl?.trimEnd('/') == normalizedActive }
+                    networkStations.find { 
+                        it.streamUrl?.trimEnd('/') == normalizedActive || 
+                        it.streamUrlHq?.trimEnd('/') == normalizedActive
+                    }
                 } else null
 
                 val representative = currentInGroup ?: stationsInCoverage
