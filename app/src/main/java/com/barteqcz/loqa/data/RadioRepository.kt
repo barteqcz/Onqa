@@ -32,11 +32,11 @@ class RadioRepository(
         val currentTime = System.currentTimeMillis()
         val timeDelta = currentTime - lastFetchTime
         val distance = lastFetchedLocation?.distanceTo(location) ?: Float.MAX_VALUE
-        
+
         if (!force && _stations.value is NetworkResult.Success) {
             val isTooClose = distance < MIN_REFRESH_DISTANCE_METERS
             val isTooSoon = timeDelta < MIN_REFRESH_TIME_MS
-            
+
             if (isTooSoon || isTooClose) {
                 return
             }
