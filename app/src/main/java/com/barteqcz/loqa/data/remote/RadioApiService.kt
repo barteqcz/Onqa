@@ -1,13 +1,12 @@
 package com.barteqcz.loqa.data.remote
 
 import com.barteqcz.loqa.data.model.RadioStation
-import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 interface RadioApiService {
-    @GET("stations/nearby")
+    @POST("stations/nearby")
     suspend fun getNearbyStations(
-        @Query("lat") latitude: Double,
-        @Query("lon") longitude: Double,
+        @Body locationRequest: LocationRequest,
     ): List<RadioStation>
 }

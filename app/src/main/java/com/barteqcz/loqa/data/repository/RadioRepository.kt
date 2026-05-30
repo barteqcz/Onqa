@@ -5,6 +5,7 @@ import android.location.Location
 import com.barteqcz.loqa.R
 import com.barteqcz.loqa.data.model.LocationInfo
 import com.barteqcz.loqa.data.model.RadioStation
+import com.barteqcz.loqa.data.remote.LocationRequest
 import com.barteqcz.loqa.data.remote.RadioApiService
 import com.barteqcz.loqa.data.util.NetworkResult
 import com.barteqcz.loqa.location.LocationManager
@@ -61,7 +62,8 @@ class RadioRepository @Inject constructor(
         isFetching = true
 
         try {
-            val result = apiService.getNearbyStations(location.latitude, location.longitude)
+            val request = LocationRequest(location.latitude, location.longitude)
+            val result = apiService.getNearbyStations(request)
             _stations.value = NetworkResult.Success(result)
         } catch (e: IOException) {
             val isServerError = e !is UnknownHostException
