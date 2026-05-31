@@ -1,10 +1,13 @@
 package com.barteqcz.loqa.location
 
+import android.content.Context
 import android.location.Location
+import com.barteqcz.loqa.R
 import com.barteqcz.loqa.data.repository.SettingsRepository
 import com.barteqcz.loqa.data.model.LocationInfo
 import com.barteqcz.loqa.data.util.NetworkResult
 import com.google.android.gms.location.Priority
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -13,6 +16,7 @@ import kotlin.math.roundToInt
 
 @Singleton
 class LocationManager @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val locationClient: LocationClient,
     private val locationRepository: LocationRepository,
     private val settingsRepository: SettingsRepository,
@@ -86,18 +90,27 @@ class LocationManager @Inject constructor(
     private fun handleGeocoding(location: Location) {
         scope.launch {
             val result = locationRepository.getAddressesFromLocation(location)
-            val addresses = (result as? NetworkResult.Success)?.data ?: return@launch
-            val firstAddress = addresses.firstOrNull() ?: return@launch
+            val addresses = (result as? NetworkResult.Success)?.data
+            val firstAddress = addresses?.firstOrNull()
 
-            val bestCandidate = AddressRefiner.findBestCityCandidate(addresses)
-            val newCity = AddressRefiner.cleanCityName(
-                bestCandidate ?: extractRawCityName(firstAddress)
-            )
+            val bestCandidate = addresses?.let { AddressRefiner.findBestCityCandidate(it) }
+            val newCity = AddressRefiner.cleanCityName(bestCandidate)
             
-            val citySearchQuery = buildCitySearchQuery(newCity, firstAddress)
-            val isSpecificCity = bestCandidate != null || isValidCityName(firstAddress.locality)
+            // Fallback for when we're in the middle of nowhere (like the sea)
+            if (newCity == null && firstAddress?.countryName == null) {
+                val unknownInfo = LocationInfo(
+                    city = context.getString(R.string.unknown_location),
+                    distanceKm = null
+                )
+                if (_locationInfo.value != unknownInfo) {
+                    _locationInfo.value = unknownInfo
+                }
+                return@launch
+            }
+
+            val citySearchQuery = firstAddress?.let { buildCitySearchQuery(newCity, it) }
             
-            val distKm = if (isSpecificCity && citySearchQuery != null) {
+            val distKm = if (newCity != null && citySearchQuery != null) {
                 calculateCityDistance(location, citySearchQuery)
             } else {
                 null
@@ -106,8 +119,8 @@ class LocationManager @Inject constructor(
             if (newCity != _locationInfo.value.city || distKm != _locationInfo.value.distanceKm) {
                 val newInfo = LocationInfo(
                     city = newCity ?: _locationInfo.value.city,
-                    country = firstAddress.countryName ?: _locationInfo.value.country,
-                    countryCode = firstAddress.countryCode ?: _locationInfo.value.countryCode,
+                    country = firstAddress?.countryName ?: _locationInfo.value.country,
+                    countryCode = firstAddress?.countryCode ?: _locationInfo.value.countryCode,
                     distanceKm = distKm
                 )
                 _locationInfo.value = newInfo
@@ -121,14 +134,6 @@ class LocationManager @Inject constructor(
             }
         }
     }
-
-    private fun extractRawCityName(address: android.location.Address): String? {
-        return listOfNotNull(address.locality, address.subAdminArea, address.adminArea, address.featureName)
-            .firstOrNull { isValidCityName(it) }
-    }
-
-    private fun isValidCityName(name: String?): Boolean = 
-        name != null && name.length > 2 && !name.all { it.isDigit() }
 
     private fun buildCitySearchQuery(city: String?, address: android.location.Address): String? {
         val terms = listOfNotNull(city, address.subAdminArea, address.adminArea, address.countryName)
