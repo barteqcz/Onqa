@@ -2,10 +2,12 @@ package com.barteqcz.loqa.data.repository
 
 import android.content.Context
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.barteqcz.loqa.data.model.AppSettings
+import com.barteqcz.loqa.ui.theme.LoqaGreen
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -35,7 +37,7 @@ class SettingsRepository @Inject constructor(
         .map { preferences ->
             AppSettings(
                 isMaterialYouEnabled = preferences[PreferencesKeys.MATERIAL_YOU] ?: false,
-                accentColor = Color(preferences[PreferencesKeys.ACCENT_COLOR] ?: 0xFF8DE19C.toInt()),
+                accentColor = Color(preferences[PreferencesKeys.ACCENT_COLOR] ?: LoqaGreen.toArgb()),
                 lastCity = preferences[PreferencesKeys.LAST_CITY],
                 lastCountryCode = preferences[PreferencesKeys.LAST_COUNTRY_CODE],
                 isOnboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
@@ -67,7 +69,7 @@ class SettingsRepository @Inject constructor(
 
     suspend fun updateAccentColor(color: Color) {
         context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.ACCENT_COLOR] = color.value.toInt()
+            preferences[PreferencesKeys.ACCENT_COLOR] = color.toArgb()
         }
     }
 
