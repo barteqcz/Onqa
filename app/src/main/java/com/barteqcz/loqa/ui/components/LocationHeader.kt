@@ -9,14 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.barteqcz.loqa.R
 import com.barteqcz.loqa.data.model.LocationInfo
-import com.barteqcz.loqa.ui.theme.TextGrey
 
 @Composable
 fun LocationHeader(info: LocationInfo) {
@@ -34,7 +32,7 @@ fun LocationHeader(info: LocationInfo) {
     ) {
         Text(
             text = stringResource(R.string.current_location_header),
-            color = TextGrey,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold,
             letterSpacing = 1.5.sp
@@ -68,7 +66,7 @@ fun LocationHeader(info: LocationInfo) {
                 }
                 Text(
                     text = targetCity,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                 )

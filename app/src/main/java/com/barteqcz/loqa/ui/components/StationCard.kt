@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.barteqcz.loqa.R
 import com.barteqcz.loqa.data.model.RadioStation
-import com.barteqcz.loqa.ui.theme.CardBackground
 import kotlin.math.roundToInt
 
 @Composable
@@ -78,9 +77,19 @@ fun StationCard(
     )
 
     val borderColor by animateColorAsState(
-        targetValue = if (station.isFavorite) Color(0xFFE57373).copy(alpha = 0.5f) else Color.White.copy(alpha = 0.1f),
-        animationSpec = tween(durationMillis = 500),
+        targetValue = if (station.isFavorite) Color(0xFFE57373).copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+        animationSpec = tween(durationMillis = 300),
         label = "borderColor"
+    )
+
+    val activeOverlayColor by animateColorAsState(
+        targetValue = when {
+            isActive && station.isFavorite -> Color(0xFFE57373).copy(alpha = 0.15f)
+            isActive -> MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+            else -> Color.Transparent
+        },
+        animationSpec = tween(durationMillis = 300),
+        label = "activeOverlayColor"
     )
 
     val cardShape = RoundedCornerShape(12.dp)
@@ -98,83 +107,89 @@ fun StationCard(
                 onLongClick = onLongClick
             ),
         shape = cardShape,
-        color = if (isActive) Color(0xFF131217) else CardBackground,
+        color = MaterialTheme.colorScheme.surfaceVariant,
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
             borderColor
         ),
-        tonalElevation = 2.dp
+        tonalElevation = 1.dp
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(activeOverlayColor)
         ) {
-            AsyncImage(
-                model = station.logo,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(52.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFF2C2C2E)),
-                contentScale = ContentScale.Fit
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                val iconColor by animateColorAsState(
-                    targetValue = if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary,
-                    label = "stationIconColor",
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = station.logo,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
+                    contentScale = ContentScale.Fit
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = station.name,
-                        color = Color.White,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        modifier = Modifier.weight(1f, fill = false).basicMarquee(),
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    val infoColor by animateColorAsState(
+                        targetValue = if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary,
+                        label = "stationIconColor",
                     )
-                    
-                    if (showHqIcon) {
-                        HqIcon(tint = iconColor)
-                    }
-                }
-                if ((station.transmitterName != null) || (station.distance != null)) {
-                    val infoText = buildString {
-                        station.transmitterName?.let { append(it) }
-                        station.distance?.let {
-                            val dist = it.roundToInt()
-                            if (isNotEmpty()) append(" ")
-                            if (dist == 0) {
-                                append(stringResource(R.string.less_than_one_km_with_dot))
-                            } else {
-                                append(stringResource(R.string.distance_with_dot, dist))
-                            }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = station.name,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            modifier = Modifier.weight(1f, fill = false).basicMarquee(),
+                        )
+                        
+                        if (showHqIcon) {
+                            HqIcon(tint = infoColor)
                         }
                     }
-                    
-                    Text(
-                        text = infoText,
-                        color = iconColor,
-                        style = MaterialTheme.typography.labelSmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if ((station.transmitterName != null) || (station.distance != null)) {
+                        val infoText = buildString {
+                            station.transmitterName?.let { append(it) }
+                            station.distance?.let {
+                                val dist = it.roundToInt()
+                                if (isNotEmpty()) append(" ")
+                                if (dist == 0) {
+                                    append(stringResource(R.string.less_than_one_km_with_dot))
+                                } else {
+                                    append(stringResource(R.string.distance_with_dot, dist))
+                                }
+                            }
+                        }
+                        
+                        Text(
+                            text = infoText,
+                            color = infoColor,
+                            style = MaterialTheme.typography.labelSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
-            }
 
-            Box(
-                modifier = Modifier.padding(start = 8.dp).width(36.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (isPlaying) {
-                    EqualizerAnimation(color = if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary)
-                } else {
-                    FavoriteHeart(visible = station.isFavorite)
+                Box(
+                    modifier = Modifier.padding(start = 8.dp).width(36.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isPlaying) {
+                        EqualizerAnimation(color = if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary)
+                    } else {
+                        FavoriteHeart(visible = station.isFavorite)
+                    }
                 }
             }
         }

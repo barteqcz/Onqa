@@ -43,5 +43,9 @@
     <string name="hex_prefix"># </string>
     <string name="category_audio">Audio</string>
     <string name="category_appearance">Appearance</string>
+    <string name="theme_mode_title">Theme Mode</string>
+    <string name="theme_mode_system">System</string>
+    <string name="theme_mode_light">Light</string>
+    <string name="theme_mode_dark">Dark</string>
     <string name="unknown_location">&#129517; We got no clue where you are</string>
 </resources>

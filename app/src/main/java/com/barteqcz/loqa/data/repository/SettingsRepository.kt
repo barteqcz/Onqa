@@ -7,6 +7,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.barteqcz.loqa.data.model.AppSettings
+import com.barteqcz.loqa.data.model.ThemeMode
 import com.barteqcz.loqa.ui.theme.LoqaGreen
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,7 @@ class SettingsRepository @Inject constructor(
 ) {
 
     private object PreferencesKeys {
+        val THEME_MODE = stringPreferencesKey("theme_mode")
         val MATERIAL_YOU = booleanPreferencesKey("material_you")
         val ACCENT_COLOR = intPreferencesKey("accent_color")
         val LAST_CITY = stringPreferencesKey("last_city")
@@ -36,6 +38,7 @@ class SettingsRepository @Inject constructor(
     val settingsFlow: Flow<AppSettings> = context.dataStore.data
         .map { preferences ->
             AppSettings(
+                themeMode = ThemeMode.valueOf(preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.SYSTEM.name),
                 isMaterialYouEnabled = preferences[PreferencesKeys.MATERIAL_YOU] ?: false,
                 accentColor = Color(preferences[PreferencesKeys.ACCENT_COLOR] ?: LoqaGreen.toArgb()),
                 lastCity = preferences[PreferencesKeys.LAST_CITY],
@@ -64,6 +67,12 @@ class SettingsRepository @Inject constructor(
     suspend fun updateMaterialYou(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.MATERIAL_YOU] = enabled
+        }
+    }
+
+    suspend fun updateThemeMode(mode: ThemeMode) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.THEME_MODE] = mode.name
         }
     }
 

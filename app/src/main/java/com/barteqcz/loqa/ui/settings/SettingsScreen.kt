@@ -27,10 +27,9 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.loqa.R
+import com.barteqcz.loqa.data.model.ThemeMode
 import com.barteqcz.loqa.ui.main.RadioViewModel
-import com.barteqcz.loqa.ui.theme.DarkBackground
 import com.barteqcz.loqa.ui.theme.LoqaGreen
-import com.barteqcz.loqa.ui.theme.TextGrey
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -45,10 +44,15 @@ fun SettingsScreen(
 
     var customHex by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
+
     val showShadow by remember {
         derivedStateOf {
             (selectedUrl != null) && scrollState.canScrollForward
         }
+    }
+
+    LaunchedEffect(scrollState.canScrollForward, scrollState.canScrollBackward) {
+        viewModel.setScrollable(scrollState.canScrollForward || scrollState.canScrollBackward)
     }
 
     val accentColors = listOf(
@@ -60,18 +64,22 @@ fun SettingsScreen(
     )
 
     Scaffold(
-        containerColor = DarkBackground,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.settings_title), color = Color.White, fontWeight = FontWeight.SemiBold) },
+                title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back), tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
+                ),
                 modifier = Modifier
-                    .background(DarkBackground)
+                    .background(MaterialTheme.colorScheme.background)
                     .statusBarsPadding(),
             )
         }
@@ -97,8 +105,8 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.hq_stream_title), color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                        Text(stringResource(R.string.hq_stream_desc), color = TextGrey, style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.hq_stream_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.hq_stream_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                     }
                     Switch(
                         checked = settings.useHqStream,
@@ -114,14 +122,51 @@ fun SettingsScreen(
                 
                 SettingCategory(title = stringResource(R.string.category_appearance))
 
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        stringResource(R.string.theme_mode_title),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    SingleChoiceSegmentedButtonRow(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        ThemeMode.entries.forEachIndexed { index, mode ->
+                            SegmentedButton(
+                                shape = SegmentedButtonDefaults.itemShape(index = index, count = ThemeMode.entries.size),
+                                onClick = { viewModel.updateThemeMode(mode) },
+                                selected = settings.themeMode == mode,
+                                label = {
+                                    Text(
+                                        when (mode) {
+                                            ThemeMode.SYSTEM -> stringResource(R.string.theme_mode_system)
+                                            ThemeMode.LIGHT -> stringResource(R.string.theme_mode_light)
+                                            ThemeMode.DARK -> stringResource(R.string.theme_mode_dark)
+                                        }
+                                    )
+                                },
+                                colors = SegmentedButtonDefaults.colors(
+                                    activeContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                    activeContentColor = MaterialTheme.colorScheme.primary,
+                                    inactiveContentColor = MaterialTheme.colorScheme.onSurface
+                                )
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.material_you_title), color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                        Text(stringResource(R.string.material_you_desc), color = TextGrey, style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.material_you_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.material_you_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                     }
                     Switch(
                         checked = settings.isMaterialYouEnabled,
@@ -192,15 +237,15 @@ fun SettingsScreen(
                                     } catch (_: Exception) {}
                                 }
                             },
-                            label = { Text(stringResource(R.string.custom_hex_label), color = TextGrey) },
+                            label = { Text(stringResource(R.string.custom_hex_label), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
-                            prefix = { Text(stringResource(R.string.hex_prefix), color = Color.White) },
+                            prefix = { Text(stringResource(R.string.hex_prefix), color = MaterialTheme.colorScheme.onSurface) },
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = Color.DarkGray
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
                         )
                     }
@@ -221,9 +266,9 @@ fun SettingsScreen(
                             Brush.verticalGradient(
                                 colors = listOf(
                                     Color.Transparent,
-                                    DarkBackground.copy(alpha = 0.4f),
-                                    DarkBackground.copy(alpha = 0.8f),
-                                    DarkBackground
+                                    MaterialTheme.colorScheme.background.copy(alpha = 0.4f),
+                                    MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+                                    MaterialTheme.colorScheme.background
                                 )
                             )
                         )

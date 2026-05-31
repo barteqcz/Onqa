@@ -1,6 +1,7 @@
 package com.barteqcz.loqa.ui.components
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -29,8 +30,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.barteqcz.loqa.R
 import com.barteqcz.loqa.data.model.RadioStation
-import com.barteqcz.loqa.ui.theme.CardBackground
-import com.barteqcz.loqa.ui.theme.TextGrey
 import kotlin.math.roundToInt
 
 @Composable
@@ -41,6 +40,7 @@ fun MiniPlayer(
     isBuffering: Boolean,
     metadata: String?,
     showHqIcon: Boolean,
+    isScrollable: Boolean = false,
     onToggle: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
@@ -59,6 +59,12 @@ fun MiniPlayer(
             .copy(alpha = if (isPlaying || isBuffering) 0.5f else 0f),
         animationSpec = tween(durationMillis = 500),
         label = "miniPlayerBorder"
+    )
+
+    val elevation by animateDpAsState(
+        targetValue = if (isScrollable) 12.dp else 0.dp,
+        animationSpec = tween(durationMillis = 500),
+        label = "miniPlayerElevation"
     )
 
     Surface(
@@ -88,13 +94,13 @@ fun MiniPlayer(
                 }
             },
         shape = RoundedCornerShape(28.dp),
-        color = CardBackground,
+        color = MaterialTheme.colorScheme.surfaceVariant,
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
             borderColor
         ),
-        tonalElevation = 12.dp,
-        shadowElevation = 20.dp
+        tonalElevation = if (isScrollable) 8.dp else 0.dp,
+        shadowElevation = elevation
     ) {
         AnimatedContent(
             targetState = station.streamUrl,
@@ -148,7 +154,7 @@ fun MiniPlayer(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    val iconColor by animateColorAsState(
+                    val infoColor by animateColorAsState(
                         targetValue = if (targetStation.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary,
                         label = "miniPlayerIconColor"
                     )
@@ -158,7 +164,7 @@ fun MiniPlayer(
                     ) {
                         Text(
                             text = targetStation.name,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
@@ -166,7 +172,7 @@ fun MiniPlayer(
                         )
                         
                         if (showHqIcon) {
-                            HqIcon(tint = iconColor)
+                            HqIcon(tint = infoColor)
                         }
                     }
                     
@@ -181,7 +187,7 @@ fun MiniPlayer(
                         if (!text.isNullOrBlank()) {
                             Text(
                                 text = text,
-                                color = iconColor,
+                                color = infoColor,
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium,
                                 maxLines = 1,
@@ -190,7 +196,7 @@ fun MiniPlayer(
                         } else if (isBuffering) {
                             Text(
                                 text = stringResource(R.string.buffering),
-                                color = TextGrey,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.bodySmall,
                                 maxLines = 1
                             )
@@ -212,14 +218,14 @@ fun MiniPlayer(
                         if (buffering) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(32.dp),
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 strokeWidth = 3.dp,
                             )
                         } else {
                             Icon(
                                 if (playing) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = null,
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(36.dp),
                             )
                         }

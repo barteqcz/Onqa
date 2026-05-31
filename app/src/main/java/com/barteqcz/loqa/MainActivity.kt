@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -18,9 +17,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -102,16 +99,13 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
-        )
+        enableEdgeToEdge()
 
         setContent {
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
             LoqaTheme(
-                darkTheme = true,
+                themeMode = viewState.settings.themeMode,
                 dynamicColor = viewState.settings.isMaterialYouEnabled,
                 accentColor = viewState.settings.accentColor,
             ) {
@@ -176,6 +170,7 @@ class MainActivity : ComponentActivity() {
                                         isBuffering = viewState.isBuffering,
                                         metadata = viewState.metadata,
                                         showHqIcon = viewState.settings.useHqStream && !it.streamUrlHq.isNullOrBlank(),
+                                        isScrollable = viewState.isScrollable,
                                         onToggle = { viewModel.toggleStation(viewState.selectedUrl!!) },
                                         onNext = { viewModel.nextStation() },
                                         onPrevious = { viewModel.previousStation() }

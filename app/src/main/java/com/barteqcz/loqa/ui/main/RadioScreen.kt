@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.loqa.R
 import com.barteqcz.loqa.ui.components.*
-import com.barteqcz.loqa.ui.theme.DarkBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,214 +32,216 @@ fun RadioScreen(
 ) {
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
-    Box(modifier = Modifier.fillMaxSize().background(DarkBackground)) {
-        Scaffold(
-            containerColor = Color.Transparent,
-            topBar = {
-                Column(
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+                    .statusBarsPadding()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                    ) { }
+                    .padding(bottom = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(DarkBackground)
-                        .statusBarsPadding()
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                        ) { }
-                        .padding(bottom = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
+                    Text(
+                        stringResource(R.string.app_name),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = (-0.5).sp,
+                    )
+                    IconButton(
+                        onClick = onSettingsClick,
+                        modifier = Modifier.size(32.dp),
                     ) {
-                        Text(
-                            stringResource(R.string.app_name),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = (-0.5).sp,
+                        Icon(
+                            Icons.Default.Settings,
+                            contentDescription = stringResource(R.string.settings_title),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.size(24.dp),
                         )
-                        IconButton(
-                            onClick = onSettingsClick,
-                            modifier = Modifier.size(32.dp),
-                        ) {
-                            Icon(
-                                Icons.Default.Settings,
-                                contentDescription = stringResource(R.string.settings_title),
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
                     }
-                    
-                    LocationHeader(viewState.locationInfo)
                 }
+                
+                LocationHeader(viewState.locationInfo)
             }
-        ) { paddingValues ->
-            Box(modifier = Modifier.fillMaxSize()) {
-                AnimatedContent(
-                    targetState = viewState.uiState,
-                    transitionSpec = {
-                        fadeIn(tween(500)).togetherWith(fadeOut(tween(500)))
-                    },
-                    contentKey = { if (!viewState.isNetworkAvailable) "no_internet" else it::class },
-                    label = "uiStateTransition",
-                    modifier = Modifier.fillMaxSize()
-                ) { state ->
-                    if (!viewState.isNetworkAvailable) {
-                        StatusContainer(
-                            message = stringResource(R.string.error_no_internet),
-                            isError = true,
-                            modifier = Modifier.padding(paddingValues),
-                            onRetry = { viewModel.refresh() }
-                        )
-                    } else {
-                        when (state) {
-                            is RadioUiState.Loading -> {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(paddingValues),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                                }
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            AnimatedContent(
+                targetState = viewState.uiState,
+                transitionSpec = {
+                    fadeIn(tween(500)).togetherWith(fadeOut(tween(500)))
+                },
+                contentKey = { if (!viewState.isNetworkAvailable) "no_internet" else it::class },
+                label = "uiStateTransition",
+                modifier = Modifier.fillMaxSize()
+            ) { state ->
+                if (!viewState.isNetworkAvailable) {
+                    StatusContainer(
+                        message = stringResource(R.string.error_no_internet),
+                        isError = true,
+                        modifier = Modifier.padding(paddingValues),
+                        onRetry = { viewModel.refresh() }
+                    )
+                } else {
+                    when (state) {
+                        is RadioUiState.Loading -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(paddingValues),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                             }
-                            is RadioUiState.Success -> {
-                                if (state.stations.isEmpty()) {
-                                    StatusContainer(
-                                        message = stringResource(R.string.no_stations_message),
-                                        modifier = Modifier.padding(paddingValues)
-                                    )
-                                } else {
-                                    val listState = rememberLazyListState()
+                        }
+                        is RadioUiState.Success -> {
+                            if (state.stations.isEmpty()) {
+                                StatusContainer(
+                                    message = stringResource(R.string.no_stations_message),
+                                    modifier = Modifier.padding(paddingValues)
+                                )
+                            } else {
+                                val listState = rememberLazyListState()
 
-                                    val favoritesCount = remember(state.stations) { state.stations.count { it.isFavorite } }
-                                    var lastFavoritesCount by remember { mutableIntStateOf(favoritesCount) }
-                                    
-                                    LaunchedEffect(favoritesCount) {
-                                        if (favoritesCount > lastFavoritesCount && listState.firstVisibleItemIndex <= 2) {
-                                            listState.animateScrollToItem(0)
-                                        }
-                                        lastFavoritesCount = favoritesCount
+                                val favoritesCount = remember(state.stations) { state.stations.count { it.isFavorite } }
+                                var lastFavoritesCount by remember { mutableIntStateOf(favoritesCount) }
+                                
+                                LaunchedEffect(favoritesCount) {
+                                    if (favoritesCount > lastFavoritesCount && listState.firstVisibleItemIndex <= 2) {
+                                        listState.animateScrollToItem(0)
                                     }
+                                    lastFavoritesCount = favoritesCount
+                                }
 
-                                    LaunchedEffect(viewState.selectedUrl) {
-                                        val selectedUrl = viewState.selectedUrl
-                                        if (selectedUrl != null) {
-                                            val layoutInfo = listState.layoutInfo
-                                            val totalItems = layoutInfo.totalItemsCount
-                                            val visibleItems = layoutInfo.visibleItemsInfo
+                                LaunchedEffect(viewState.selectedUrl) {
+                                    val selectedUrl = viewState.selectedUrl
+                                    if (selectedUrl != null) {
+                                        val layoutInfo = listState.layoutInfo
+                                        val totalItems = layoutInfo.totalItemsCount
+                                        val visibleItems = layoutInfo.visibleItemsInfo
 
-                                            val fitsOnScreen = visibleItems.size >= totalItems
+                                        val fitsOnScreen = visibleItems.size >= totalItems
+                                        
+                                        if (!fitsOnScreen) {
+                                            val isLastItemVisible = visibleItems.any { it.index == (totalItems - 1) }
+                                            val selectedIndex = state.stations.indexOfFirst { it.streamUrl == selectedUrl }
+                                            val isLastItemSelected = selectedIndex == state.stations.size - 1
                                             
-                                            if (!fitsOnScreen) {
-                                                val isLastItemVisible = visibleItems.any { it.index == (totalItems - 1) }
-                                                val selectedIndex = state.stations.indexOfFirst { it.streamUrl == selectedUrl }
-                                                val isLastItemSelected = selectedIndex == state.stations.size - 1
-                                                
-                                                if (isLastItemVisible && isLastItemSelected && listState.canScrollBackward) {
-                                                    listState.animateScrollToItem(totalItems - 1)
-                                                }
+                                            if (isLastItemVisible && isLastItemSelected && listState.canScrollBackward) {
+                                                listState.animateScrollToItem(totalItems - 1)
                                             }
                                         }
                                     }
+                                }
 
-                                    val bottomNavPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                                    val showShadow by remember {
-                                        derivedStateOf {
-                                            (viewState.selectedUrl != null) && listState.canScrollForward
-                                        }
+                                val bottomNavPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                                val showShadow by remember {
+                                    derivedStateOf {
+                                        (viewState.selectedUrl != null) && listState.canScrollForward
                                     }
+                                }
 
-                                    Box(modifier = Modifier.fillMaxSize()) {
-                                        LazyColumn(
-                                            state = listState,
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentPadding = PaddingValues(
-                                                top = paddingValues.calculateTopPadding() + 8.dp,
-                                                bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
-                                                start = 20.dp,
-                                                end = 20.dp
-                                            ),
-                                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                                        ) {
-                                            item(key = "scroll_anchor") {
-                                                Spacer(modifier = Modifier.height(0.5.dp))
-                                            }
+                                LaunchedEffect(listState.canScrollForward, listState.canScrollBackward) {
+                                    viewModel.setScrollable(listState.canScrollForward || listState.canScrollBackward)
+                                }
 
-                                            itemsIndexed(
-                                                items = state.stations,
-                                                key = { _, it -> "${it.name}|${it.network}" }
-                                            ) { _, station ->
-                                                Box(
-                                                    modifier = Modifier
-                                                        .animateItem(
-                                                            fadeInSpec = tween(durationMillis = 300),
-                                                            fadeOutSpec = tween(durationMillis = 300),
-                                                            placementSpec = spring(
-                                                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                                                stiffness = Spring.StiffnessMedium
-                                                            )
-                                                        )
-                                                ) {
-                                                    StationCard(
-                                                        station = station,
-                                                        isActive = viewState.selectedUrl != null && (station.streamUrl == viewState.selectedUrl || station.streamUrlHq == viewState.selectedUrl),
-                                                        isPlaying = viewState.selectedUrl != null && (station.streamUrl == viewState.selectedUrl || station.streamUrlHq == viewState.selectedUrl) && viewState.isPlaying,
-                                                        showHqIcon = !station.streamUrlHq.isNullOrBlank(),
-                                                        onClick = {
-                                                            val url = station.streamUrl ?: station.streamUrlHq
-                                                            url?.let { viewModel.toggleStation(it) }
-                                                        },
-                                                        onLongClick = { viewModel.toggleFavorite(station) }
-                                                    )
-                                                }
-                                            }
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    LazyColumn(
+                                        state = listState,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentPadding = PaddingValues(
+                                            top = paddingValues.calculateTopPadding() + 8.dp,
+                                            bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
+                                            start = 20.dp,
+                                            end = 20.dp
+                                        ),
+                                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                                    ) {
+                                        item(key = "scroll_anchor") {
+                                            Spacer(modifier = Modifier.height(0.5.dp))
                                         }
 
-                                        AnimatedVisibility(
-                                            visible = showShadow,
-                                            enter = fadeIn(),
-                                            exit = fadeOut(),
-                                            modifier = Modifier.align(Alignment.BottomCenter)
-                                        ) {
+                                        itemsIndexed(
+                                            items = state.stations,
+                                            key = { _, it -> "${it.name}|${it.network}" }
+                                        ) { _, station ->
                                             Box(
                                                 modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(140.dp)
-                                                    .background(
-                                                        Brush.verticalGradient(
-                                                            colors = listOf(
-                                                                Color.Transparent,
-                                                                DarkBackground.copy(alpha = 0.4f),
-                                                                DarkBackground.copy(alpha = 0.8f),
-                                                                DarkBackground
-                                                            )
+                                                    .animateItem(
+                                                        fadeInSpec = tween(durationMillis = 300),
+                                                        fadeOutSpec = tween(durationMillis = 300),
+                                                        placementSpec = spring(
+                                                            dampingRatio = Spring.DampingRatioNoBouncy,
+                                                            stiffness = Spring.StiffnessMedium
                                                         )
                                                     )
-                                            )
+                                            ) {
+                                                StationCard(
+                                                    station = station,
+                                                    isActive = viewState.selectedUrl != null && (station.streamUrl == viewState.selectedUrl || station.streamUrlHq == viewState.selectedUrl),
+                                                    isPlaying = viewState.selectedUrl != null && (station.streamUrl == viewState.selectedUrl || station.streamUrlHq == viewState.selectedUrl) && viewState.isPlaying,
+                                                    showHqIcon = !station.streamUrlHq.isNullOrBlank(),
+                                                    onClick = {
+                                                        val url = station.streamUrl ?: station.streamUrlHq
+                                                        url?.let { viewModel.toggleStation(it) }
+                                                    },
+                                                    onLongClick = { viewModel.toggleFavorite(station) }
+                                                )
+                                            }
                                         }
+                                    }
+
+                                    AnimatedVisibility(
+                                        visible = showShadow,
+                                        enter = fadeIn(),
+                                        exit = fadeOut(),
+                                        modifier = Modifier.align(Alignment.BottomCenter)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(140.dp)
+                                                .background(
+                                                    Brush.verticalGradient(
+                                                        colors = listOf(
+                                                            Color.Transparent,
+                                                            MaterialTheme.colorScheme.background.copy(alpha = 0.4f),
+                                                            MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+                                                            MaterialTheme.colorScheme.background
+                                                        )
+                                                    )
+                                                )
+                                        )
                                     }
                                 }
                             }
-                            is RadioUiState.Error -> {
-                                if (state.isServerError) {
-                                    ServerNapContainer(
-                                        modifier = Modifier.padding(paddingValues),
-                                        onRetry = { viewModel.refresh() }
-                                    )
-                                } else {
-                                    StatusContainer(
-                                        message = stringResource(R.string.error_no_internet),
-                                        isError = true,
-                                        modifier = Modifier.padding(paddingValues),
-                                        onRetry = { viewModel.refresh() }
-                                    )
-                                }
+                        }
+                        is RadioUiState.Error -> {
+                            if (state.isServerError) {
+                                ServerNapContainer(
+                                    modifier = Modifier.padding(paddingValues),
+                                    onRetry = { viewModel.refresh() }
+                                )
+                            } else {
+                                StatusContainer(
+                                    message = stringResource(R.string.error_no_internet),
+                                    isError = true,
+                                    modifier = Modifier.padding(paddingValues),
+                                    onRetry = { viewModel.refresh() }
+                                )
                             }
                         }
                     }

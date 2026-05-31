@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.barteqcz.loqa.data.model.AppSettings
+import com.barteqcz.loqa.data.model.ThemeMode
 import com.barteqcz.loqa.player.RadioPlayer
 import com.barteqcz.loqa.data.repository.RadioRepository
 import com.barteqcz.loqa.data.repository.SettingsRepository
@@ -29,11 +30,13 @@ data class RadioViewState(
     val metadata: String? = null,
     val locationInfo: LocationInfo = LocationInfo(),
     val settings: AppSettings = AppSettings(
+        themeMode = ThemeMode.SYSTEM,
         isMaterialYouEnabled = false,
         accentColor = LoqaGreen,
         useHqStream = false,
     ),
     val isNetworkAvailable: Boolean = true,
+    val isScrollable: Boolean = false,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -48,6 +51,7 @@ class RadioViewModel @Inject constructor(
     private var lastNetworkId: String? = null
     private val _uiState = MutableStateFlow<RadioUiState>(RadioUiState.Loading)
     private val _selectedStationUrl = MutableStateFlow<String?>(null)
+    private val _isScrollable = MutableStateFlow(false)
 
     private val connectivityStatus = connectivityObserver.observe()
         .stateIn(
@@ -61,6 +65,7 @@ class RadioViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS),
             initialValue = AppSettings(
+                themeMode = ThemeMode.SYSTEM,
                 isMaterialYouEnabled = false,
                 accentColor = LoqaGreen,
                 useHqStream = false,
@@ -100,6 +105,7 @@ class RadioViewModel @Inject constructor(
         repository.locationInfo,
         settings,
         connectivityStatus,
+        _isScrollable,
     ) { args ->
         RadioViewState(
             uiState = args[0] as RadioUiState,
@@ -112,6 +118,7 @@ class RadioViewModel @Inject constructor(
             locationInfo = args[7] as LocationInfo,
             settings = args[8] as AppSettings,
             isNetworkAvailable = args[9] is ConnectivityObserver.Status.Available,
+            isScrollable = args[10] as Boolean,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), RadioViewState())
 
@@ -286,8 +293,10 @@ class RadioViewModel @Inject constructor(
     }
 
     fun updateMaterialYou(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateMaterialYou(enabled) }
+    fun updateThemeMode(mode: ThemeMode) = viewModelScope.launch { settingsRepository.updateThemeMode(mode) }
     fun updateUseHqStream(useHq: Boolean) = viewModelScope.launch { settingsRepository.updateUseHqStream(useHq) }
     fun updateAccentColor(color: Color) = viewModelScope.launch { settingsRepository.updateAccentColor(color) }
+    fun setScrollable(scrollable: Boolean) { _isScrollable.value = scrollable }
     fun completeOnboarding() = viewModelScope.launch { settingsRepository.updateOnboardingCompleted(completed = true) }
     fun resetOnboarding() = viewModelScope.launch { settingsRepository.updateOnboardingCompleted(completed = false) }
 
