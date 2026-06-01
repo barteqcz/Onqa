@@ -3,7 +3,7 @@
 
 # Onqa
 
-There’s definitely something magical about discovering the local radio ether. Hearing the voices, music, and stories that make each place unique. However, FM radio is often unavailable in new phones. 
+There’s definitely something magical about discovering the local radio ether, that is different in every place, what makes each place unique. However, FM radio is often unavailable in new phones. 
 
 As an IT enthusiast, radio enthusiast and a DXer, I’ve always loved exploring the airwaves wherever I go. I feel like life would be much sadder without radio. Yet terrestrial broadcasting is the most magical way of enjoying it, sometimes you just want something more portable - straight on your phone, with an amazing UI, polished [maps ecosystem](https://onqa.barteq.cz/) and many features.
 
