@@ -3,7 +3,7 @@
 
 # Onqa
 
-Most of today’s phones no longer have an FM radio. Yet there’s something magical about discovering the local ether—hearing the voices, music, and stories that make each place unique. As a radio enthusiast, I’ve always loved exploring the airwaves wherever I go.
+Most of today’s phones no longer have an FM radio. Yet there’s something magical about discovering the local ether - hearing the voices, music, and stories that make each place unique. As a radio enthusiast, I’ve always loved exploring the airwaves wherever I go.
 
 That’s where Onqa comes from. The name is inspired by the Spanish words *onda* (“wave”) and *cerca* (“nearby”), reflecting the idea of discovering the radio waves around you.
 
