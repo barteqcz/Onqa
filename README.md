@@ -1,33 +1,31 @@
-# Onqa 📻
+<img width="150" alt="dfggdfgdfdg" src="https://github.com/user-attachments/assets/4b919397-4e25-400f-9b5e-356125befe10" />
+<br>
 
-**Onqa** is a modern, location-aware radio streaming application for Android.
+# Onqa
 
-The name **Onqa** is a unique blend of two Spanish concepts:
-- **Onda** (Wave/Vibe): Representing the radio waves and the musical atmosphere.
-- **Cerca** (Near): Highlighting the app's core feature of discovering radio stations based on your proximity.
+Most of today’s phones no longer have an FM radio. Yet there’s something magical about discovering the local ether—hearing the voices, music, and stories that make each place unique. As a radio enthusiast, I’ve always loved exploring the airwaves wherever I go.
 
-Together, Onqa brings you the "Nearby Waves" – the best local and global radio stations right at your fingertips.
+That’s where Onqa comes from. The name is inspired by the Spanish words *onda* (“wave”) and *cerca* (“nearby”), reflecting the idea of discovering the radio waves around you.
 
----
+## Screenshots
 
-## 📸 Screenshots
+<img width="200" alt="Screenshot_2026-06-01-19-58-52-855_com barteqcz onqa" src="https://github.com/user-attachments/assets/7cc3a0b8-de45-404f-9d69-fdb3808de2a3" />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<img width="200" alt="Screenshot_2026-06-01-19-58-46-148_com barteqcz onqa" src="https://github.com/user-attachments/assets/cfd432c9-d301-4602-88bf-972e4f963811" />
 
 
+## Features
 
-## ✨ Features
+- **Location-Based Discovery**: Automatically finds and prioritizes radio stations near your current location using background location services.
+- **High-Quality Streaming**: Support for HQ audio streams to provide a crystal-clear listening experience.
+- **Material UI**: A beautiful UI that can also adapt to your device's wallpaper and theme colors.
+- **Adaptive Themes**: Full support for Light and Dark modes, with customizable accent colors.
+- **Seamless Media Experience**: Built with Android Media3 for robust background playback, lock screen controls, and system integration.
+- **Favorites**: Save your most-listened-to stations for instant access.
+- **Modern Mini Player**: Control your music effortlessly while navigating the app.
+- **Intelligent Connectivity**: Monitoring network status to ensure smooth playback transitions between Wi-Fi and mobile data.
 
-- **📍 Location-Based Discovery**: Automatically finds and prioritizes radio stations near your current location using background location services.
-- **🎵 High-Quality Streaming**: Support for HQ audio streams to provide a crystal-clear listening experience.
-- **🎨 Material You**: A beautiful UI that adapts to your device's wallpaper and theme colors.
-- **🌓 Adaptive Themes**: Full support for Light and Dark modes, with customizable accent colors.
-- **🎧 Seamless Media Experience**: Built with Android Media3 for robust background playback, lock screen controls, and system integration.
-- **⭐ Favorites**: Save your most-listened-to stations for instant access.
-- **📱 Modern Mini Player**: Control your music effortlessly while navigating the app.
-- **🌐 Intelligent Connectivity**: Monitoring network status to ensure smooth playback transitions between Wi-Fi and mobile data.
-
----
-
-## 🛠 Tech Stack
+## Tech Stack
 
 - **UI**: [Jetpack Compose](https://developer.android.com/jetpack/compose) with [Material 3](https://m3.material.io/)
 - **Architecture**: MVVM with Clean Architecture principles
@@ -40,14 +38,3 @@ Together, Onqa brings you the "Nearby Waves" – the best local and global radio
 - **Image Loading**: [Coil](https://coil-kt.github.io/coil/)
 - **Location**: [Google Play Services Location](https://developers.google.com/android/guides/setup)
 - **Logging**: [Timber](https://github.com/JakeWharton/timber)
-
----
-
-## 🚀 Getting Started
-
-1. Clone the repository.
-2. Open the project in **Android Studio Ladybug** or newer.
-3. Add any necessary API keys (if applicable) to `local.properties`.
-4. Build and run the `app` module.
-
----
