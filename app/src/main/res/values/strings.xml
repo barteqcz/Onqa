@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Loqa</string>
+    <string name="app_name">Onqa</string>
     <string name="notification_channel_name">Radio Playback</string>
     <string name="notification_channel_description">Controls for radio playback</string>
     <string name="settings_title">Settings</string>
@@ -17,7 +17,7 @@
     <string name="custom_hex_label">Custom HEX (#)</string>
     <string name="retry">Retry</string>
     <string name="welcome_title">Welcome!</string>
-    <string name="welcome_desc">To provide the best radio experience, Loqa needs a few permissions. These are essential for functionality.</string>
+    <string name="welcome_desc">To provide the best radio experience, Onqa needs a few permissions. These are essential for functionality.</string>
     <string name="permission_location_title">Location &amp; Background</string>
     <string name="permission_location_desc">Used to find local stations and automatically switch to the strongest signal while you move.</string>
     <string name="permission_notifications_title">Notifications</string>
@@ -25,11 +25,11 @@
     <string name="grant_permissions">Grant Permissions</string>
     <string name="permissions_required_error">All permissions must be granted to use the app.</string>
     <string name="permissions_required_title">Permissions Required</string>
-    <string name="permissions_required_desc">Loqa needs location and notification permissions to function correctly. Please grant them to continue.</string>
+    <string name="permissions_required_desc">Onqa needs location and notification permissions to function correctly. Please grant them to continue.</string>
     <string name="retry_permissions">Try Again</string>
     <string name="open_settings">Open Settings</string>
     <string name="background_location_disclosure_title">Station Switching</string>
-    <string name="background_location_disclosure_message">Loqa uses location access to automatically switch radio stations and update the list, even in the background.\n\nWhen prompted, select “Allow all the time” so Loqa can stay connected while you move.</string>
+    <string name="background_location_disclosure_message">Onqa uses location access to automatically switch radio stations and update the list, even in the background.\n\nWhen prompted, select “Allow all the time” so Onqa can stay connected while you move.</string>
     <string name="continue_button">Continue</string>
     <string name="not_now">Not Now</string>
     <string name="error_no_internet">Your connection is ghosting us &#128123;</string>
@@ -39,7 +39,7 @@
     <string name="error_unknown">Unknown Error</string>
     <string name="error_resolve_address">Failed to resolve address</string>
     <string name="error_find_coordinates">Failed to find city coordinates</string>
-    <string name="playback_service_label">Loqa Radio Playback</string>
+    <string name="playback_service_label">Onqa Radio Playback</string>
     <string name="hex_prefix"># </string>
     <string name="category_audio">Audio</string>
     <string name="category_appearance">Appearance</string>

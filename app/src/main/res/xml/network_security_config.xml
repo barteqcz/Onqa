@@ -2,7 +2,7 @@
 <network-security-config
     xmlns:tools="http://schemas.android.com/tools">
     <domain-config cleartextTrafficPermitted="false">
-        <domain includeSubdomains="true">loqa-api.barteq.cz</domain>
+        <domain includeSubdomains="true">onqa-api.barteq.cz</domain>
     </domain-config>
 
     <base-config cleartextTrafficPermitted="true"

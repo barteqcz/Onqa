@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import java.util.Properties
 import java.io.FileInputStream
 
@@ -16,11 +18,11 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.barteqcz.loqa"
+    namespace = "com.barteqcz.onqa"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.barteqcz.loqa"
+        applicationId = "com.barteqcz.onqa"
         minSdk = 24
         targetSdk = 37
         versionCode = 1

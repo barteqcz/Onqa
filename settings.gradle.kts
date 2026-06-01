@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
     repositories {
         google {
@@ -22,6 +24,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Loqa"
+rootProject.name = "Onqa"
 include(":app")
  
