@@ -13,19 +13,21 @@ Onqa is designed to help you discover local radio stations. To provide this core
 *   **Precise and Approximate Location:** We collect your device's location (GPS and network-based) to determine which radio stations are available in your area.
 *   **Background Location:** The App may access your location even when it is running in the background. This allows us to provide seamless updates to your local radio list as you move, and to maintain location-aware features during audio playback. You will be asked for explicit permission before we access your location in the background.
 
-### 1.2 Usage and Technical Data
-When you use the App, we may collect certain technical information automatically:
-*   **Device Information:** We may collect information about your mobile device, including the hardware model, operating system version, and unique device identifiers.
-*   **Connectivity Status:** We monitor your network status (Wi-Fi or mobile data) to ensure smooth audio playback and transition between networks.
+### 1.2 Technical Data (Processed Locally)
+To ensure a smooth user experience, the App processes certain technical information on your device:
+*   **Connectivity Status:** We monitor your network status (Wi-Fi or mobile data) to ensure smooth audio playback and transition between networks. This information is processed locally and is not sent to our servers.
+*   **Device Version:** We check your Android version to provide compatible features (like Material You dynamic colors). This is used only to adjust the App's behavior on your device.
 
-### 1.3 Personal Information
-Onqa **does not** require a user account, and we do **not** collect personal identification information such as your name, email address, or phone number.
+### 1.3 No Personal Information or Device Identifiers
+Onqa **does not** collect, store, or transmit:
+*   Personal identification information (name, email, etc.).
+*   Unique device identifiers (IMEI, Android ID, etc.).
+*   Your contacts, photos, or other files.
 
 ## 2. How We Use Your Information
 
 We use the information we collect for the following purposes:
 *   **To provide the core service:** To identify and list radio stations near your current location.
-*   **To improve the App:** To understand how users interact with the App and to troubleshoot technical issues.
 *   **To maintain playback:** To ensure the radio stream continues as you move between different regions or network types.
 
 ## 3. Data Sharing and Disclosure
