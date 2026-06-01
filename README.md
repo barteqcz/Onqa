@@ -1,63 +1,59 @@
-# Loqa
+# Onqa 📻
 
-**Loqa** is a location-aware radio streaming application for Android that seamlessly switches between radio stations as you move. It ensures you always have the best local or network-affiliated station playing, no matter where your journey takes you.
+**Onqa** is a modern, location-aware radio streaming application for Android.
 
-## Features
+The name **Onqa** is a unique blend of two Spanish concepts:
+- **Onda** (Wave/Vibe): Representing the radio waves and the musical atmosphere.
+- **Cerca** (Near): Highlighting the app's core feature of discovering radio stations based on your proximity.
 
-- **Location-Based Discovery**: Automatically finds and lists radio stations near your current location.
-- **Smart Station Handoff**: The core "Loqa" feature — the app monitors your location in the background and automatically switches to a nearby station or an affiliated network station if you move out of coverage.
-- **Modern UI**: Built entirely with **Jetpack Compose**, featuring a sleek, dark-themed interface with **Material You** dynamic color support.
-- **High-Quality Streaming**: Powered by **Android Media3 (ExoPlayer)**, supporting various formats including HLS and DASH.
-- **Background Playback**: Full integration with Android Media Session, providing rich notifications and lock screen controls.
-- **Smart Metadata**: Displays real-time song and artist information (E-RDS) where available.
-- **Favorites**: Mark your favorite stations for quick access and priority in the handoff logic.
-- **Seamless Fading**: Audio fades in and out during station transitions and when pausing/resuming for a premium listening experience.
+Together, Onqa brings you the "Nearby Waves" – the best local and global radio stations right at your fingertips.
+
+---
+
+## 📸 Screenshots
 
 
-> **Note**: This app requires Location permissions (including Background Location) to perform the automatic station switching feature.
 
-## Tech Stack
+## ✨ Features
 
-- **UI**: [Jetpack Compose](https://developer.android.com/jetpack/compose)
-- **Playback**: [Media3 / ExoPlayer](https://developer.android.com/guide/topics/media/media3)
-- **Dependency Injection**: [Hilt](https://dagger.dev/hilt/)
-- **Networking**: [Retrofit](https://square.github.io/retrofit/) & [Kotlinx Serialization](https://kotlinlang.org/docs/serialization.html)
-- **Location**: [Google Play Services Location](https://developers.google.com/android/guides/setup)
-- **Image Loading**: [Coil](https://coil-kt.github.io/coil/)
+- **📍 Location-Based Discovery**: Automatically finds and prioritizes radio stations near your current location using background location services.
+- **🎵 High-Quality Streaming**: Support for HQ audio streams to provide a crystal-clear listening experience.
+- **🎨 Material You**: A beautiful UI that adapts to your device's wallpaper and theme colors.
+- **🌓 Adaptive Themes**: Full support for Light and Dark modes, with customizable accent colors.
+- **🎧 Seamless Media Experience**: Built with Android Media3 for robust background playback, lock screen controls, and system integration.
+- **⭐ Favorites**: Save your most-listened-to stations for instant access.
+- **📱 Modern Mini Player**: Control your music effortlessly while navigating the app.
+- **🌐 Intelligent Connectivity**: Monitoring network status to ensure smooth playback transitions between Wi-Fi and mobile data.
+
+---
+
+## 🛠 Tech Stack
+
+- **UI**: [Jetpack Compose](https://developer.android.com/jetpack/compose) with [Material 3](https://m3.material.io/)
 - **Architecture**: MVVM with Clean Architecture principles
-- **Local Storage**: [DataStore Preferences](https://developer.android.com/topic/libraries/architecture/datastore)
+- **Dependency Injection**: [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
+- **Media**: [Media3 (ExoPlayer)](https://developer.android.com/guide/topics/media/media3)
+- **Networking**: [Retrofit](https://square.github.io/retrofit/) & [OkHttp](https://square.github.io/okhttp/)
+- **Serialization**: [Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization)
+- **Concurrency**: [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) & [Flow](https://kotlinlang.org/docs/flow.html)
+- **Storage**: [Jetpack DataStore](https://developer.android.com/topic/libraries/architecture/datastore)
+- **Image Loading**: [Coil](https://coil-kt.github.io/coil/)
+- **Location**: [Google Play Services Location](https://developers.google.com/android/guides/setup)
+- **Logging**: [Timber](https://github.com/JakeWharton/timber)
 
-## Screenshot
+---
 
-<img width="240" alt="Screenshot_2026-05-29-00-14-50-720_com barteqcz loqa" src="https://github.com/user-attachments/assets/841d675a-e03d-49fe-8a58-99af67055d72" />
+## 🚀 Getting Started
 
-## Getting Started with development
+1. Clone the repository.
+2. Open the project in **Android Studio Ladybug** or newer.
+3. Add any necessary API keys (if applicable) to `local.properties`.
+4. Build and run the `app` module.
 
-### Prerequisites
+---
 
-- Android Studio Ladybug or newer
-- Android SDK 37 (Compile SDK)
-- Minimum Android version: API 24 (Nougat)
+## 📄 License
 
-### Set-up
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/barteqcz/Loqa.git
-   ```
-2. Open the project in Android Studio.
-3. Run the `app` module on your device or emulator.
-
-## Project Structure
-
-- `ui`: Compose screens, ViewModels, and theme.
-- `data`: Repositories, API services, and data models.
-- `service`: `PlaybackService` handling Media3 integration and background location monitoring.
-- `location`: `LocationClient` for managing location updates.
-- `util`: Helpers for connectivity, address refining, and more
-
-
-## Roadmap
-
-- Google Play Store release
-- Extending the database
+```text
+Add your license information here (e.g., MIT, Apache 2.0).
+```
