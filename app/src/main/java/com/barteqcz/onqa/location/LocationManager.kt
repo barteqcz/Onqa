@@ -43,7 +43,7 @@ class LocationManager @Inject constructor(
             Timber.d("Tracking already in progress, skipping start.")
             return
         }
-        
+
         Timber.i("Starting location tracking...")
         trackingJob = scope.launch {
             loadSavedLocation()
@@ -79,7 +79,7 @@ class LocationManager @Inject constructor(
                     longitude = settings.lastLongitude
                 }
                 _currentLocation.value = savedLoc
-                
+
                 settings.lastCity?.let { lastCity ->
                     _locationInfo.value = LocationInfo(
                         city = lastCity,
@@ -111,17 +111,16 @@ class LocationManager @Inject constructor(
         geocodingJob = scope.launch {
             Timber.d("Starting geocoding for location: ${location.latitude}, ${location.longitude}")
             val result = locationRepository.getAddressesFromLocation(location)
-            
+
             if (result is NetworkResult.Error) {
                 Timber.w("Geocoding failed: ${result.message}")
             }
 
             val addresses = (result as? NetworkResult.Success)?.data
-            val refinedInfo = AddressRefiner.refineLocation(addresses)
-            
+            val refinedInfo = AddressRefiner.refineLocation(addresses, location.latitude, location.longitude)
+
             val newCity = refinedInfo.city
-            
-            // Fallback for when we're in the middle of nowhere (like the sea)
+
             if (newCity == null && refinedInfo.country == null) {
                 updateToUnknownLocation()
                 return@launch
@@ -134,13 +133,16 @@ class LocationManager @Inject constructor(
                 null
             }
 
-            if (newCity != _locationInfo.value.city || distKm != _locationInfo.value.distanceKm) {
+            if (newCity != _locationInfo.value.city ||
+                refinedInfo.countryCode != _locationInfo.value.countryCode ||
+                distKm != _locationInfo.value.distanceKm) {
+
                 val newInfo = refinedInfo.copy(
                     city = newCity ?: _locationInfo.value.city,
                     distanceKm = distKm
                 )
                 _locationInfo.value = newInfo
-                
+
                 settingsRepository.updateLastLocation(
                     city = newInfo.city,
                     code = newInfo.countryCode,
@@ -154,6 +156,7 @@ class LocationManager @Inject constructor(
     private fun updateToUnknownLocation() {
         val unknownInfo = LocationInfo(
             city = context.getString(R.string.unknown_location),
+            countryCode = null,
             distanceKm = null
         )
         if (_locationInfo.value != unknownInfo) {

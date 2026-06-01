@@ -157,7 +157,6 @@ class RadioViewModel @Inject constructor(
                     is NetworkResult.Success -> {
                         val allStations = result.data
 
-                        // Update current playback if stream URL has changed in the backend
                         val currentPlaying = radioPlayer.stationInfo.value
                         if (currentPlaying.url != null && (radioPlayer.isPlaying.value || radioPlayer.isBuffering.value)) {
                             val updatedStation = allStations.find { it.name == currentPlaying.name }
