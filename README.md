@@ -51,9 +51,3 @@ Together, Onqa brings you the "Nearby Waves" – the best local and global radio
 4. Build and run the `app` module.
 
 ---
-
-## 📄 License
-
-```text
-Add your license information here (e.g., MIT, Apache 2.0).
-```
