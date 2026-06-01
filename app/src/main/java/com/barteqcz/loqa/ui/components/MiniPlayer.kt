@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -62,7 +63,7 @@ fun MiniPlayer(
     )
 
     val elevation by animateDpAsState(
-        targetValue = if (isScrollable) 12.dp else 0.dp,
+        targetValue = if (isScrollable) 12.dp else 8.dp,
         animationSpec = tween(durationMillis = 500),
         label = "miniPlayerElevation"
     )
@@ -71,6 +72,12 @@ fun MiniPlayer(
         modifier = Modifier
             .padding(12.dp)
             .navigationBarsPadding()
+            .shadow(
+                elevation = elevation,
+                shape = RoundedCornerShape(28.dp),
+                ambientColor = Color.Black.copy(alpha = 0.2f),
+                spotColor = Color.Black.copy(alpha = 0.4f)
+            )
             .fillMaxWidth()
             .height(88.dp)
             .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
@@ -99,8 +106,8 @@ fun MiniPlayer(
             1.dp,
             borderColor
         ),
-        tonalElevation = if (isScrollable) 8.dp else 0.dp,
-        shadowElevation = elevation
+        tonalElevation = if (isScrollable) 8.dp else 4.dp,
+        shadowElevation = 0.dp
     ) {
         AnimatedContent(
             targetState = station.streamUrl,

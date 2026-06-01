@@ -8,11 +8,13 @@ import com.barteqcz.loqa.data.model.RadioStation
 import com.barteqcz.loqa.data.remote.LocationRequest
 import com.barteqcz.loqa.data.remote.RadioApiService
 import com.barteqcz.loqa.data.util.NetworkResult
+import com.barteqcz.loqa.di.ApplicationScope
 import com.barteqcz.loqa.location.LocationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import retrofit2.HttpException
+import timber.log.Timber
 import java.io.IOException
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -23,9 +25,8 @@ class RadioRepository @Inject constructor(
     private val apiService: RadioApiService,
     private val locationManager: LocationManager,
     @param:ApplicationContext private val context: Context,
+    @param:ApplicationScope private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    
     private val _stations = MutableStateFlow<NetworkResult<List<RadioStation>>>(NetworkResult.Loading)
     val stations: StateFlow<NetworkResult<List<RadioStation>>> = _stations.asStateFlow()
 
@@ -36,9 +37,13 @@ class RadioRepository @Inject constructor(
     private var observationJob: Job? = null
 
     fun startLocationTracking() {
+        Timber.i("Starting radio station location tracking...")
         locationManager.startTracking()
         
-        if (observationJob != null) return
+        if (observationJob != null) {
+            Timber.d("Observation job already running.")
+            return
+        }
         observationJob = scope.launch {
             locationManager.currentLocation
                 .filterNotNull()
@@ -58,20 +63,28 @@ class RadioRepository @Inject constructor(
     }
 
     suspend fun updateNearbyStations(location: Location) {
-        if (isFetching) return
+        if (isFetching) {
+            Timber.d("Already fetching stations, skipping.")
+            return
+        }
         isFetching = true
 
         try {
+            Timber.d("Fetching nearby stations for: ${location.latitude}, ${location.longitude}")
             val request = LocationRequest(location.latitude, location.longitude)
             val result = apiService.getNearbyStations(request)
             _stations.value = NetworkResult.Success(result)
+            Timber.i("Successfully fetched ${result.size} stations.")
         } catch (e: IOException) {
+            Timber.e(e, "IO error fetching stations")
             val isServerError = e !is UnknownHostException
             val message = e.message ?: context.getString(R.string.error_io)
             _stations.value = NetworkResult.Error(message, e, isServerError = isServerError)
         } catch (e: HttpException) {
+            Timber.e(e, "HTTP error fetching stations (code: ${e.code()})")
             _stations.value = NetworkResult.Error(context.getString(R.string.error_server_with_code, e.code()), e, isServerError = true)
         } catch (e: Exception) {
+            Timber.e(e, "Unexpected error fetching stations")
             val message = e.message ?: context.getString(R.string.error_unknown)
             _stations.value = NetworkResult.Error(message, e, isServerError = true)
         } finally {

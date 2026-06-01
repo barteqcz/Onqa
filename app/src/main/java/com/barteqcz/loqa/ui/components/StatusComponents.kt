@@ -11,15 +11,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.barteqcz.loqa.R
-import com.barteqcz.loqa.ui.theme.CardBackground
-import com.barteqcz.loqa.ui.theme.TextGrey
 
 @Composable
 fun ServerNapContainer(
@@ -33,12 +30,13 @@ fun ServerNapContainer(
         contentAlignment = Alignment.TopCenter,
     ) {
         Surface(
-            color = CardBackground.copy(alpha = 0.5f),
+            color = MaterialTheme.colorScheme.surfaceVariant,
             shape = RoundedCornerShape(24.dp),
             border = androidx.compose.foundation.BorderStroke(
                 1.dp,
-                MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
-            )
+                MaterialTheme.colorScheme.error.copy(alpha = 0.3f)
+            ),
+            tonalElevation = 2.dp
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 40.dp),
@@ -52,7 +50,7 @@ fun ServerNapContainer(
                     modifier = Modifier
                         .size(48.dp)
                         .background(
-                            MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                            MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
                             CircleShape
                         )
                         .padding(12.dp)
@@ -60,7 +58,7 @@ fun ServerNapContainer(
 
                 Text(
                     text = stringResource(R.string.error_server_nap),
-                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
+                    color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
@@ -98,13 +96,14 @@ fun StatusContainer(
         contentAlignment = Alignment.TopCenter,
     ) {
         Surface(
-            color = CardBackground.copy(alpha = 0.5f),
+            color = MaterialTheme.colorScheme.surfaceVariant,
             shape = RoundedCornerShape(24.dp),
             border = androidx.compose.foundation.BorderStroke(
                 1.dp,
-                if (isError) MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
-                else Color.White.copy(alpha = 0.05f),
-            )
+                if (isError) MaterialTheme.colorScheme.error.copy(alpha = 0.3f)
+                else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+            ),
+            tonalElevation = 2.dp
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 40.dp),
@@ -119,7 +118,7 @@ fun StatusContainer(
                         modifier = Modifier
                             .size(48.dp)
                             .background(
-                                MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                                MaterialTheme.colorScheme.error.copy(alpha = 0.15f),
                                 CircleShape
                             )
                             .padding(12.dp)
@@ -128,7 +127,7 @@ fun StatusContainer(
 
                 Text(
                     text = message,
-                    color = if (isError) MaterialTheme.colorScheme.error.copy(alpha = 0.8f) else TextGrey,
+                    color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,

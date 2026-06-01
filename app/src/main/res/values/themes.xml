@@ -1,6 +1,6 @@
 <resources>
     <style name="Theme.Loqa" parent="@android:style/Theme.DeviceDefault.NoActionBar">
-        <item name="android:windowBackground">#0F0E13</item>
+        <item name="android:windowBackground">#F8F9FA</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>

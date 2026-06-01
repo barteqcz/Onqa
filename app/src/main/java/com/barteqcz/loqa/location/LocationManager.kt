@@ -6,10 +6,12 @@ import com.barteqcz.loqa.R
 import com.barteqcz.loqa.data.repository.SettingsRepository
 import com.barteqcz.loqa.data.model.LocationInfo
 import com.barteqcz.loqa.data.util.NetworkResult
+import com.barteqcz.loqa.di.ApplicationScope
 import com.google.android.gms.location.Priority
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.roundToInt
@@ -20,9 +22,8 @@ class LocationManager @Inject constructor(
     private val locationClient: LocationClient,
     private val locationRepository: LocationRepository,
     private val settingsRepository: SettingsRepository,
+    @param:ApplicationScope private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    
     private val _currentLocation = MutableStateFlow<Location?>(null)
     val currentLocation: StateFlow<Location?> = _currentLocation.asStateFlow()
 
@@ -30,10 +31,20 @@ class LocationManager @Inject constructor(
     val locationInfo: StateFlow<LocationInfo> = _locationInfo.asStateFlow()
 
     private var trackingJob: Job? = null
+    private var geocodingJob: Job? = null
+
+    companion object {
+        private const val UPDATE_INTERVAL = 30000L
+        private const val MIN_DISTANCE = 1000f
+    }
 
     fun startTracking() {
-        if (trackingJob != null) return
+        if (trackingJob != null) {
+            Timber.d("Tracking already in progress, skipping start.")
+            return
+        }
         
+        Timber.i("Starting location tracking...")
         trackingJob = scope.launch {
             loadSavedLocation()
 
@@ -42,9 +53,9 @@ class LocationManager @Inject constructor(
             }
 
             locationClient.getLocationUpdates(
-                interval = 30000L,
-                minDistance = 1000f,
-                priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY
+                interval = UPDATE_INTERVAL,
+                minDistance = MIN_DISTANCE,
+                priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY,
             ).collect { location ->
                 updateLocation(location)
             }
@@ -52,25 +63,33 @@ class LocationManager @Inject constructor(
     }
 
     fun stopTracking() {
+        Timber.i("Stopping location tracking.")
         trackingJob?.cancel()
         trackingJob = null
+        geocodingJob?.cancel()
+        geocodingJob = null
     }
 
     private suspend fun loadSavedLocation() {
-        val settings = settingsRepository.settingsFlow.first()
-        if (settings.lastLatitude != null && settings.lastLongitude != null) {
-            val savedLoc = Location("saved").apply {
-                latitude = settings.lastLatitude
-                longitude = settings.lastLongitude
+        try {
+            val settings = settingsRepository.settingsFlow.first()
+            if (settings.lastLatitude != null && settings.lastLongitude != null) {
+                val savedLoc = Location("saved").apply {
+                    latitude = settings.lastLatitude
+                    longitude = settings.lastLongitude
+                }
+                _currentLocation.value = savedLoc
+                
+                settings.lastCity?.let { lastCity ->
+                    _locationInfo.value = LocationInfo(
+                        city = lastCity,
+                        countryCode = settings.lastCountryCode
+                    )
+                }
+                Timber.d("Loaded saved location: ${settings.lastCity} (${settings.lastLatitude}, ${settings.lastLongitude})")
             }
-            _currentLocation.value = savedLoc
-            
-            if (settings.lastCity != null) {
-                _locationInfo.value = LocationInfo(
-                    city = settings.lastCity,
-                    countryCode = settings.lastCountryCode
-                )
-            }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to load saved location from settings")
         }
     }
 
@@ -88,28 +107,27 @@ class LocationManager @Inject constructor(
     }
 
     private fun handleGeocoding(location: Location) {
-        scope.launch {
+        geocodingJob?.cancel()
+        geocodingJob = scope.launch {
+            Timber.d("Starting geocoding for location: ${location.latitude}, ${location.longitude}")
             val result = locationRepository.getAddressesFromLocation(location)
-            val addresses = (result as? NetworkResult.Success)?.data
-            val firstAddress = addresses?.firstOrNull()
+            
+            if (result is NetworkResult.Error) {
+                Timber.w("Geocoding failed: ${result.message}")
+            }
 
-            val bestCandidate = addresses?.let { AddressRefiner.findBestCityCandidate(it) }
-            val newCity = AddressRefiner.cleanCityName(bestCandidate)
+            val addresses = (result as? NetworkResult.Success)?.data
+            val refinedInfo = AddressRefiner.refineLocation(addresses)
+            
+            val newCity = refinedInfo.city
             
             // Fallback for when we're in the middle of nowhere (like the sea)
-            if (newCity == null && firstAddress?.countryName == null) {
-                val unknownInfo = LocationInfo(
-                    city = context.getString(R.string.unknown_location),
-                    distanceKm = null
-                )
-                if (_locationInfo.value != unknownInfo) {
-                    _locationInfo.value = unknownInfo
-                }
+            if (newCity == null && refinedInfo.country == null) {
+                updateToUnknownLocation()
                 return@launch
             }
 
-            val citySearchQuery = firstAddress?.let { buildCitySearchQuery(newCity, it) }
-            
+            val citySearchQuery = buildCitySearchQuery(newCity, addresses?.firstOrNull())
             val distKm = if (newCity != null && citySearchQuery != null) {
                 calculateCityDistance(location, citySearchQuery)
             } else {
@@ -117,10 +135,8 @@ class LocationManager @Inject constructor(
             }
 
             if (newCity != _locationInfo.value.city || distKm != _locationInfo.value.distanceKm) {
-                val newInfo = LocationInfo(
+                val newInfo = refinedInfo.copy(
                     city = newCity ?: _locationInfo.value.city,
-                    country = firstAddress?.countryName ?: _locationInfo.value.country,
-                    countryCode = firstAddress?.countryCode ?: _locationInfo.value.countryCode,
                     distanceKm = distKm
                 )
                 _locationInfo.value = newInfo
@@ -135,7 +151,18 @@ class LocationManager @Inject constructor(
         }
     }
 
-    private fun buildCitySearchQuery(city: String?, address: android.location.Address): String? {
+    private fun updateToUnknownLocation() {
+        val unknownInfo = LocationInfo(
+            city = context.getString(R.string.unknown_location),
+            distanceKm = null
+        )
+        if (_locationInfo.value != unknownInfo) {
+            _locationInfo.value = unknownInfo
+        }
+    }
+
+    private fun buildCitySearchQuery(city: String?, address: android.location.Address?): String? {
+        if (address == null) return city
         val terms = listOfNotNull(city, address.subAdminArea, address.adminArea, address.countryName)
             .distinct()
         return if (terms.isNotEmpty()) terms.joinToString(", ") else null

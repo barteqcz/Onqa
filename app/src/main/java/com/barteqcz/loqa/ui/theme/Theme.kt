@@ -104,7 +104,12 @@ fun LoqaTheme(
     val targetColorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            val base = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            base.copy(
+                background = if (darkTheme) DarkBackground else LightBackground,
+                surface = if (darkTheme) DarkBackground else LightBackground,
+                surfaceVariant = if (darkTheme) CardBackground else LightCardBackground,
+            )
         }
         darkTheme -> DarkColorScheme.copy(primary = accentColor)
         else -> LightColorScheme.copy(primary = if (accentColor == LoqaGreen) LoqaGreenDark else accentColor)

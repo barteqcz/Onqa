@@ -17,4 +17,8 @@ data class RadioStation(
     @SerialName("coverage_km")
     val coverageKm: Double? = null,
     val isFavorite: Boolean = false
-)
+) {
+    fun getStreamUrl(useHq: Boolean): String? {
+        return if (useHq && !streamUrlHq.isNullOrBlank()) streamUrlHq else streamUrl
+    }
+}

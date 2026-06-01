@@ -1,21 +1,33 @@
 package com.barteqcz.loqa.location
 
 import android.location.Address
+import com.barteqcz.loqa.data.model.LocationInfo
 
 object AddressRefiner {
 
-    fun findBestCityCandidate(addresses: List<Address>): String? {
+    fun refineLocation(addresses: List<Address>?): LocationInfo {
+        if (addresses.isNullOrEmpty()) return LocationInfo()
+
+        val bestCandidate = findBestCityCandidate(addresses)
+        val city = cleanCityName(bestCandidate)
+        val firstAddress = addresses.first()
+
+        return LocationInfo(
+            city = city,
+            country = firstAddress.countryName,
+            countryCode = firstAddress.countryCode
+        )
+    }
+
+    private fun findBestCityCandidate(addresses: List<Address>): String? {
         if (addresses.isEmpty()) return null
-        
-        // To get the "Main Name" (e.g., "Ljubljana" instead of a district like "Bežigrad"),
-        // we look for the 'locality' starting from the least specific results.
-        // Geocoders usually return broad area matches at the end of the list.
+
         val mainCity = addresses.asReversed().firstNotNullOfOrNull { it.locality }
-        
+
         if (mainCity != null) return mainCity
 
-        // Fallback to administrative areas if locality is entirely missing
         val first = addresses.first()
+
         return first.subAdminArea ?: first.adminArea
     }
 
