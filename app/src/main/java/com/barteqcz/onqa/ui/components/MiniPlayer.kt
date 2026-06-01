@@ -19,9 +19,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.nativePaint
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -63,7 +68,7 @@ fun MiniPlayer(
     )
 
     val elevation by animateDpAsState(
-        targetValue = if (isScrollable) 12.dp else 8.dp,
+        targetValue = if (isScrollable) 16.dp else 12.dp,
         animationSpec = tween(durationMillis = 500),
         label = "miniPlayerElevation"
     )
@@ -72,11 +77,35 @@ fun MiniPlayer(
         modifier = Modifier
             .padding(12.dp)
             .navigationBarsPadding()
+            .drawBehind {
+                val shadowColor = Color.Black.copy(alpha = 0.2f)
+                val blurRadius = (elevation.toPx() * 1.5f).coerceAtLeast(1f)
+                drawIntoCanvas { canvas ->
+                    val paint = Paint()
+                    val frameworkPaint = paint.nativePaint
+                    frameworkPaint.color = android.graphics.Color.TRANSPARENT
+                    frameworkPaint.setShadowLayer(
+                        blurRadius,
+                        0f,
+                        0f,
+                        shadowColor.toArgb()
+                    )
+                    canvas.drawRoundRect(
+                        0f,
+                        0f,
+                        size.width,
+                        size.height,
+                        28.dp.toPx(),
+                        28.dp.toPx(),
+                        paint
+                    )
+                }
+            }
             .shadow(
                 elevation = elevation,
                 shape = RoundedCornerShape(28.dp),
-                ambientColor = Color.Black.copy(alpha = 0.2f),
-                spotColor = Color.Black.copy(alpha = 0.4f)
+                ambientColor = Color.Black.copy(alpha = 0.25f),
+                spotColor = Color.Black.copy(alpha = 0.2f)
             )
             .fillMaxWidth()
             .height(88.dp)

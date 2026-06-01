@@ -122,38 +122,29 @@ fun SettingsScreen(
                 
                 SettingCategory(title = stringResource(R.string.category_appearance))
 
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        stringResource(R.string.theme_mode_title),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    SingleChoiceSegmentedButtonRow(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        ThemeMode.entries.forEachIndexed { index, mode ->
-                            SegmentedButton(
-                                shape = SegmentedButtonDefaults.itemShape(index = index, count = ThemeMode.entries.size),
-                                onClick = { viewModel.updateThemeMode(mode) },
-                                selected = settings.themeMode == mode,
-                                label = {
-                                    Text(
-                                        when (mode) {
-                                            ThemeMode.SYSTEM -> stringResource(R.string.theme_mode_system)
-                                            ThemeMode.LIGHT -> stringResource(R.string.theme_mode_light)
-                                            ThemeMode.DARK -> stringResource(R.string.theme_mode_dark)
-                                        }
-                                    )
-                                },
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    ThemeMode.entries.forEachIndexed { index, mode ->
+                        SegmentedButton(
+                            shape = SegmentedButtonDefaults.itemShape(index = index, count = ThemeMode.entries.size),
+                            onClick = { viewModel.updateThemeMode(mode) },
+                            selected = settings.themeMode == mode,
+                            label = {
+                                Text(
+                                    when (mode) {
+                                        ThemeMode.SYSTEM -> stringResource(R.string.theme_mode_system)
+                                        ThemeMode.LIGHT -> stringResource(R.string.theme_mode_light)
+                                        ThemeMode.DARK -> stringResource(R.string.theme_mode_dark)
+                                    }
+                                )
+                                    },
                                 colors = SegmentedButtonDefaults.colors(
                                     activeContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                                     activeContentColor = MaterialTheme.colorScheme.primary,
                                     inactiveContentColor = MaterialTheme.colorScheme.onSurface
                                 )
-                            )
-                        }
+                        )
                     }
                 }
 
