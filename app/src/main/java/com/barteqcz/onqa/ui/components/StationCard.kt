@@ -20,10 +20,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.rounded.CellTower
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -123,15 +126,31 @@ fun StationCard(
                 modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AsyncImage(
-                    model = station.logo,
-                    contentDescription = null,
+                var isImageLoaded by remember(station.logo) { mutableStateOf(false) }
+                Box(
                     modifier = Modifier
                         .size(52.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
-                    contentScale = ContentScale.Fit
-                )
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (!isImageLoaded) {
+                        Icon(
+                            imageVector = Icons.Rounded.CellTower,
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                        )
+                    }
+                    AsyncImage(
+                        model = station.logo,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit,
+                        onSuccess = { isImageLoaded = true },
+                        onError = { isImageLoaded = false }
+                    )
+                }
 
                 Spacer(modifier = Modifier.width(16.dp))
 

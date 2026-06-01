@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.auto(
                 android.graphics.Color.TRANSPARENT,
-                android.graphics.Color.TRANSPARENT
+                android.graphics.Color.TRANSPARENT,
             )
         )
 
@@ -164,7 +164,7 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 val stations = (viewState.uiState as? RadioUiState.Success)?.stations ?: emptyList()
                                 val selectedStation = viewState.selectedUrl?.let { url ->
-                                    stations.find { it.streamUrl == url || it.streamUrlHq == url }
+                                    stations.find { (it.streamUrl == url) || (it.streamUrlHq == url) }
                                 }
                                 val displayStation = selectedStation ?: viewState.currentStation
 

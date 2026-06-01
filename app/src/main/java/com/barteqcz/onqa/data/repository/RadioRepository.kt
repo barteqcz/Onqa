@@ -48,7 +48,7 @@ class RadioRepository @Inject constructor(
             locationManager.currentLocation
                 .filterNotNull()
                 .distinctUntilChanged { old, new ->
-                    old.latitude == new.latitude && old.longitude == new.longitude
+                    (old.latitude == new.latitude) && (old.longitude == new.longitude)
                 }
                 .collect { location ->
                     updateNearbyStations(location)

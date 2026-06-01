@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -14,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.rounded.CellTower
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -176,18 +178,36 @@ fun MiniPlayer(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val scale by animateFloatAsState(if (isPlaying) 1.05f else 1f, label = "logoScale")
-                AsyncImage(
-                    model = targetStation.logo,
-                    contentDescription = null,
+                var isImageLoaded by remember(targetStation.logo) { mutableStateOf(false) }
+
+                Box(
                     modifier = Modifier
                         .size(60.dp)
                         .graphicsLayer {
                             scaleX = scale
                             scaleY = scale
                         }
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Fit
-                )
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (!isImageLoaded) {
+                        Icon(
+                            imageVector = Icons.Rounded.CellTower,
+                            contentDescription = null,
+                            modifier = Modifier.size(36.dp),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                        )
+                    }
+                    AsyncImage(
+                        model = targetStation.logo,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit,
+                        onSuccess = { isImageLoaded = true },
+                        onError = { isImageLoaded = false }
+                    )
+                }
 
                 Spacer(modifier = Modifier.width(16.dp))
 

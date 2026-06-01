@@ -52,12 +52,12 @@ class RadioViewModel @Inject constructor(
     private var lastNetworkId: String? = null
     private val _uiState = MutableStateFlow<RadioUiState>(RadioUiState.Loading)
     private val _selectedStationUrl = MutableStateFlow<String?>(null)
-    private val _isScrollable = MutableStateFlow(false)
+    private val _isScrollable = MutableStateFlow(value = false)
 
     private val connectivityStatus = connectivityObserver.observe()
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
+            SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS),
             ConnectivityObserver.Status.Available(),
         )
 
@@ -84,7 +84,7 @@ class RadioViewModel @Inject constructor(
 
         val stations = (state as? RadioUiState.Success)?.stations ?: emptyList()
         val station = stations.find { it.name == info.name }
-            ?: stations.find { it.streamUrl == url || it.streamUrlHq == url }
+            ?: stations.find { (it.streamUrl == url) || (it.streamUrlHq == url) }
             ?: RadioStation(
                 name = info.name ?: "",
                 streamUrl = url,
@@ -93,7 +93,7 @@ class RadioViewModel @Inject constructor(
             )
 
         station.copy(isFavorite = station.name in favorites)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), null)
 
     val viewState: StateFlow<RadioViewState> = combine(
         _uiState,
@@ -108,32 +108,20 @@ class RadioViewModel @Inject constructor(
         connectivityStatus,
         _isScrollable,
     ) { args ->
-        val uiState = args[0] as RadioUiState
-        val selectedUrl = args[1] as String?
-        val currentStation = args[2] as RadioStation?
-        val isPlaying = args[3] as Boolean
-        val isBuffering = args[4] as Boolean
-        val playbackError = args[5] as Boolean
-        val metadata = args[6] as String?
-        val locationInfo = args[7] as LocationInfo
-        val settings = args[8] as AppSettings
-        val connectivity = args[9] as ConnectivityObserver.Status
-        val isScrollable = args[10] as Boolean
-
         RadioViewState(
-            uiState = uiState,
-            selectedUrl = selectedUrl,
-            currentStation = currentStation,
-            isPlaying = isPlaying,
-            isBuffering = isBuffering,
-            playbackError = playbackError,
-            metadata = metadata,
-            locationInfo = locationInfo,
-            settings = settings,
-            isNetworkAvailable = connectivity is ConnectivityObserver.Status.Available,
-            isScrollable = isScrollable,
+            uiState = args[0] as RadioUiState,
+            selectedUrl = args[1] as String?,
+            currentStation = args[2] as RadioStation?,
+            isPlaying = args[3] as Boolean,
+            isBuffering = args[4] as Boolean,
+            playbackError = args[5] as Boolean,
+            metadata = args[6] as String?,
+            locationInfo = args[7] as LocationInfo,
+            settings = args[8] as AppSettings,
+            isNetworkAvailable = (args[9] as ConnectivityObserver.Status) is ConnectivityObserver.Status.Available,
+            isScrollable = args[10] as Boolean,
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), RadioViewState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
     init {
         observeSettings()
@@ -158,7 +146,7 @@ class RadioViewModel @Inject constructor(
                         val allStations = result.data
 
                         val currentPlaying = radioPlayer.stationInfo.value
-                        if (currentPlaying.url != null && (radioPlayer.isPlaying.value || radioPlayer.isBuffering.value)) {
+                        if ((currentPlaying.url != null) && (radioPlayer.isPlaying.value || radioPlayer.isBuffering.value)) {
                             val updatedStation = allStations.find { it.name == currentPlaying.name }
                             val targetUrl = updatedStation?.getStreamUrl(settings.value.useHqStream)
                             
@@ -364,7 +352,7 @@ class RadioViewModel @Inject constructor(
 
     private fun currentIndex(): Int {
         val stations = (_uiState.value as? RadioUiState.Success)?.stations ?: return -1
-        return stations.indexOfFirst { it.streamUrl == _selectedStationUrl.value || it.streamUrlHq == _selectedStationUrl.value }
+        return stations.indexOfFirst { (it.streamUrl == _selectedStationUrl.value) || (it.streamUrlHq == _selectedStationUrl.value) }
     }
 
     companion object {
