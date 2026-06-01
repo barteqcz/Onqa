@@ -3,9 +3,13 @@
 
 # Onqa
 
-Most of today’s phones no longer have an FM radio. Yet there’s something magical about discovering the local ether - hearing the voices, music, and stories that make each place unique. As a radio enthusiast, I’ve always loved exploring the airwaves wherever I go.
+There’s definitely something magical about discovering the local radio ether. Hearing the voices, music, and stories that make each place unique. However, FM radio is often unavailable in new phones. 
 
-That’s where Onqa comes from. The name is inspired by the Spanish words *onda* (“wave”) and *cerca* (“nearby”), reflecting the idea of discovering the radio waves around you.
+As an IT enthusiast, radio enthusiast and a DXer, I’ve always loved exploring the airwaves wherever I go. I feel like life would be much sadder without radio. Yet terrestrial broadcasting is the most magical way of enjoying it, sometimes you just want something more portable - straight on your phone, with an amazing UI, polished [maps ecosystem](https://onqa.barteq.cz/) and many features.
+
+That’s where **Onqa** comes from. It's not meant to be a replacement for terriestrial broadcasting. It's meant to do a similar thing - allow the users to discover their local radio ether.
+
+The name is inspired by the Spanish words *onda* (“wave”) and *cerca* (“nearby”), reflecting the idea of discovering the radio stations around you.
 
 ## Screenshots
 
