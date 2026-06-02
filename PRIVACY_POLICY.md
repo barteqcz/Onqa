@@ -43,8 +43,8 @@ We do not sell, trade, or otherwise transfer your information to outside parties
 
 ## 5. Your Rights and Choices
 
-*   **Location Permissions:** You can enable or disable location services at any time through your device settings. You can also choose whether to allow location access "Only while using the app" or "All the time" (for background access).
-*   **Notification Permissions:** You can opt out of receiving notifications through your device settings.
+*   **Location Permissions:** You can enable or disable location services at any time through your device settings. You can also choose whether to allow location access "Only while using the app" (the App might stop working) or "All the time" (for background access).
+*   **Notification Permissions:** You can opt out of seeing playback notifications through your device settings.
 *   **Data Deletion:** You can delete all locally stored data (favorites and settings) by clearing the App's storage or uninstalling the App.
 
 ## 6. Children's Privacy
@@ -60,5 +60,7 @@ We may update our Privacy Policy from time to time. We will notify you of any ch
 If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us.
 
 **Developer:** barteqcz
+
 **Email:** bartosz.brom06@gmail.com
+
 **Website:** https://onqa.barteq.cz/
