@@ -9,8 +9,8 @@ object AddressRefiner {
         val baseInfo = if (addresses.isNullOrEmpty()) {
             LocationInfo()
         } else {
-            val bestCandidate = findBestCityCandidate(addresses)
-            val city = cleanCityName(bestCandidate)
+            val cityCandidate = findBestCityCandidate(addresses)
+            val city = cleanCityName(cityCandidate)
             val firstAddress = addresses.first()
             LocationInfo(
                 city = city,
@@ -20,6 +20,23 @@ object AddressRefiner {
         }
 
         return applySpecialRegionOverrides(baseInfo, lat, lon, addresses)
+    }
+
+    private fun findBestCityCandidate(addresses: List<Address>): String? {
+        val locality = addresses.firstNotNullOfOrNull { it.locality }
+        if (locality != null) return locality
+
+        val first = addresses.first()
+        return first.subAdminArea ?: first.adminArea ?: first.countryName
+    }
+
+    private fun cleanCityName(name: String?): String? {
+        if (name.isNullOrBlank()) return null
+
+        return name.replace(Regex("\\d+"), "")
+            .replace(Regex("-(?=[a-z])\\w+"), "")
+            .trim()
+            .takeIf { it.length > 2 }
     }
 
     private fun applySpecialRegionOverrides(
@@ -64,26 +81,5 @@ object AddressRefiner {
         }
 
         return info
-    }
-
-    private fun findBestCityCandidate(addresses: List<Address>): String? {
-        if (addresses.isEmpty()) return null
-
-        val mainCity = addresses.asReversed().firstNotNullOfOrNull { it.locality }
-
-        if (mainCity != null) return mainCity
-
-        val first = addresses.first()
-
-        return first.subAdminArea ?: first.adminArea ?: first.countryName
-    }
-
-    fun cleanCityName(name: String?): String? {
-        if (name.isNullOrBlank()) return null
-
-        return name.replace(Regex("\\d+"), "")
-            .replace(Regex("-(?=[a-z])\\w+"), "")
-            .trim()
-            .takeIf { it.length > 2 }
     }
 }
