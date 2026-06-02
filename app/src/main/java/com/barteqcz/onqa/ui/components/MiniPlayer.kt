@@ -143,36 +143,46 @@ fun MiniPlayer(
         shadowElevation = 0.dp
     ) {
         AnimatedContent(
-            targetState = station.streamUrl,
+            targetState = station to showHqIcon,
             transitionSpec = {
-                val initialIndex = stations.indexOfFirst { it.streamUrl == initialState || it.streamUrlHq == initialState }
-                val targetIndex = stations.indexOfFirst { it.streamUrl == targetState || it.streamUrlHq == targetState }
-                
-                val isNext = if ((initialIndex != -1) && (targetIndex != -1)) {
-                    if (stations.size > 2) {
-                        when (initialIndex) {
-                            stations.lastIndex -> targetIndex == 0
-                            0 -> targetIndex != stations.lastIndex
-                            else -> targetIndex > initialIndex
-                        }
+                val (initialStation, initialHq) = initialState
+                val (targetStation, targetHq) = targetState
+
+                if (initialStation.name == targetStation.name && initialStation.network == targetStation.network) {
+                    if (initialHq != targetHq) {
+                        (fadeIn(tween(400)) togetherWith fadeOut(tween(400)))
                     } else {
-                        targetIndex > initialIndex
+                        EnterTransition.None togetherWith ExitTransition.None
                     }
                 } else {
-                    offsetX < 0
-                }
+                    val initialIndex = stations.indexOfFirst { it.name == initialStation.name && it.network == initialStation.network }
+                    val targetIndex = stations.indexOfFirst { it.name == targetStation.name && it.network == targetStation.network }
 
-                if (isNext) {
-                    (slideInHorizontally(tween(400)) { it } + fadeIn(tween(400)))
-                        .togetherWith(slideOutHorizontally(tween(400)) { -it } + fadeOut(tween(400)))
-                } else {
-                    (slideInHorizontally(tween(400)) { -it } + fadeIn(tween(400)))
-                        .togetherWith(slideOutHorizontally(tween(400)) { it } + fadeOut(tween(400)))
+                    val isNext = if ((initialIndex != -1) && (targetIndex != -1)) {
+                        if (stations.size > 2) {
+                            when (initialIndex) {
+                                stations.lastIndex -> targetIndex == 0
+                                0 -> targetIndex != stations.lastIndex
+                                else -> targetIndex > initialIndex
+                            }
+                        } else {
+                            targetIndex > initialIndex
+                        }
+                    } else {
+                        offsetX < 0
+                    }
+
+                    if (isNext) {
+                        (slideInHorizontally(tween(400)) { it } + fadeIn(tween(400)))
+                            .togetherWith(slideOutHorizontally(tween(400)) { -it } + fadeOut(tween(400)))
+                    } else {
+                        (slideInHorizontally(tween(400)) { -it } + fadeIn(tween(400)))
+                            .togetherWith(slideOutHorizontally(tween(400)) { it } + fadeOut(tween(400)))
+                    }
                 }
             },
             label = "stationChange"
-        ) { targetUrl ->
-            val targetStation = stations.find { it.streamUrl == targetUrl || it.streamUrlHq == targetUrl } ?: station
+        ) { (targetStation, targetShowHqIcon) ->
             Row(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -229,7 +239,7 @@ fun MiniPlayer(
                             modifier = Modifier.weight(1f, fill = false).basicMarquee()
                         )
                         
-                        if (showHqIcon) {
+                        if (targetShowHqIcon) {
                             HqIcon(tint = infoColor)
                         }
                     }
