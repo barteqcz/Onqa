@@ -4,7 +4,7 @@ coreKtx = "1.18.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-kotlin = "2.3.21"
+kotlin = "2.4.0"
 composeBom = "2026.05.01"
 lifecycle = "2.10.0"
 media3 = "1.10.1"
@@ -20,9 +20,12 @@ hilt = "2.59.2"
 hiltNavigationCompose = "1.3.0"
 ksp = "2.3.8"
 timber = "5.0.1"
+kotlinxCollectionsImmutable = "0.4.0"
+androidxProfileinstaller = "1.4.1"
 
 [libraries]
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -56,6 +59,7 @@ retrofit-kotlinx-serialization-converter = { group = "com.squareup.retrofit2", n
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "androidxProfileinstaller" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

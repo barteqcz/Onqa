@@ -111,10 +111,12 @@ dependencies {
     implementation(libs.retrofit.kotlinx.serialization.converter)
     
     implementation(libs.timber)
+    implementation(libs.kotlinx.collections.immutable)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.profileinstaller)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

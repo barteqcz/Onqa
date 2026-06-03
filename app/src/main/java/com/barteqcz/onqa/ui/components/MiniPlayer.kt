@@ -15,7 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.rounded.CellTower
+import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -206,7 +206,7 @@ fun MiniPlayer(
                 ) {
                     if (!isImageLoaded) {
                         Icon(
-                            imageVector = Icons.Rounded.CellTower,
+                            imageVector = Icons.Default.Radio,
                             contentDescription = null,
                             modifier = Modifier.size(36.dp),
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)

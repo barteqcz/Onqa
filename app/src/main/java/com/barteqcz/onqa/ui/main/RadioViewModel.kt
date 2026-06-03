@@ -1,5 +1,6 @@
 package com.barteqcz.onqa.ui.main
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,12 +16,14 @@ import com.barteqcz.onqa.domain.GetSortedStationsUseCase
 import com.barteqcz.onqa.ui.theme.OnqaGreen
 import com.barteqcz.onqa.util.ConnectivityObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Immutable
 data class RadioViewState(
     val uiState: RadioUiState = RadioUiState.Loading,
     val selectedUrl: String? = null,
@@ -28,7 +31,6 @@ data class RadioViewState(
     val isPlaying: Boolean = false,
     val isBuffering: Boolean = false,
     val playbackError: Boolean = false,
-    val metadata: String? = null,
     val locationInfo: LocationInfo = LocationInfo(),
     val settings: AppSettings = AppSettings(
         themeMode = ThemeMode.SYSTEM,
@@ -96,6 +98,8 @@ class RadioViewModel @Inject constructor(
         station.copy(isFavorite = station.name in favorites)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), null)
 
+    val metadata: StateFlow<String?> = radioPlayer.metadata
+
     val viewState: StateFlow<RadioViewState> = combine(
         _uiState,
         _selectedStationUrl,
@@ -103,7 +107,6 @@ class RadioViewModel @Inject constructor(
         radioPlayer.isPlaying,
         radioPlayer.isBuffering,
         radioPlayer.playbackError,
-        radioPlayer.metadata,
         repository.locationInfo,
         settings,
         connectivityStatus,
@@ -116,11 +119,10 @@ class RadioViewModel @Inject constructor(
             isPlaying = args[3] as Boolean,
             isBuffering = args[4] as Boolean,
             playbackError = args[5] as Boolean,
-            metadata = args[6] as String?,
-            locationInfo = args[7] as LocationInfo,
-            settings = args[8] as AppSettings,
-            isNetworkAvailable = (args[9] as ConnectivityObserver.Status) is ConnectivityObserver.Status.Available,
-            isScrollable = args[10] as Boolean,
+            locationInfo = args[6] as LocationInfo,
+            settings = args[7] as AppSettings,
+            isNetworkAvailable = (args[8] as ConnectivityObserver.Status) is ConnectivityObserver.Status.Available,
+            isScrollable = args[9] as Boolean,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
@@ -167,14 +169,14 @@ class RadioViewModel @Inject constructor(
                         if (currentState is RadioUiState.Success) {
                             _uiState.value = currentState.copy(
                                 stations = groupedStations,
-                                allStations = allStations,
+                                allStations = allStations.toImmutableList(),
                                 currentLocation = location ?: currentState.currentLocation,
                             )
                         } else if (location != null) {
                             val locInfo = repository.locationInfo.value
                             _uiState.value = RadioUiState.Success(
                                 stations = groupedStations,
-                                allStations = allStations,
+                                allStations = allStations.toImmutableList(),
                                 currentLocation = location,
                                 cityName = locInfo.city,
                                 countryName = locInfo.country,

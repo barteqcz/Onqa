@@ -109,6 +109,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+            val metadata by viewModel.metadata.collectAsStateWithLifecycle()
 
             OnqaTheme(
                 themeMode = viewState.settings.themeMode,
@@ -174,7 +175,7 @@ class MainActivity : ComponentActivity() {
                                         stations = stations,
                                         isPlaying = viewState.isPlaying,
                                         isBuffering = viewState.isBuffering,
-                                        metadata = viewState.metadata,
+                                        metadata = metadata,
                                         showHqIcon = viewState.settings.useHqStream && !it.streamUrlHq.isNullOrBlank(),
                                         isScrollable = viewState.isScrollable,
                                         onToggle = { viewModel.toggleStation(viewState.selectedUrl!!) },

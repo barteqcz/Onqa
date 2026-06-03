@@ -1,6 +1,8 @@
 package com.barteqcz.onqa.data.util
 
 import com.barteqcz.onqa.data.model.RadioStation
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 object StationProcessor {
 
@@ -8,7 +10,7 @@ object StationProcessor {
         allStations: List<RadioStation>,
         activeUrl: String?,
         favorites: Set<String>
-    ): List<RadioStation> {
+    ): ImmutableList<RadioStation> {
         val normalizedActive = activeUrl?.trimEnd('/')
         return allStations.groupBy { "${it.name}|${it.network}" }
             .asSequence()
@@ -41,6 +43,6 @@ object StationProcessor {
                     .thenBy { it.transmitterId ?: Int.MAX_VALUE }
                     .thenBy { it.displayOrder ?: Int.MAX_VALUE }
             )
-            .toList()
+            .toImmutableList()
     }
 }
