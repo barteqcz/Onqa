@@ -146,7 +146,7 @@ fun MiniPlayer(
         shadowElevation = 0.dp
     ) {
         AnimatedContent(
-            targetState = station to showHqIcon,
+            targetState = Triple(station, showHqIcon, isBuffering),
             transitionSpec = {
                 val (initialStation, initialHq) = initialState
                 val (targetStation, targetHq) = targetState
@@ -185,7 +185,7 @@ fun MiniPlayer(
                 }
             },
             label = "stationChange"
-        ) { (targetStation, targetShowHqIcon) ->
+        ) { (targetStation, targetShowHqIcon, targetIsBuffering) ->
             Row(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -267,7 +267,7 @@ fun MiniPlayer(
                                 maxLines = 1,
                                 modifier = Modifier.basicMarquee()
                             )
-                        } else if (isBuffering) {
+                        } else if (targetIsBuffering) {
                             Text(
                                 text = stringResource(R.string.buffering),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -283,7 +283,7 @@ fun MiniPlayer(
                     modifier = Modifier.size(52.dp)
                 ) {
                     AnimatedContent(
-                        targetState = isBuffering to isPlaying,
+                        targetState = targetIsBuffering to isPlaying,
                         transitionSpec = {
                             fadeIn(tween(200)).togetherWith(fadeOut(tween(200)))
                         },

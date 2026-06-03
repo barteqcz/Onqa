@@ -114,6 +114,7 @@ class RadioPlayer @Inject constructor(
     fun play(stationName: String?, url: String, logoUrl: String?, network: String? = null, forceReload: Boolean = false) {
         lastPauseActionTime = 0
         _playbackError.value = false
+        _isBuffering.value = true
         
         val player = controller ?: return
         
@@ -142,6 +143,7 @@ class RadioPlayer @Inject constructor(
             .build()
 
         player.setMediaItem(mediaItem)
+        player.seekToDefaultPosition()
         player.prepare()
         player.play()
     }
