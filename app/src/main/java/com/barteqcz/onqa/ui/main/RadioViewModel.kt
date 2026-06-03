@@ -15,6 +15,7 @@ import com.barteqcz.onqa.domain.GetSortedStationsUseCase
 import com.barteqcz.onqa.ui.theme.OnqaGreen
 import com.barteqcz.onqa.util.ConnectivityObserver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -135,6 +136,7 @@ class RadioViewModel @Inject constructor(
     private fun observeStations() {
         repository.stations
             .combine(repository.currentLocation) { stations, location -> stations to location }
+            .flowOn(Dispatchers.Default)
             .onEach { (result, location) ->
                 when (result) {
                     is NetworkResult.Loading -> {
@@ -287,7 +289,9 @@ class RadioViewModel @Inject constructor(
                     _uiState.value = state.copy(stations = newStations)
                 }
             }
-        }.launchIn(viewModelScope)
+        }
+        .flowOn(Dispatchers.Default)
+        .launchIn(viewModelScope)
     }
 
     fun updateMaterialYou(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateMaterialYou(enabled) }

@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -67,7 +68,11 @@ fun EqualizerAnimation(color: Color = MaterialTheme.colorScheme.primary) {
             Box(
                 modifier = Modifier
                     .width(3.dp)
-                    .fillMaxHeight(heightScale)
+                    .fillMaxHeight()
+                    .graphicsLayer {
+                        this.scaleY = heightScale
+                        this.transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f)
+                    }
                     .background(
                         color,
                         RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp),

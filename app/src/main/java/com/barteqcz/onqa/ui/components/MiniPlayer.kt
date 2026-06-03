@@ -35,7 +35,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.model.RadioStation
 import kotlin.math.roundToInt
@@ -64,7 +66,7 @@ fun MiniPlayer(
 
     val borderColor by animateColorAsState(
         targetValue = (if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary)
-            .copy(alpha = if (isPlaying || isBuffering) 0.5f else 0f),
+            .copy(alpha = if (isPlaying || isBuffering || kotlin.math.abs(animatedOffsetX) > 0.5f) 0.5f else 0f),
         animationSpec = tween(durationMillis = 500),
         label = "miniPlayerBorder"
     )
@@ -79,6 +81,9 @@ fun MiniPlayer(
         modifier = Modifier
             .padding(12.dp)
             .navigationBarsPadding()
+            .fillMaxWidth()
+            .height(88.dp)
+            .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
             .drawBehind {
                 val shadowColor = Color.Black.copy(alpha = 0.2f)
                 val blurRadius = (elevation.toPx() * 1.5f).coerceAtLeast(1f)
@@ -109,9 +114,7 @@ fun MiniPlayer(
                 ambientColor = Color.Black.copy(alpha = 0.25f),
                 spotColor = Color.Black.copy(alpha = 0.2f)
             )
-            .fillMaxWidth()
-            .height(88.dp)
-            .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
+            .clip(RoundedCornerShape(28.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -210,7 +213,10 @@ fun MiniPlayer(
                         )
                     }
                     AsyncImage(
-                        model = targetStation.logo,
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(targetStation.logo)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit,

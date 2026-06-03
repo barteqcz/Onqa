@@ -249,20 +249,22 @@ fun SettingsScreen(
                 exit = fadeOut(),
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
+                val bgColor = MaterialTheme.colorScheme.background
+                val shadowBrush = remember(bgColor) {
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            bgColor.copy(alpha = 0.4f),
+                            bgColor.copy(alpha = 0.8f),
+                            bgColor
+                        )
+                    )
+                }
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(140.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    MaterialTheme.colorScheme.background.copy(alpha = 0.4f),
-                                    MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
-                                    MaterialTheme.colorScheme.background
-                                )
-                            )
-                        )
+                        .background(shadowBrush)
                 )
             }
         }

@@ -37,7 +37,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.model.RadioStation
 import kotlin.math.roundToInt
@@ -143,7 +145,10 @@ fun StationCard(
                         )
                     }
                     AsyncImage(
-                        model = station.logo,
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(station.logo)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit,
