@@ -11,6 +11,7 @@ object MediaMetadataMapper {
         artist: String? = null,
         stationName: String? = null,
         artworkUri: String? = null,
+        artworkData: ByteArray? = null,
         network: String? = null,
         extras: Bundle = Bundle()
     ): MediaMetadata {
@@ -20,6 +21,7 @@ object MediaMetadataMapper {
             .setArtist(artist)
             .setAlbumArtist(stationName)
             .setArtworkUri(artworkUri?.toUri())
+            .setArtworkData(artworkData, MediaMetadata.PICTURE_TYPE_FRONT_COVER)
             .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
             .apply {
                 if (network != null) {

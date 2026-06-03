@@ -9,7 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
+import androidx.core.graphics.drawable.toBitmap
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -43,6 +43,7 @@ import com.barteqcz.onqa.data.util.NetworkResult
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -55,6 +56,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import kotlin.time.Duration.Companion.milliseconds
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
@@ -225,9 +227,9 @@ class PlaybackService : MediaSessionService() {
         val player = exoPlayer ?: return
         
         try {
-            withTimeout(FADE_READY_TIMEOUT_MS) {
+            withTimeout(FADE_READY_TIMEOUT_MS.milliseconds) {
                 while (player.playbackState != Player.STATE_READY || !player.isPlaying) {
-                    delay(50)
+                    delay(50.milliseconds)
                     if (player.playbackState == Player.STATE_IDLE || player.playerError != null) return@withTimeout
                 }
             }
@@ -242,7 +244,7 @@ class PlaybackService : MediaSessionService() {
         val totalDelta = 1f - currentVol
         
         for (i in 1..steps) {
-            delay(stepDuration)
+            delay(stepDuration.milliseconds)
             exoPlayer?.volume = (currentVol + (totalDelta * i / steps)).coerceIn(0f, 1f)
         }
         exoPlayer?.volume = 1f
@@ -256,7 +258,7 @@ class PlaybackService : MediaSessionService() {
         val steps = 20
         val stepDuration = durationMs / steps
         for (i in steps - 1 downTo 0) {
-            delay(stepDuration)
+            delay(stepDuration.milliseconds)
             exoPlayer?.volume = (i.toFloat() / steps) * startVol
         }
         exoPlayer?.volume = 0f
@@ -410,7 +412,8 @@ class PlaybackService : MediaSessionService() {
                             title = currentStationName,
                             artist = null,
                             stationName = currentStationName,
-                            artworkUri = currentStationLogo,
+                            artworkUri = if (currentArtworkData != null) null else currentStationLogo,
+                            artworkData = currentArtworkData,
                             network = currentStationNetwork
                         )
                     }
@@ -425,7 +428,8 @@ class PlaybackService : MediaSessionService() {
                         title = displayTitle ?: currentStationName,
                         artist = displaySubtitle,
                         stationName = currentStationName,
-                        artworkUri = currentStationLogo,
+                        artworkUri = if (currentArtworkData != null) null else currentStationLogo,
+                        artworkData = currentArtworkData,
                         network = currentStationNetwork
                     )
                 }
@@ -508,7 +512,7 @@ class PlaybackService : MediaSessionService() {
 
         playbackJob?.cancel()
         playbackJob = serviceScope.launch {
-            delay(RETRY_DELAY_MS)
+            delay(RETRY_DELAY_MS.milliseconds)
             playInternal(name, url, logo, network)
         }
     }
@@ -547,29 +551,31 @@ class PlaybackService : MediaSessionService() {
                     title = displayTitle ?: stationName,
                     artist = displaySubtitle,
                     stationName = stationName,
-                    artworkUri = currentStationLogo,
-                    extras = Bundle().apply { 
+                    artworkUri = if (currentArtworkData != null) null else currentStationLogo,
+                    artworkData = currentArtworkData,
+                    extras = Bundle().apply {
                         currentArtworkData?.let {
                             putByteArray("artwork_data", it)
                         }
                     }
                 ).buildUpon()
-                    .apply {
-                        currentArtworkData?.let {
-                            setArtworkData(it, MediaMetadata.PICTURE_TYPE_FRONT_COVER)
-                        }
-                    }
                     .build()
 
                 if (isUpdatingMetadata) return
                 isUpdatingMetadata = true
                 try {
-                    if (currentItem.mediaMetadata.title?.toString() != metadata.title?.toString()) {
+                    val currentMetadata = currentItem.mediaMetadata
+                    val isMetadataDifferent = currentMetadata.title != metadata.title || 
+                                             currentMetadata.artist != metadata.artist ||
+                                             !currentMetadata.artworkData.contentEquals(metadata.artworkData)
+
+                    if (isMetadataDifferent) {
+                        Timber.d("Updating media item metadata. Has artwork: ${currentArtworkData != null}")
                         player.replaceMediaItem(index, currentItem.buildUpon().setMediaMetadata(metadata).build())
                     }
                     player.playlistMetadata = metadata
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    Timber.e(e, "Error updating metadata")
                 } finally {
                     isUpdatingMetadata = false
                 }
@@ -584,6 +590,7 @@ class PlaybackService : MediaSessionService() {
         currentStationLogo = logo
         currentStationUrl = url
         currentStationNetwork = network
+        currentArtworkData = null // Reset artwork for the new station
         
         initializePlayer()
         loadArtwork(logo)
@@ -673,22 +680,27 @@ class PlaybackService : MediaSessionService() {
         }
         serviceScope.launch {
             try {
+                Timber.d("Loading artwork from: $url")
                 val request = ImageRequest.Builder(this@PlaybackService)
                     .data(url)
-                    .size(600, 600)
+                    .size(500, 500)
+                    .crossfade(false)
+                    .allowHardware(false)
                     .build()
                 val result = imageLoader.execute(request)
                 if (result is SuccessResult) {
-                    val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
-                    if (bitmap != null) {
-                        val outputStream = ByteArrayOutputStream()
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                        currentArtworkData = outputStream.toByteArray()
-                        updateRdsAndNotification(null)
-                    }
+                    val bitmap = result.drawable.toBitmap()
+                    val outputStream = ByteArrayOutputStream()
+                    // JPEG is usually safer for notification memory limits
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+                    currentArtworkData = outputStream.toByteArray()
+                    Timber.d("Artwork loaded successfully, size: ${currentArtworkData?.size} bytes")
+                    updateRdsAndNotification(null)
+                } else if (result is coil.request.ErrorResult) {
+                    Timber.e(result.throwable, "Failed to load artwork from $url")
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e(e, "Error loading artwork")
             }
         }
     }
