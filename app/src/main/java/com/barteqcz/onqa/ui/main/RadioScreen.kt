@@ -3,6 +3,7 @@ package com.barteqcz.onqa.ui.main
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -115,6 +117,7 @@ fun RadioScreen(
                                 )
                             } else {
                                 val listState = rememberLazyListState()
+                                val density = LocalDensity.current
 
                                 val favoritesCount = remember(state.stations) { state.stations.count { it.isFavorite } }
                                 var lastFavoritesCount by remember { mutableIntStateOf(favoritesCount) }
@@ -126,6 +129,7 @@ fun RadioScreen(
                                     lastFavoritesCount = favoritesCount
                                 }
 
+                                var wasMiniPlayerVisible by remember { mutableStateOf(viewState.selectedUrl != null) }
                                 LaunchedEffect(viewState.selectedUrl) {
                                     val selectedUrl = viewState.selectedUrl
                                     if (selectedUrl != null) {
@@ -133,18 +137,24 @@ fun RadioScreen(
                                         val totalItems = layoutInfo.totalItemsCount
                                         val visibleItems = layoutInfo.visibleItemsInfo
 
-                                        val fitsOnScreen = visibleItems.size >= totalItems
-                                        
-                                        if (!fitsOnScreen) {
+                                        if (visibleItems.isNotEmpty()) {
                                             val isLastItemVisible = visibleItems.any { it.index == (totalItems - 1) }
                                             val selectedIndex = state.stations.indexOfFirst { it.streamUrl == selectedUrl }
                                             val isLastItemSelected = selectedIndex == state.stations.size - 1
                                             
-                                            if (isLastItemVisible && isLastItemSelected && listState.canScrollBackward) {
-                                                listState.animateScrollToItem(totalItems - 1)
+                                            if (isLastItemVisible && listState.canScrollBackward) {
+                                                if (!wasMiniPlayerVisible) {
+                                                    // Pchnięcie listy w górę przy pierwszym pojawieniu się mini-playera
+                                                    val scrollAmount = with(density) { 100.dp.toPx() }
+                                                    listState.animateScrollBy(scrollAmount)
+                                                } else if (isLastItemSelected) {
+                                                    // Przewinięcie do ostatniego elementu przy jego ponownym wybraniu
+                                                    listState.animateScrollToItem(totalItems - 1)
+                                                }
                                             }
                                         }
                                     }
+                                    wasMiniPlayerVisible = selectedUrl != null
                                 }
 
                                 val bottomNavPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
