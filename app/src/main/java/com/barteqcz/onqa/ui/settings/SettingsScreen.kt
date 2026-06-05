@@ -46,7 +46,17 @@ fun SettingsScreen(
     val settings = viewState.settings
     val selectedUrl = viewState.selectedUrl
 
-    var customHex by remember { mutableStateOf("") }
+    var customHex by remember { 
+        mutableStateOf(String.format("%06X", (settings.accentColor.toArgb() and 0x00FFFFFF))) 
+    }
+    
+    LaunchedEffect(settings.accentColor) {
+        val hex = String.format("%06X", (settings.accentColor.toArgb() and 0x00FFFFFF))
+        if (customHex.uppercase() != hex) {
+            customHex = hex
+        }
+    }
+
     val scrollState = rememberScrollState()
 
     val showShadow by remember {
