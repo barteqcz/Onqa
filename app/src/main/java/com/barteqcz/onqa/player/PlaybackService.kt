@@ -80,10 +80,12 @@ class PlaybackService : MediaSessionService() {
     private var currentStationUrl: String? = null
     private var currentStationNetwork: String? = null
     private var currentArtworkData: ByteArray? = null
+    private var lastRdsTitle: String? = null
     private var isUpdatingMetadata = false
 
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var playbackJob: Job? = null
+    private var artworkJob: Job? = null
 
     private val noisyReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -518,9 +520,14 @@ class PlaybackService : MediaSessionService() {
     }
 
     private fun processMetadata(mediaMetadata: MediaMetadata) {
+        val title = mediaMetadata.title?.toString()
+        val artist = mediaMetadata.artist?.toString()
+
+        if (title.isNullOrBlank() && artist.isNullOrBlank()) return
+
         val (displayTitle, _) = MediaMetadataMapper.getEffectiveMetadata(
-            streamTitle = mediaMetadata.title?.toString(),
-            streamArtist = mediaMetadata.artist?.toString(),
+            streamTitle = title,
+            streamArtist = artist,
             stationName = currentStationName
         )
         updateRdsAndNotification(displayTitle)
@@ -528,10 +535,17 @@ class PlaybackService : MediaSessionService() {
 
     private fun updateRdsAndNotification(info: String?) {
         val stationName = currentStationName?.trim()
+        val stationUrl = currentStationUrl ?: return
+
+        if (info != null) {
+            lastRdsTitle = info
+        }
         
-        val (displayTitle, displaySubtitle) = if (info != null) {
+        val titleToProcess = lastRdsTitle ?: info
+        
+        val (displayTitle, displaySubtitle) = if (titleToProcess != null) {
             MediaMetadataMapper.getEffectiveMetadata(
-                streamTitle = info,
+                streamTitle = titleToProcess,
                 streamArtist = null,
                 stationName = stationName
             )
@@ -546,38 +560,35 @@ class PlaybackService : MediaSessionService() {
             
             val currentItem = if (index < player.mediaItemCount) player.getMediaItemAt(index) else null
             
-            if (currentItem != null) {
+            if (currentItem != null && currentItem.mediaId == stationUrl) {
                 val metadata = MediaMetadataMapper.buildMetadata(
                     title = displayTitle ?: stationName,
                     artist = displaySubtitle,
                     stationName = stationName,
-                    artworkUri = if (currentArtworkData != null) null else currentStationLogo,
+                    artworkUri = currentStationLogo,
                     artworkData = currentArtworkData,
-                    extras = Bundle().apply {
-                        currentArtworkData?.let {
-                            putByteArray("artwork_data", it)
-                        }
-                    }
-                ).buildUpon()
-                    .build()
+                    network = currentStationNetwork
+                )
 
                 if (isUpdatingMetadata) return
-                isUpdatingMetadata = true
-                try {
-                    val currentMetadata = currentItem.mediaMetadata
-                    val isMetadataDifferent = currentMetadata.title != metadata.title || 
-                                             currentMetadata.artist != metadata.artist ||
-                                             !currentMetadata.artworkData.contentEquals(metadata.artworkData)
+                
+                val currentMetadata = currentItem.mediaMetadata
+                val isMetadataDifferent = currentMetadata.title != metadata.title || 
+                                         currentMetadata.artist != metadata.artist ||
+                                         !java.util.Arrays.equals(currentMetadata.artworkData, metadata.artworkData) ||
+                                         currentMetadata.artworkUri != metadata.artworkUri
 
-                    if (isMetadataDifferent) {
-                        Timber.d("Updating media item metadata. Has artwork: ${currentArtworkData != null}")
+                if (isMetadataDifferent) {
+                    isUpdatingMetadata = true
+                    try {
+                        Timber.d("Updating media item metadata for $stationName. Has artwork: ${currentArtworkData != null}")
                         player.replaceMediaItem(index, currentItem.buildUpon().setMediaMetadata(metadata).build())
+                        player.playlistMetadata = metadata
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error updating metadata")
+                    } finally {
+                        isUpdatingMetadata = false
                     }
-                    player.playlistMetadata = metadata
-                } catch (e: Exception) {
-                    Timber.e(e, "Error updating metadata")
-                } finally {
-                    isUpdatingMetadata = false
                 }
             }
         }
@@ -591,6 +602,7 @@ class PlaybackService : MediaSessionService() {
         currentStationUrl = url
         currentStationNetwork = network
         currentArtworkData = null // Reset artwork for the new station
+        lastRdsTitle = null // Reset RDS for the new station
         
         initializePlayer()
         loadArtwork(logo)
@@ -640,13 +652,13 @@ class PlaybackService : MediaSessionService() {
                 player.volume = 0f
                 player.prepare()
                 player.play()
+                updateRdsAndNotification(null)
                 fadeIn()
             } else {
                 if (player.volume < 1f) fadeIn()
+                updateRdsAndNotification(null)
             }
         }
-        
-        updateRdsAndNotification(null)
     }
 
     private fun stopInternal() {
@@ -656,6 +668,7 @@ class PlaybackService : MediaSessionService() {
         currentStationLogo = null
         currentStationNetwork = null
         currentArtworkData = null
+        lastRdsTitle = null
         
         playbackJob = serviceScope.launch {
             try {
@@ -674,11 +687,12 @@ class PlaybackService : MediaSessionService() {
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? = mediaSession
 
     private fun loadArtwork(url: String?) {
+        artworkJob?.cancel()
         if (url == null) {
             currentArtworkData = null
             return
         }
-        serviceScope.launch {
+        artworkJob = serviceScope.launch {
             try {
                 Timber.d("Loading artwork from: $url")
                 val request = ImageRequest.Builder(this@PlaybackService)

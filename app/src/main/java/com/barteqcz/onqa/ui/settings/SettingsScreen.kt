@@ -11,6 +11,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Contrast
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -122,31 +126,10 @@ fun SettingsScreen(
                 
                 SettingCategory(title = stringResource(R.string.category_appearance))
 
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    ThemeMode.entries.forEachIndexed { index, mode ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(index = index, count = ThemeMode.entries.size),
-                            onClick = { viewModel.updateThemeMode(mode) },
-                            selected = settings.themeMode == mode,
-                            label = {
-                                Text(
-                                    when (mode) {
-                                        ThemeMode.SYSTEM -> stringResource(R.string.theme_mode_system)
-                                        ThemeMode.LIGHT -> stringResource(R.string.theme_mode_light)
-                                        ThemeMode.DARK -> stringResource(R.string.theme_mode_dark)
-                                    }
-                                )
-                                    },
-                                colors = SegmentedButtonDefaults.colors(
-                                    activeContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                    activeContentColor = MaterialTheme.colorScheme.primary,
-                                    inactiveContentColor = MaterialTheme.colorScheme.onSurface
-                                )
-                        )
-                    }
-                }
+                ThemeSwitcher(
+                    currentMode = settings.themeMode,
+                    onModeSelect = { viewModel.updateThemeMode(it) }
+                )
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -267,6 +250,96 @@ fun SettingsScreen(
                         .background(shadowBrush)
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ThemeSwitcher(
+    currentMode: ThemeMode,
+    onModeSelect: (ThemeMode) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        ThemeMode.entries.forEach { mode ->
+            ThemeOption(
+                mode = mode,
+                isSelected = currentMode == mode,
+                onClick = { onModeSelect(mode) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ThemeOption(
+    mode: ThemeMode,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // We rely on OnqaTheme's animateColorScheme for all transitions.
+    // We use MaterialTheme.colorScheme.primary to support both manual accent colors 
+    // and dynamic Material You colors.
+
+    val isLightMode = MaterialTheme.colorScheme.surface.luminance() > 0.5f
+    val activeColor = MaterialTheme.colorScheme.primary
+    
+    val containerColor = if (isSelected) {
+        activeColor.copy(alpha = if (isLightMode) 0.12f else 0.2f)
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+    }
+    
+    val contentColor = if (isSelected) {
+        activeColor
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    val icon = when (mode) {
+        ThemeMode.SYSTEM -> Icons.Default.Contrast
+        ThemeMode.LIGHT -> Icons.Default.LightMode
+        ThemeMode.DARK -> Icons.Default.DarkMode
+    }
+    val label = when (mode) {
+        ThemeMode.SYSTEM -> stringResource(R.string.theme_mode_system)
+        ThemeMode.LIGHT -> stringResource(R.string.theme_mode_light)
+        ThemeMode.DARK -> stringResource(R.string.theme_mode_dark)
+    }
+
+    Surface(
+        onClick = onClick,
+        modifier = modifier.height(80.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = containerColor,
+        contentColor = contentColor,
+        border = BorderStroke(
+            width = if (isSelected) 1.5.dp else 1.dp,
+            color = if (isSelected) activeColor.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+            )
         }
     }
 }
