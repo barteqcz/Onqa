@@ -112,21 +112,29 @@ class RadioViewModel @Inject constructor(
         _isScrollable,
         radioPlayer.metadata,
     ) { args ->
+        val state = args[0] as RadioUiState
+        val selectedUrl = args[1] as String?
+        val current = args[2] as RadioStation?
         val isPlaying = args[3] as Boolean
         val isBuffering = args[4] as Boolean
+        val playbackError = args[5] as Boolean
+        val locInfo = args[6] as LocationInfo
+        val sett = args[7] as AppSettings
+        val status = args[8] as ConnectivityObserver.Status
+        val scrollable = args[9] as Boolean
         val meta = args[10] as String?
-        
+
         RadioViewState(
-            uiState = args[0] as RadioUiState,
-            selectedUrl = args[1] as String?,
-            currentStation = args[2] as RadioStation?,
+            uiState = state,
+            selectedUrl = selectedUrl,
+            currentStation = current,
             isPlaying = isPlaying,
             isBuffering = isBuffering,
-            playbackError = args[5] as Boolean,
-            locationInfo = args[6] as LocationInfo,
-            settings = args[7] as AppSettings,
-            isNetworkAvailable = (args[8] as ConnectivityObserver.Status) is ConnectivityObserver.Status.Available,
-            isScrollable = args[9] as Boolean,
+            playbackError = playbackError,
+            locationInfo = locInfo,
+            settings = sett,
+            isNetworkAvailable = status is ConnectivityObserver.Status.Available,
+            isScrollable = scrollable,
             metadata = if (isPlaying || isBuffering) meta else null,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
@@ -291,6 +299,14 @@ class RadioViewModel @Inject constructor(
         ) { state, playing, buffering, info, favorites ->
             if (state is RadioUiState.Success) {
                 val activeUrl = if (playing || buffering) info.url else null
+                activeUrl to favorites
+            } else null
+        }
+        .filterNotNull()
+        .distinctUntilChanged()
+        .onEach { (activeUrl, favorites) ->
+            val state = _uiState.value
+            if (state is RadioUiState.Success) {
                 val newStations = getSortedStations(state.allStations, activeUrl, favorites)
                 if (newStations != state.stations) {
                     _uiState.value = state.copy(stations = newStations)

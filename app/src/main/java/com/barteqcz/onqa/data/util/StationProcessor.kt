@@ -12,7 +12,7 @@ object StationProcessor {
         favorites: Set<String>
     ): ImmutableList<RadioStation> {
         val normalizedActive = activeUrl?.trimEnd('/')
-        return allStations.groupBy { "${it.name}|${it.network}" }
+        return allStations.groupBy { it.name to it.network }
             .asSequence()
             .mapNotNull { (_, networkStations) ->
                 val stationsInCoverage = networkStations.filter {
@@ -23,17 +23,17 @@ object StationProcessor {
 
                 val currentInGroup = if (normalizedActive != null) {
                     networkStations.find { 
-                        it.streamUrl?.trimEnd('/') == normalizedActive || 
-                        it.streamUrlHq?.trimEnd('/') == normalizedActive
+                        it.normalizedStreamUrl == normalizedActive || 
+                        it.normalizedStreamUrlHq == normalizedActive
                     }
                 } else null
 
                 val representative = currentInGroup ?: stationsInCoverage
-                    .sortedWith(
+                    .minWithOrNull(
                         compareBy<RadioStation> { it.distance ?: Double.MAX_VALUE }
                             .thenBy { it.transmitterId ?: Int.MAX_VALUE }
                             .thenBy { it.displayOrder ?: Int.MAX_VALUE }
-                    ).firstOrNull()
+                    )
 
                 representative?.copy(isFavorite = representative.name in favorites)
             }

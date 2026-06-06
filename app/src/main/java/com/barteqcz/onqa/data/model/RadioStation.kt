@@ -20,6 +20,9 @@ data class RadioStation(
     val coverageKm: Double? = null,
     val isFavorite: Boolean = false
 ) {
+    val normalizedStreamUrl: String? by lazy { streamUrl?.trimEnd('/') }
+    val normalizedStreamUrlHq: String? by lazy { streamUrlHq?.trimEnd('/') }
+
     fun getStreamUrl(useHq: Boolean): String? {
         return if (useHq && !streamUrlHq.isNullOrBlank()) streamUrlHq else streamUrl
     }

@@ -30,7 +30,7 @@ object AddressRefiner {
         return first.subAdminArea ?: first.adminArea ?: first.countryName
     }
 
-    private fun cleanCityName(name: String?): String? {
+    fun cleanCityName(name: String?): String? {
         if (name.isNullOrBlank()) return null
 
         return name.replace(Regex("\\d+"), "")

@@ -127,7 +127,16 @@ class LocationManager @Inject constructor(
             }
 
             val citySearchQuery = buildCitySearchQuery(newCity, addresses?.firstOrNull())
-            val distKm = if (newCity != null && citySearchQuery != null) {
+            
+            val isAlreadyInCity = addresses?.any { addr ->
+                addr.locality?.let { loc ->
+                    AddressRefiner.cleanCityName(loc)?.equals(newCity, ignoreCase = true) == true
+                } ?: false
+            } ?: false
+
+            val distKm = if (isAlreadyInCity) {
+                null
+            } else if (newCity != null && citySearchQuery != null) {
                 calculateCityDistance(location, citySearchQuery)
             } else {
                 null
@@ -167,13 +176,18 @@ class LocationManager @Inject constructor(
     private fun buildCitySearchQuery(city: String?, address: android.location.Address?): String? {
         if (address == null) return city
         val terms = listOfNotNull(city, address.subAdminArea, address.adminArea, address.countryName)
-            .distinct()
+            .distinctBy { 
+                it.lowercase().trim().let { s ->
+                    java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD)
+                        .replace(Regex("\\p{Mn}"), "")
+                }
+            }
         return if (terms.isNotEmpty()) terms.joinToString(", ") else null
     }
 
     private suspend fun calculateCityDistance(currentLocation: Location, cityName: String): Int? {
         val result = locationRepository.getCityLocation(cityName, proximity = currentLocation)
-        val cityLoc = (result as? NetworkResult.Success)?.data ?: return _locationInfo.value.distanceKm
+        val cityLoc = (result as? NetworkResult.Success)?.data ?: return null
         val results = FloatArray(1)
         Location.distanceBetween(
             currentLocation.latitude, currentLocation.longitude,
