@@ -40,6 +40,7 @@ data class RadioViewState(
     ),
     val isNetworkAvailable: Boolean = true,
     val isScrollable: Boolean = false,
+    val metadata: String? = null,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -98,8 +99,6 @@ class RadioViewModel @Inject constructor(
         station.copy(isFavorite = station.name in favorites)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), null)
 
-    val metadata: StateFlow<String?> = radioPlayer.metadata
-
     val viewState: StateFlow<RadioViewState> = combine(
         _uiState,
         _selectedStationUrl,
@@ -111,18 +110,24 @@ class RadioViewModel @Inject constructor(
         settings,
         connectivityStatus,
         _isScrollable,
+        radioPlayer.metadata,
     ) { args ->
+        val isPlaying = args[3] as Boolean
+        val isBuffering = args[4] as Boolean
+        val meta = args[10] as String?
+        
         RadioViewState(
             uiState = args[0] as RadioUiState,
             selectedUrl = args[1] as String?,
             currentStation = args[2] as RadioStation?,
-            isPlaying = args[3] as Boolean,
-            isBuffering = args[4] as Boolean,
+            isPlaying = isPlaying,
+            isBuffering = isBuffering,
             playbackError = args[5] as Boolean,
             locationInfo = args[6] as LocationInfo,
             settings = args[7] as AppSettings,
             isNetworkAvailable = (args[8] as ConnectivityObserver.Status) is ConnectivityObserver.Status.Available,
             isScrollable = args[9] as Boolean,
+            metadata = if (isPlaying || isBuffering) meta else null,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 

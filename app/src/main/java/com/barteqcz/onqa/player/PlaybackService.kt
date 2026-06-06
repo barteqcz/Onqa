@@ -313,13 +313,20 @@ class PlaybackService : MediaSessionService() {
                     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                         if (isUpdatingMetadata) return
                         
-                        val currentItemUrl = exoPlayer?.currentMediaItem?.mediaId
+                        val player = exoPlayer ?: return
+                        val currentItemUrl = player.currentMediaItem?.mediaId
                         if (currentItemUrl != currentStationUrl) return
                         
-                        processMetadata(mediaMetadata)
+                        if (player.isPlaying || player.playbackState == Player.STATE_BUFFERING) {
+                            processMetadata(mediaMetadata)
+                        } else {
+                            updateRdsAndNotification(null)
+                        }
                     }
                     override fun onMetadata(metadata: Metadata) {
-                        if (exoPlayer?.currentMediaItem?.mediaId != currentStationUrl) return
+                        val player = exoPlayer ?: return
+                        if (player.currentMediaItem?.mediaId != currentStationUrl) return
+                        if (!player.isPlaying && player.playbackState != Player.STATE_BUFFERING) return
 
                         for (i in 0 until metadata.length()) {
                             val entry = metadata[i]
@@ -335,6 +342,7 @@ class PlaybackService : MediaSessionService() {
                         if (playWhenReady && exoPlayer?.playbackState == Player.STATE_IDLE) {
                             exoPlayer?.prepare()
                         }
+                        updateRdsAndNotification(null)
                     }
                 },
             )
@@ -407,7 +415,8 @@ class PlaybackService : MediaSessionService() {
                 }
 
                 private fun getCustomMetadata(original: MediaMetadata): MediaMetadata {
-                    val currentItemUrl = exoPlayer?.currentMediaItem?.mediaId
+                    val player = exoPlayer ?: return original
+                    val currentItemUrl = player.currentMediaItem?.mediaId
                     
                     if (currentItemUrl != currentStationUrl) {
                         return MediaMetadataMapper.buildMetadata(
@@ -420,9 +429,13 @@ class PlaybackService : MediaSessionService() {
                         )
                     }
 
+                    val isActuallyPlaying = isPlaying || playbackState == STATE_BUFFERING
+                    val streamTitle = if (isActuallyPlaying) (original.title?.toString() ?: lastRdsTitle) else null
+                    val streamArtist = if (isActuallyPlaying) original.artist?.toString() else null
+
                     val (displayTitle, displaySubtitle) = MediaMetadataMapper.getEffectiveMetadata(
-                        streamTitle = original.title?.toString(),
-                        streamArtist = original.artist?.toString(),
+                        streamTitle = streamTitle,
+                        streamArtist = streamArtist,
                         stationName = currentStationName
                     )
                     
@@ -536,12 +549,14 @@ class PlaybackService : MediaSessionService() {
     private fun updateRdsAndNotification(info: String?) {
         val stationName = currentStationName?.trim()
         val stationUrl = currentStationUrl ?: return
+        val player = exoPlayer ?: return
 
         if (info != null) {
             lastRdsTitle = info
         }
         
-        val titleToProcess = lastRdsTitle ?: info
+        val isActuallyPlaying = player.playWhenReady || player.playbackState == Player.STATE_BUFFERING
+        val titleToProcess = if (isActuallyPlaying) (lastRdsTitle ?: info) else null
         
         val (displayTitle, displaySubtitle) = if (titleToProcess != null) {
             MediaMetadataMapper.getEffectiveMetadata(
@@ -575,7 +590,7 @@ class PlaybackService : MediaSessionService() {
                 val currentMetadata = currentItem.mediaMetadata
                 val isMetadataDifferent = currentMetadata.title != metadata.title || 
                                          currentMetadata.artist != metadata.artist ||
-                                         !java.util.Arrays.equals(currentMetadata.artworkData, metadata.artworkData) ||
+                                         !currentMetadata.artworkData.contentEquals(metadata.artworkData) ||
                                          currentMetadata.artworkUri != metadata.artworkUri
 
                 if (isMetadataDifferent) {

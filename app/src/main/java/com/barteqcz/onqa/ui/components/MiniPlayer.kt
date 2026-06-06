@@ -147,7 +147,7 @@ fun MiniPlayer(
         shadowElevation = 0.dp
     ) {
         AnimatedContent(
-            targetState = Triple(station, showHqIcon, isBuffering),
+            targetState = station to showHqIcon,
             transitionSpec = {
                 val (initialStation, initialHq) = initialState
                 val (targetStation, targetHq) = targetState
@@ -186,7 +186,7 @@ fun MiniPlayer(
                 }
             },
             label = "stationChange"
-        ) { (targetStation, targetShowHqIcon, targetIsBuffering) ->
+        ) { (targetStation, targetShowHqIcon) ->
             Row(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -257,17 +257,18 @@ fun MiniPlayer(
                         }
                     }
                     
+                    val metadataState = if (isBuffering && metadata.isNullOrBlank()) "buffering" else metadata
                     AnimatedContent(
-                        targetState = metadata,
+                        targetState = metadataState,
                         transitionSpec = {
-                            (fadeIn(tween(600)) + slideInVertically { it / 2 })
-                                .togetherWith(fadeOut(tween(600)) + slideOutVertically { -it / 2 })
+                            (fadeIn(tween(400)) + slideInVertically { it / 2 })
+                                .togetherWith(fadeOut(tween(400)) + slideOutVertically { -it / 2 })
                         },
                         label = "metadataTransition"
-                    ) { text ->
-                        if (!text.isNullOrBlank()) {
+                    ) { state ->
+                        if (!state.isNullOrBlank() && state != "buffering") {
                             Text(
-                                text = text,
+                                text = state,
                                 color = infoColor,
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium,
@@ -278,7 +279,7 @@ fun MiniPlayer(
                                     initialDelayMillis = 1000
                                 )
                             )
-                        } else if (targetIsBuffering) {
+                        } else if (state == "buffering") {
                             Text(
                                 text = stringResource(R.string.buffering),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -294,7 +295,7 @@ fun MiniPlayer(
                     modifier = Modifier.size(52.dp)
                 ) {
                     AnimatedContent(
-                        targetState = targetIsBuffering to isPlaying,
+                        targetState = isBuffering to isPlaying,
                         transitionSpec = {
                             fadeIn(tween(200)).togetherWith(fadeOut(tween(200)))
                         },

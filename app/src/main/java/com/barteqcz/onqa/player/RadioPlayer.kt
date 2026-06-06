@@ -68,7 +68,6 @@ class RadioPlayer @Inject constructor(
     private fun setupController(player: MediaController) {
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(playing: Boolean) {
-                if (playing && (System.currentTimeMillis() - lastPauseActionTime < 1000)) return
                 _isPlaying.value = playing
             }
             override fun onPlaybackStateChanged(state: Int) {
@@ -112,6 +111,10 @@ class RadioPlayer @Inject constructor(
     }
 
     fun play(stationName: String?, url: String, logoUrl: String?, network: String? = null, forceReload: Boolean = false) {
+        if (_stationInfo.value.url != url) {
+            _metadata.value = null
+        }
+
         lastPauseActionTime = 0
         _playbackError.value = false
         _isBuffering.value = true
