@@ -70,12 +70,13 @@ fun MiniPlayer(
     
     val interactionSource = remember { MutableInteractionSource() }
 
-    val borderColor by animateColorAsState(
-        targetValue = (if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary)
-            .copy(alpha = if (isPlaying || isBuffering || kotlin.math.abs(animatedOffsetX) > 0.5f) 0.5f else 0f),
+    val borderAlpha by animateFloatAsState(
+        targetValue = if (isPlaying || isBuffering || kotlin.math.abs(animatedOffsetX) > 0.5f) 0.5f else 0f,
         animationSpec = tween(durationMillis = 500),
-        label = "miniPlayerBorder"
+        label = "miniPlayerBorderAlpha"
     )
+    val borderColor = (if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary)
+        .copy(alpha = borderAlpha)
 
     val elevation by animateDpAsState(
         targetValue = if (isScrollable) 16.dp else 12.dp,
