@@ -39,14 +39,14 @@ class SettingsRepository @Inject constructor(
     val settingsFlow: Flow<AppSettings> = context.dataStore.data
         .map { preferences ->
             AppSettings(
-                themeMode = ThemeMode.valueOf(preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.SYSTEM.name),
+                themeMode = ThemeMode.valueOf(preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.DARK.name),
                 isMaterialYouEnabled = preferences[PreferencesKeys.MATERIAL_YOU] ?: false,
                 accentColor = Color(preferences[PreferencesKeys.ACCENT_COLOR] ?: OnqaGreen.toArgb()),
                 lastCity = preferences[PreferencesKeys.LAST_CITY],
                 lastCountryCode = preferences[PreferencesKeys.LAST_COUNTRY_CODE],
                 isOnboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
                 favoriteStations = preferences[PreferencesKeys.FAVORITE_STATIONS]?.toPersistentSet() ?: kotlinx.collections.immutable.persistentSetOf(),
-                useHqStream = preferences[PreferencesKeys.USE_HQ_STREAM] ?: false,
+                useHqStream = preferences[PreferencesKeys.USE_HQ_STREAM] ?: true,
                 lastLatitude = preferences[PreferencesKeys.LAST_LATITUDE],
                 lastLongitude = preferences[PreferencesKeys.LAST_LONGITUDE],
                 isInitialValue = false

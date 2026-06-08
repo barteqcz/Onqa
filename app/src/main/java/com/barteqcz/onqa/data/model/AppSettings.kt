@@ -8,14 +8,14 @@ import kotlinx.collections.immutable.persistentSetOf
 
 @Immutable
 data class AppSettings(
-    val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val themeMode: ThemeMode = ThemeMode.DARK,
     val isMaterialYouEnabled: Boolean = false,
     val accentColor: Color = OnqaGreen,
     val lastCity: String? = null,
     val lastCountryCode: String? = null,
     val isOnboardingCompleted: Boolean = false,
     val favoriteStations: PersistentSet<String> = persistentSetOf(),
-    val useHqStream: Boolean = false,
+    val useHqStream: Boolean = true,
     val lastLatitude: Double? = null,
     val lastLongitude: Double? = null,
     val isInitialValue: Boolean = true

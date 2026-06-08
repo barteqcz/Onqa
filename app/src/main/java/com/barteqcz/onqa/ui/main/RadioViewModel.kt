@@ -30,10 +30,10 @@ data class RadioViewState(
     val playbackError: Boolean = false,
     val locationInfo: LocationInfo = LocationInfo(),
     val settings: AppSettings = AppSettings(
-        themeMode = ThemeMode.SYSTEM,
+        themeMode = ThemeMode.DARK,
         isMaterialYouEnabled = false,
         accentColor = OnqaGreen,
-        useHqStream = false,
+        useHqStream = true,
         favoriteStations = kotlinx.collections.immutable.persistentSetOf(),
     ),
     val isNetworkAvailable: Boolean = true,
@@ -68,10 +68,10 @@ class RadioViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS),
             initialValue = AppSettings(
-                themeMode = ThemeMode.SYSTEM,
+                themeMode = ThemeMode.DARK,
                 isMaterialYouEnabled = false,
                 accentColor = OnqaGreen,
-                useHqStream = false,
+                useHqStream = true,
                 favoriteStations = kotlinx.collections.immutable.persistentSetOf(),
             ),
         )
