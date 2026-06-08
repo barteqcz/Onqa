@@ -19,8 +19,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.Radio
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -58,7 +59,7 @@ fun FavoriteHeart(
         exit = fadeOut(animationSpec = snap())
     ) {
         Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_favorite),
+            imageVector = Icons.Rounded.Favorite,
             contentDescription = null,
             modifier = modifier.size(24.dp),
             tint = Color(0xFFE57373),
@@ -141,7 +142,7 @@ fun StationCard(
                 ) {
                     if (!isImageLoaded) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_radio),
+                            imageVector = Icons.Rounded.Radio,
                             contentDescription = null,
                             modifier = Modifier.size(32.dp),
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)

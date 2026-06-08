@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -99,7 +100,13 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        
+        splashScreen.setKeepOnScreenCondition {
+            viewModel.settings.value.isInitialValue
+        }
+
         enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.auto(
                 android.graphics.Color.TRANSPARENT,
@@ -112,7 +119,7 @@ class MainActivity : ComponentActivity() {
 
             OnqaTheme(
                 themeMode = viewState.settings.themeMode,
-                dynamicColor = viewState.settings.isMaterialYouEnabled,
+                dynamicColor = if (!viewState.settings.isOnboardingCompleted) false else viewState.settings.isMaterialYouEnabled,
                 accentColor = viewState.settings.accentColor,
             ) {
                 Surface(color = MaterialTheme.colorScheme.background) {

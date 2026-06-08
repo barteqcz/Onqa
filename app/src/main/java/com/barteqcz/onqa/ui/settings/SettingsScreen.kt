@@ -8,6 +8,12 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Contrast
+import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,9 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,7 +33,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.ui.main.RadioViewModel
+import com.barteqcz.onqa.ui.theme.OnqaBlue
+import com.barteqcz.onqa.ui.theme.OnqaCyan
 import com.barteqcz.onqa.ui.theme.OnqaGreen
+import com.barteqcz.onqa.ui.theme.OnqaOrange
+import com.barteqcz.onqa.ui.theme.OnqaPurple
+import com.barteqcz.onqa.ui.theme.applyLightVariant
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -42,12 +51,16 @@ fun SettingsScreen(
     val settings = viewState.settings
     val selectedUrl = viewState.selectedUrl
 
+    val isLightMode = MaterialTheme.colorScheme.surface.luminance() > 0.5f
+    
+    val activeAccentColor = MaterialTheme.colorScheme.primary
+
     var customHex by remember { 
-        mutableStateOf(String.format("%06X", (settings.accentColor.toArgb() and 0x00FFFFFF))) 
+        mutableStateOf(String.format("%06X", (activeAccentColor.toArgb() and 0x00FFFFFF))) 
     }
     
-    LaunchedEffect(settings.accentColor) {
-        val hex = String.format("%06X", (settings.accentColor.toArgb() and 0x00FFFFFF))
+    LaunchedEffect(activeAccentColor) {
+        val hex = String.format("%06X", (activeAccentColor.toArgb() and 0x00FFFFFF))
         if (customHex.uppercase() != hex) {
             customHex = hex
         }
@@ -67,11 +80,16 @@ fun SettingsScreen(
 
     val accentColors = listOf(
         OnqaGreen,
-        Color(0xFFD0BCFF),
-        Color(0xFF03DAC5),
-        Color(0xFFFFB74D),
-        Color(0xFF64B5F6),
+        OnqaPurple,
+        OnqaCyan,
+        OnqaOrange,
+        OnqaBlue,
     )
+
+    val displayAccentColors = accentColors.map { color ->
+        val target = if (isLightMode) color.applyLightVariant() else color
+        animateColorAsState(target, tween(500), label = "paletteColor").value
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -80,7 +98,7 @@ fun SettingsScreen(
                 title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(ImageVector.vectorResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.back))
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -123,7 +141,9 @@ fun SettingsScreen(
                         onCheckedChange = { viewModel.updateUseHqStream(it) },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.primary,
-                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
                         )
                     )
                 }
@@ -153,7 +173,9 @@ fun SettingsScreen(
                         onCheckedChange = { viewModel.updateMaterialYou(it) },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.primary,
-                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
                         )
                     )
                 }
@@ -176,9 +198,10 @@ fun SettingsScreen(
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            accentColors.forEach { color ->
+                            displayAccentColors.forEachIndexed { index, color ->
+                                val baseColor = accentColors[index]
                                 val isSelected = (!settings.isMaterialYouEnabled) && 
-                                                 (settings.accentColor.toArgb() == color.toArgb())
+                                                 (settings.accentColor.toArgb() == baseColor.toArgb())
                                 
                                 val scale by animateFloatAsState(if (isSelected) 1.15f else 1f, label = "scale")
                                 
@@ -191,14 +214,14 @@ fun SettingsScreen(
                                         }
                                         .clip(CircleShape)
                                         .background(color)
-                                        .clickable { viewModel.updateAccentColor(color) },
+                                        .clickable { viewModel.updateAccentColor(baseColor) },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (isSelected) {
                                         Icon(
-                                            ImageVector.vectorResource(R.drawable.ic_check),
+                                            Icons.Rounded.Check,
                                             contentDescription = null, 
-                                            tint = Color.Black.copy(alpha = 0.7f), 
+                                            tint = if (isLightMode) Color.White else Color.Black.copy(alpha = 0.7f),
                                             modifier = Modifier.size(18.dp),
                                         )
                                     }
@@ -305,9 +328,9 @@ private fun ThemeOption(
     }
 
     val icon = when (mode) {
-        ThemeMode.SYSTEM -> ImageVector.vectorResource(R.drawable.ic_contrast)
-        ThemeMode.LIGHT -> ImageVector.vectorResource(R.drawable.ic_light_mode)
-        ThemeMode.DARK -> ImageVector.vectorResource(R.drawable.ic_dark_mode)
+        ThemeMode.SYSTEM -> Icons.Rounded.Contrast
+        ThemeMode.LIGHT -> Icons.Rounded.LightMode
+        ThemeMode.DARK -> Icons.Rounded.DarkMode
     }
     val label = when (mode) {
         ThemeMode.SYSTEM -> stringResource(R.string.theme_mode_system)

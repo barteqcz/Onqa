@@ -13,8 +13,10 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Radio
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -210,7 +212,7 @@ fun MiniPlayer(
                 ) {
                     if (!isImageLoaded) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_radio),
+                            imageVector = Icons.Rounded.Radio,
                             contentDescription = null,
                             modifier = Modifier.size(36.dp),
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
@@ -312,7 +314,7 @@ fun MiniPlayer(
                             )
                         } else {
                             Icon(
-                                if (playing) ImageVector.vectorResource(R.drawable.ic_pause) else ImageVector.vectorResource(R.drawable.ic_play_arrow),
+                                if (playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(36.dp),

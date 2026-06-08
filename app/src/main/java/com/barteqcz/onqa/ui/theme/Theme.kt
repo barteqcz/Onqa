@@ -15,8 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import com.barteqcz.onqa.data.model.ThemeMode
 
@@ -37,11 +39,11 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = OnqaGreenDark,
+    primary = OnqaGreen,
     onPrimary = Color.White,
-    secondary = OnqaGreenDark,
+    secondary = OnqaGreen,
     onSecondary = Color.White,
-    tertiary = OnqaGreenDark,
+    tertiary = OnqaGreen,
     onTertiary = Color.White,
     background = LightBackground,
     onBackground = TextBlack,
@@ -51,6 +53,16 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = TextGreyLight,
     outline = TextGreyLight,
 )
+
+fun Color.applyLightVariant(): Color {
+    val hsl = FloatArray(3)
+    ColorUtils.colorToHSL(this.toArgb(), hsl)
+    // If color is too light (lightness > 0.35), darken it for white text readability on light background
+    if (hsl[2] > 0.35f) {
+        hsl[2] = 0.35f // Set a deeper readable lightness for light theme
+    }
+    return Color(ColorUtils.HSLToColor(hsl))
+}
 
 @Composable
 fun animateColorScheme(targetColorScheme: ColorScheme): ColorScheme {
@@ -112,7 +124,7 @@ fun OnqaTheme(
             )
         }
         darkTheme -> DarkColorScheme.copy(primary = accentColor)
-        else -> LightColorScheme.copy(primary = if (accentColor == OnqaGreen) OnqaGreenDark else accentColor)
+        else -> LightColorScheme.copy(primary = accentColor.applyLightVariant())
     }
 
     val colorScheme = animateColorScheme(targetColorScheme)

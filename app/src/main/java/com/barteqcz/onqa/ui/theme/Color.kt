@@ -8,8 +8,12 @@ val CardBackground = Color(0xFF1C1B21)
 val LightBackground = Color(0xFFF8F9FA)
 val LightCardBackground = Color(0xFFFFFFFF)
 
+// Base Palette (Dark Mode optimized)
 val OnqaGreen = Color(0xFFA0D995)
-val OnqaGreenDark = Color(0xFF388E3C)
+val OnqaPurple = Color(0xFFD0BCFF)
+val OnqaCyan = Color(0xFF03DAC5)
+val OnqaOrange = Color(0xFFFFB74D)
+val OnqaBlue = Color(0xFF64B5F6)
 
 val TextWhite = Color(0xFFFFFFFF)
 val TextBlack = Color(0xFF1C1B21)

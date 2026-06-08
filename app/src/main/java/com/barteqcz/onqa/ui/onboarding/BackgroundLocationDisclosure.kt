@@ -1,10 +1,9 @@
 package com.barteqcz.onqa.ui.onboarding
 
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -21,7 +20,7 @@ fun BackgroundLocationDisclosure(
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = true),
         onDismissRequest = onDismiss,
-        icon = { Icon(ImageVector.vectorResource(R.drawable.ic_location_on), contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+        icon = { Icon(Icons.Rounded.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
         title = {
             Text(
                 text = stringResource(R.string.background_location_disclosure_title),
@@ -55,11 +54,11 @@ fun BackgroundLocationDisclosure(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.not_now), color = Color.Gray)
+                Text(stringResource(R.string.not_now), color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
             }
         },
-        containerColor = Color(0xFF1C1C1E),
-        titleContentColor = Color.White,
-        textContentColor = Color.LightGray
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }

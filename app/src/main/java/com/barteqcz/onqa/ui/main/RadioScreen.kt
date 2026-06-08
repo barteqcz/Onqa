@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -68,7 +68,7 @@ fun RadioScreen(
                         modifier = Modifier.size(32.dp),
                     ) {
                         Icon(
-                            ImageVector.vectorResource(R.drawable.ic_settings),
+                            Icons.Rounded.Settings,
                             contentDescription = stringResource(R.string.settings_title),
                             tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(24.dp),

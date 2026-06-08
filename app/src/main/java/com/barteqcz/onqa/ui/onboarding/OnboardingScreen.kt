@@ -2,21 +2,20 @@ package com.barteqcz.onqa.ui.onboarding
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.barteqcz.onqa.R
-import com.barteqcz.onqa.ui.theme.DarkBackground
-import com.barteqcz.onqa.ui.theme.TextGrey
 
 @Composable
 fun OnboardingScreen(
@@ -24,7 +23,7 @@ fun OnboardingScreen(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = DarkBackground
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = Modifier
@@ -44,7 +43,7 @@ fun OnboardingScreen(
             
             Text(
                 text = stringResource(R.string.welcome_desc),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 lineHeight = 24.sp
@@ -53,7 +52,7 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.height(48.dp))
             
             PermissionItem(
-                icon = ImageVector.vectorResource(R.drawable.ic_location_on),
+                icon = Icons.Rounded.LocationOn,
                 title = stringResource(R.string.permission_location_title),
                 desc = stringResource(R.string.permission_location_desc)
             )
@@ -61,7 +60,7 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             PermissionItem(
-                icon = ImageVector.vectorResource(R.drawable.ic_notifications),
+                icon = Icons.Rounded.Notifications,
                 title = stringResource(R.string.permission_notifications_title),
                 desc = stringResource(R.string.permission_notifications_desc)
             )
@@ -76,7 +75,7 @@ fun OnboardingScreen(
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.Black
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Text(
@@ -113,13 +112,13 @@ private fun PermissionItem(
         Column {
             Text(
                 text = title,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = desc,
-                color = TextGrey,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall,
                 lineHeight = 18.sp
             )
