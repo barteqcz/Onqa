@@ -24,6 +24,7 @@ import javax.inject.Singleton
 class RadioRepository @Inject constructor(
     private val apiService: RadioApiService,
     private val locationManager: LocationManager,
+    private val settingsRepository: SettingsRepository,
     @param:ApplicationContext private val context: Context,
     @param:ApplicationScope private val scope: CoroutineScope,
 ) {
@@ -38,7 +39,14 @@ class RadioRepository @Inject constructor(
 
     init {
         scope.launch {
-            fetchAllStations()
+            val settings = settingsRepository.settingsFlow.first()
+            val hasLastLocation = settings.lastLatitude != null && settings.lastLongitude != null
+            
+            if (!settings.isOnboardingCompleted || !hasLastLocation) {
+                fetchAllStations()
+            } else {
+                Timber.d("Onboarding completed and last location exists, skipping initial full fetch to allow nearby fetch.")
+            }
         }
     }
 
