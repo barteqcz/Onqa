@@ -2,25 +2,44 @@ package com.barteqcz.onqa
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.SvgDecoder
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
+import com.barteqcz.onqa.location.LocationManager
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
 
 @HiltAndroidApp
 class OnqaApplication : Application(), ImageLoaderFactory {
+
+    @Inject
+    lateinit var locationManager: LocationManager
+
     override fun onCreate() {
         super.onCreate()
         val isDebuggable = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
         if (isDebuggable) {
             Timber.plant(Timber.DebugTree())
         }
+
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) {
+                locationManager.setAppForeground(true)
+            }
+
+            override fun onStop(owner: LifecycleOwner) {
+                locationManager.setAppForeground(false)
+            }
+        })
     }
 
     override fun newImageLoader(): ImageLoader {
@@ -41,7 +60,7 @@ class OnqaApplication : Application(), ImageLoaderFactory {
             }
             .okHttpClient {
                 val cacheDirectory = File(cacheDir, "http_cache")
-                val cacheSize = 50L * 1024L * 1024L // 50 MB
+                val cacheSize = 50L * 1024L * 1024L
                 val cache = Cache(cacheDirectory, cacheSize)
 
                 OkHttpClient.Builder()

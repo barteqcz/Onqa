@@ -4,13 +4,10 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.barteqcz.onqa.data.model.AppSettings
-import com.barteqcz.onqa.data.model.ThemeMode
+import com.barteqcz.onqa.data.model.*
 import com.barteqcz.onqa.player.RadioPlayer
 import com.barteqcz.onqa.data.repository.RadioRepository
 import com.barteqcz.onqa.data.repository.SettingsRepository
-import com.barteqcz.onqa.data.model.LocationInfo
-import com.barteqcz.onqa.data.model.RadioStation
 import com.barteqcz.onqa.data.util.NetworkResult
 import com.barteqcz.onqa.domain.GetSortedStationsUseCase
 import com.barteqcz.onqa.ui.theme.OnqaGreen
@@ -37,6 +34,7 @@ data class RadioViewState(
         isMaterialYouEnabled = false,
         accentColor = OnqaGreen,
         useHqStream = false,
+        favoriteStations = kotlinx.collections.immutable.persistentSetOf(),
     ),
     val isNetworkAvailable: Boolean = true,
     val isScrollable: Boolean = false,
@@ -74,6 +72,7 @@ class RadioViewModel @Inject constructor(
                 isMaterialYouEnabled = false,
                 accentColor = OnqaGreen,
                 useHqStream = false,
+                favoriteStations = kotlinx.collections.immutable.persistentSetOf(),
             ),
         )
 
@@ -150,7 +149,9 @@ class RadioViewModel @Inject constructor(
 
     private fun observeStations() {
         repository.stations
-            .combine(repository.currentLocation) { stations, location -> stations to location }
+            .combine(repository.currentLocation) { stations, location -> 
+                stations to location?.let { StableLocation(it.latitude, it.longitude) }
+            }
             .flowOn(Dispatchers.Default)
             .onEach { (result, location) ->
                 when (result) {

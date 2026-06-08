@@ -70,19 +70,6 @@ fun LocationHeader(info: LocationInfo) {
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                 )
-                
-                AnimatedVisibility(
-                    visible = info.distanceKm != null,
-                    enter = fadeIn() + expandHorizontally(),
-                    exit = fadeOut() + shrinkHorizontally()
-                ) {
-                    Text(
-                        text = if (info.distanceKm == 0) stringResource(R.string.less_than_one_km_with_dot) else stringResource(R.string.distance_with_dot, info.distanceKm ?: 0),
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
             }
         }
     }

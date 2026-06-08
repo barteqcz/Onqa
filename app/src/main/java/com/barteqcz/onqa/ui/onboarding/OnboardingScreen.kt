@@ -2,9 +2,6 @@ package com.barteqcz.onqa.ui.onboarding
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -12,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,7 +53,7 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.height(48.dp))
             
             PermissionItem(
-                icon = Icons.Default.LocationOn,
+                icon = ImageVector.vectorResource(R.drawable.ic_location_on),
                 title = stringResource(R.string.permission_location_title),
                 desc = stringResource(R.string.permission_location_desc)
             )
@@ -63,7 +61,7 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             PermissionItem(
-                icon = Icons.Default.Notifications,
+                icon = ImageVector.vectorResource(R.drawable.ic_notifications),
                 title = stringResource(R.string.permission_notifications_title),
                 desc = stringResource(R.string.permission_notifications_desc)
             )

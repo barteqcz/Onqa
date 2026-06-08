@@ -1,8 +1,12 @@
 package com.barteqcz.onqa.data.model
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import com.barteqcz.onqa.ui.theme.OnqaGreen
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentSetOf
 
+@Immutable
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val isMaterialYouEnabled: Boolean = false,
@@ -10,7 +14,7 @@ data class AppSettings(
     val lastCity: String? = null,
     val lastCountryCode: String? = null,
     val isOnboardingCompleted: Boolean = false,
-    val favoriteStations: Set<String> = emptySet(),
+    val favoriteStations: PersistentSet<String> = persistentSetOf(),
     val useHqStream: Boolean = false,
     val lastLatitude: Double? = null,
     val lastLongitude: Double? = null,

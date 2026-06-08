@@ -1,7 +1,7 @@
 package com.barteqcz.onqa.ui.onboarding
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -21,7 +21,7 @@ fun BackgroundLocationDisclosure(
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = true),
         onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+        icon = { Icon(ImageVector.vectorResource(R.drawable.ic_location_on), contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
         title = {
             Text(
                 text = stringResource(R.string.background_location_disclosure_title),

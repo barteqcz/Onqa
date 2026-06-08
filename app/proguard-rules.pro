@@ -1,3 +1,4 @@
+# Kotlin Serialization
 -keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
 -keepclassmembers class ** {
     @kotlinx.serialization.SerialName <fields>;
@@ -18,7 +19,15 @@
     public static ** serializer();
 }
 
--keep class * extends androidx.lifecycle.ViewModel { *; }
-
+# Retrofit & OkHttp
 -keepattributes Signature, InnerClasses, AnnotationDefault
 -keepattributes *Annotation*
+-dontwarn retrofit2.**
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
+
+# Timber
+-keep class timber.log.Timber* { *; }

@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.roundToInt
 
 @Singleton
 class LocationManager @Inject constructor(
@@ -32,6 +31,7 @@ class LocationManager @Inject constructor(
 
     private var trackingJob: Job? = null
     private var geocodingJob: Job? = null
+    private var isAppInForeground: Boolean = false
 
     companion object {
         private const val UPDATE_INTERVAL = 30000L
@@ -106,7 +106,21 @@ class LocationManager @Inject constructor(
         handleGeocoding(location)
     }
 
+    fun setAppForeground(foreground: Boolean) {
+        if (isAppInForeground != foreground) {
+            isAppInForeground = foreground
+            Timber.d("App foreground state changed: $foreground")
+            if (foreground) {
+                _currentLocation.value?.let { handleGeocoding(it) }
+            }
+        }
+    }
+
     private fun handleGeocoding(location: Location) {
+        if (!isAppInForeground) {
+            Timber.d("App is in background, skipping geocoding for UI.")
+            return
+        }
         geocodingJob?.cancel()
         geocodingJob = scope.launch {
             Timber.d("Starting geocoding for location: ${location.latitude}, ${location.longitude}")
@@ -126,29 +140,11 @@ class LocationManager @Inject constructor(
                 return@launch
             }
 
-            val citySearchQuery = buildCitySearchQuery(newCity, addresses?.firstOrNull())
-            
-            val isAlreadyInCity = addresses?.any { addr ->
-                addr.locality?.let { loc ->
-                    AddressRefiner.cleanCityName(loc)?.equals(newCity, ignoreCase = true) == true
-                } ?: false
-            } ?: false
-
-            val distKm = if (isAlreadyInCity) {
-                null
-            } else if (newCity != null && citySearchQuery != null) {
-                calculateCityDistance(location, citySearchQuery)
-            } else {
-                null
-            }
-
             if (newCity != _locationInfo.value.city ||
-                refinedInfo.countryCode != _locationInfo.value.countryCode ||
-                distKm != _locationInfo.value.distanceKm) {
+                refinedInfo.countryCode != _locationInfo.value.countryCode) {
 
                 val newInfo = refinedInfo.copy(
-                    city = newCity ?: _locationInfo.value.city,
-                    distanceKm = distKm
+                    city = newCity ?: _locationInfo.value.city
                 )
                 _locationInfo.value = newInfo
 
@@ -165,35 +161,10 @@ class LocationManager @Inject constructor(
     private fun updateToUnknownLocation() {
         val unknownInfo = LocationInfo(
             city = context.getString(R.string.unknown_location),
-            countryCode = null,
-            distanceKm = null
+            countryCode = null
         )
         if (_locationInfo.value != unknownInfo) {
             _locationInfo.value = unknownInfo
         }
-    }
-
-    private fun buildCitySearchQuery(city: String?, address: android.location.Address?): String? {
-        if (address == null) return city
-        val terms = listOfNotNull(city, address.subAdminArea, address.adminArea, address.countryName)
-            .distinctBy { 
-                it.lowercase().trim().let { s ->
-                    java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD)
-                        .replace(Regex("\\p{Mn}"), "")
-                }
-            }
-        return if (terms.isNotEmpty()) terms.joinToString(", ") else null
-    }
-
-    private suspend fun calculateCityDistance(currentLocation: Location, cityName: String): Int? {
-        val result = locationRepository.getCityLocation(cityName, proximity = currentLocation)
-        val cityLoc = (result as? NetworkResult.Success)?.data ?: return null
-        val results = FloatArray(1)
-        Location.distanceBetween(
-            currentLocation.latitude, currentLocation.longitude,
-            cityLoc.latitude, cityLoc.longitude,
-            results,
-        )
-        return (results[0] / 1000).roundToInt()
     }
 }

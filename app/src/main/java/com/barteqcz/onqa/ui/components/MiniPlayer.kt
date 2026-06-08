@@ -13,11 +13,14 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Radio
-import androidx.compose.material3.*
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -207,7 +210,7 @@ fun MiniPlayer(
                 ) {
                     if (!isImageLoaded) {
                         Icon(
-                            imageVector = Icons.Default.Radio,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_radio),
                             contentDescription = null,
                             modifier = Modifier.size(36.dp),
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
@@ -309,7 +312,7 @@ fun MiniPlayer(
                             )
                         } else {
                             Icon(
-                                if (playing) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                if (playing) ImageVector.vectorResource(R.drawable.ic_pause) else ImageVector.vectorResource(R.drawable.ic_play_arrow),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(36.dp),

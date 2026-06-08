@@ -10,6 +10,7 @@ import com.barteqcz.onqa.data.model.AppSettings
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.ui.theme.OnqaGreen
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -44,7 +45,7 @@ class SettingsRepository @Inject constructor(
                 lastCity = preferences[PreferencesKeys.LAST_CITY],
                 lastCountryCode = preferences[PreferencesKeys.LAST_COUNTRY_CODE],
                 isOnboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
-                favoriteStations = preferences[PreferencesKeys.FAVORITE_STATIONS] ?: emptySet(),
+                favoriteStations = preferences[PreferencesKeys.FAVORITE_STATIONS]?.toPersistentSet() ?: kotlinx.collections.immutable.persistentSetOf(),
                 useHqStream = preferences[PreferencesKeys.USE_HQ_STREAM] ?: false,
                 lastLatitude = preferences[PreferencesKeys.LAST_LATITUDE],
                 lastLongitude = preferences[PreferencesKeys.LAST_LONGITUDE],

@@ -616,8 +616,8 @@ class PlaybackService : MediaSessionService() {
         currentStationLogo = logo
         currentStationUrl = url
         currentStationNetwork = network
-        currentArtworkData = null // Reset artwork for the new station
-        lastRdsTitle = null // Reset RDS for the new station
+        currentArtworkData = null
+        lastRdsTitle = null
         
         initializePlayer()
         loadArtwork(logo)
@@ -720,7 +720,6 @@ class PlaybackService : MediaSessionService() {
                 if (result is SuccessResult) {
                     val bitmap = result.drawable.toBitmap()
                     val outputStream = ByteArrayOutputStream()
-                    // JPEG is usually safer for notification memory limits
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
                     currentArtworkData = outputStream.toByteArray()
                     Timber.d("Artwork loaded successfully, size: ${currentArtworkData?.size} bytes")

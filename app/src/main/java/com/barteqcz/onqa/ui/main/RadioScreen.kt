@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -68,7 +68,7 @@ fun RadioScreen(
                         modifier = Modifier.size(32.dp),
                     ) {
                         Icon(
-                            Icons.Default.Settings,
+                            ImageVector.vectorResource(R.drawable.ic_settings),
                             contentDescription = stringResource(R.string.settings_title),
                             tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(24.dp),
@@ -144,11 +144,9 @@ fun RadioScreen(
                                             
                                             if (isLastItemVisible && listState.canScrollBackward) {
                                                 if (!wasMiniPlayerVisible) {
-                                                    // Pchnięcie listy w górę przy pierwszym pojawieniu się mini-playera
                                                     val scrollAmount = with(density) { 100.dp.toPx() }
                                                     listState.animateScrollBy(scrollAmount)
                                                 } else if (isLastItemSelected) {
-                                                    // Przewinięcie do ostatniego elementu przy jego ponownym wybraniu
                                                     listState.animateScrollToItem(totalItems - 1)
                                                 }
                                             }

@@ -8,12 +8,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Contrast
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,7 +18,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,7 +80,7 @@ fun SettingsScreen(
                 title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                        Icon(ImageVector.vectorResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -200,7 +196,7 @@ fun SettingsScreen(
                                 ) {
                                     if (isSelected) {
                                         Icon(
-                                            Icons.Default.Check, 
+                                            ImageVector.vectorResource(R.drawable.ic_check),
                                             contentDescription = null, 
                                             tint = Color.Black.copy(alpha = 0.7f), 
                                             modifier = Modifier.size(18.dp),
@@ -293,10 +289,6 @@ private fun ThemeOption(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // We rely on OnqaTheme's animateColorScheme for all transitions.
-    // We use MaterialTheme.colorScheme.primary to support both manual accent colors 
-    // and dynamic Material You colors.
-
     val isLightMode = MaterialTheme.colorScheme.surface.luminance() > 0.5f
     val activeColor = MaterialTheme.colorScheme.primary
     
@@ -313,9 +305,9 @@ private fun ThemeOption(
     }
 
     val icon = when (mode) {
-        ThemeMode.SYSTEM -> Icons.Default.Contrast
-        ThemeMode.LIGHT -> Icons.Default.LightMode
-        ThemeMode.DARK -> Icons.Default.DarkMode
+        ThemeMode.SYSTEM -> ImageVector.vectorResource(R.drawable.ic_contrast)
+        ThemeMode.LIGHT -> ImageVector.vectorResource(R.drawable.ic_light_mode)
+        ThemeMode.DARK -> ImageVector.vectorResource(R.drawable.ic_dark_mode)
     }
     val label = when (mode) {
         ThemeMode.SYSTEM -> stringResource(R.string.theme_mode_system)

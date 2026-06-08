@@ -4,9 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,7 +43,7 @@ fun ServerNapContainer(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Icon(
-                    Icons.Default.Error,
+                    ImageVector.vectorResource(R.drawable.ic_error),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier
@@ -112,7 +111,7 @@ fun StatusContainer(
             ) {
                 if (isError) {
                     Icon(
-                        Icons.Default.Warning,
+                        ImageVector.vectorResource(R.drawable.ic_warning),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier
