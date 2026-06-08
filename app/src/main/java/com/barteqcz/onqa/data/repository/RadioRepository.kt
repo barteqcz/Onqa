@@ -36,6 +36,12 @@ class RadioRepository @Inject constructor(
     private var isFetching = false
     private var observationJob: Job? = null
 
+    init {
+        scope.launch {
+            fetchAllStations()
+        }
+    }
+
     fun startLocationTracking() {
         Timber.i("Starting radio station location tracking...")
         locationManager.startTracking()
@@ -60,6 +66,35 @@ class RadioRepository @Inject constructor(
         locationManager.stopTracking()
         observationJob?.cancel()
         observationJob = null
+    }
+
+    suspend fun fetchAllStations() {
+        if (isFetching) {
+            Timber.d("Already fetching stations, skipping.")
+            return
+        }
+        isFetching = true
+
+        try {
+            Timber.d("Fetching all stations...")
+            val result = apiService.getAllStations()
+            _stations.value = NetworkResult.Success(result)
+            Timber.i("Successfully fetched ${result.size} stations.")
+        } catch (e: IOException) {
+            Timber.e(e, "IO error fetching all stations")
+            val isServerError = e !is UnknownHostException
+            val message = e.message ?: context.getString(R.string.error_io)
+            _stations.value = NetworkResult.Error(message, e, isServerError = isServerError)
+        } catch (e: HttpException) {
+            Timber.e(e, "HTTP error fetching all stations (code: ${e.code()})")
+            _stations.value = NetworkResult.Error(context.getString(R.string.error_server_with_code, e.code()), e, isServerError = true)
+        } catch (e: Exception) {
+            Timber.e(e, "Unexpected error fetching all stations")
+            val message = e.message ?: context.getString(R.string.error_unknown)
+            _stations.value = NetworkResult.Error(message, e, isServerError = true)
+        } finally {
+            isFetching = false
+        }
     }
 
     suspend fun updateNearbyStations(location: Location) {

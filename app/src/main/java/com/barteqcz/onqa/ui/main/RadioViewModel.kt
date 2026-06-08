@@ -186,12 +186,12 @@ class RadioViewModel @Inject constructor(
                                 allStations = allStations.toImmutableList(),
                                 currentLocation = location ?: currentState.currentLocation,
                             )
-                        } else if (location != null) {
+                        } else {
                             val locInfo = repository.locationInfo.value
                             _uiState.value = RadioUiState.Success(
                                 stations = groupedStations,
                                 allStations = allStations.toImmutableList(),
-                                currentLocation = location,
+                                currentLocation = location ?: StableLocation(0.0, 0.0), // Fallback if no location yet
                                 cityName = locInfo.city,
                                 countryName = locInfo.country,
                                 countryCode = locInfo.countryCode,
