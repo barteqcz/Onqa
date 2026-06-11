@@ -52,8 +52,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlin.time.Duration.Companion.milliseconds
@@ -144,83 +143,82 @@ class PlaybackService : MediaSessionService() {
     }
 
     private fun observeStations() {
-        repository.stations
-            .filterIsInstance<NetworkResult.Success<List<RadioStation>>>()
-            .onEach { result ->
-                checkCoverageAndSwitch(result.data)
-            }
-            .launchIn(serviceScope)
+        serviceScope.launch {
+            repository.stations
+                .filterIsInstance<NetworkResult.Success<List<RadioStation>>>()
+                .collectLatest { result ->
+                    checkCoverageAndSwitch(result.data)
+                }
+        }
     }
 
-    private fun checkCoverageAndSwitch(stations: List<RadioStation>) {
+    private suspend fun checkCoverageAndSwitch(stations: List<RadioStation>) {
         val currentUrl = currentStationUrl ?: return
         val currentName = currentStationName ?: return
         
         val normalizedCurrent = currentUrl.trimEnd('/')
         
-        serviceScope.launch {
-            val settings = settingsRepository.settingsFlow.first()
-            val updatedStation = stations.find { it.name == currentName }
-            
-            if (updatedStation != null) {
-                val targetUrl = if (settings.useHqStream && !updatedStation.streamUrlHq.isNullOrBlank()) {
-                    updatedStation.streamUrlHq
-                } else {
-                    updatedStation.streamUrl
-                }
-                
-                if (targetUrl != null && targetUrl.trimEnd('/') != normalizedCurrent) {
-                    playInternal(updatedStation.name, targetUrl, updatedStation.logo, updatedStation.network, forceReload = true)
-                    return@launch
-                }
-            }
-
-            val playingStation = updatedStation ?: stations.find { 
-                it.streamUrl?.trimEnd('/') == normalizedCurrent || it.streamUrlHq?.trimEnd('/') == normalizedCurrent 
+        val settings = settingsRepository.settingsFlow.first()
+        val updatedStation = stations.find { it.name == currentName }
+        
+        if (updatedStation != null) {
+            val targetUrl = if (settings.useHqStream && !updatedStation.streamUrlHq.isNullOrBlank()) {
+                updatedStation.streamUrlHq
+            } else {
+                updatedStation.streamUrl
             }
             
-            val isOutOfCoverage = playingStation == null || 
-                                 (playingStation.coverageKm != null && playingStation.coverageKm <= 0.0) ||
-                                 (playingStation.distance != null && playingStation.coverageKm != null && playingStation.distance > playingStation.coverageKm)
-            
-            if (isOutOfCoverage && (exoPlayer?.playWhenReady == true)) {
-                val favorites = settings.favoriteStations
+            if (targetUrl != null && targetUrl.trimEnd('/') != normalizedCurrent) {
+                playInternal(updatedStation.name, targetUrl, updatedStation.logo, updatedStation.network, forceReload = true)
+                return
+            }
+        }
 
-                val nextStation = if (currentStationNetwork != null) {
-                    stations.asSequence()
-                        .filter { it.network == currentStationNetwork }
-                        .sortedWith(
-                            compareBy<RadioStation> {
-                                val inCoverage = it.distance != null && it.coverageKm != null && it.distance <= it.coverageKm
-                                val notZeroCoverage = it.coverageKm == null || it.coverageKm > 0.0
-                                !(inCoverage && notZeroCoverage)
-                            }.thenBy { it.distance ?: Double.MAX_VALUE }
-                        )
-                        .firstOrNull()
-                } else null
-                
-                val fallbackStation = nextStation ?: stations.asSequence()
+        val playingStation = updatedStation ?: stations.find { 
+            it.streamUrl?.trimEnd('/') == normalizedCurrent || it.streamUrlHq?.trimEnd('/') == normalizedCurrent 
+        }
+        
+        val isOutOfCoverage = playingStation == null || 
+                             (playingStation.coverageKm != null && playingStation.coverageKm <= 0.0) ||
+                             (playingStation.distance != null && playingStation.coverageKm != null && playingStation.distance > playingStation.coverageKm)
+        
+        if (isOutOfCoverage && (exoPlayer?.playWhenReady == true)) {
+            val favorites = settings.favoriteStations
+
+            val nextStation = if (currentStationNetwork != null) {
+                stations.asSequence()
+                    .filter { it.network == currentStationNetwork }
                     .sortedWith(
-                        compareByDescending<RadioStation> { it.name in favorites }
-                            .thenBy {
-                                val inCoverage = it.distance != null && it.coverageKm != null && it.distance <= it.coverageKm
-                                val notZeroCoverage = it.coverageKm == null || it.coverageKm > 0.0
-                                !(inCoverage && notZeroCoverage)
-                            }
-                            .thenBy { it.distance ?: Double.MAX_VALUE }
+                        compareBy<RadioStation> {
+                            val inCoverage = it.distance != null && it.coverageKm != null && it.distance <= it.coverageKm
+                            val notZeroCoverage = it.coverageKm == null || it.coverageKm > 0.0
+                            !(inCoverage && notZeroCoverage)
+                        }.thenBy { it.distance ?: Double.MAX_VALUE }
                     )
                     .firstOrNull()
+            } else null
+            
+            val fallbackStation = nextStation ?: stations.asSequence()
+                .sortedWith(
+                    compareByDescending<RadioStation> { it.name in favorites }
+                        .thenBy {
+                            val inCoverage = it.distance != null && it.coverageKm != null && it.distance <= it.coverageKm
+                            val notZeroCoverage = it.coverageKm == null || it.coverageKm > 0.0
+                            !(inCoverage && notZeroCoverage)
+                        }
+                        .thenBy { it.distance ?: Double.MAX_VALUE }
+                )
+                .firstOrNull()
 
-                if ((fallbackStation != null) && (fallbackStation.streamUrl != currentUrl)) {
-                    val url = if (settings.useHqStream && !fallbackStation.streamUrlHq.isNullOrBlank()) {
-                        fallbackStation.streamUrlHq
-                    } else {
-                        fallbackStation.streamUrl
-                    }
-                    url?.let { playInternal(fallbackStation.name, it, fallbackStation.logo, fallbackStation.network) }
+            if ((fallbackStation != null) && (fallbackStation.streamUrl != currentUrl)) {
+                val url = if (settings.useHqStream && !fallbackStation.streamUrlHq.isNullOrBlank()) {
+                    fallbackStation.streamUrlHq
                 } else {
-                    stopInternal()
+                    fallbackStation.streamUrl
                 }
+                url?.let { playInternal(fallbackStation.name, it, fallbackStation.logo, fallbackStation.network) }
+            } else {
+                stopInternal()
             }
         }
     }
@@ -559,11 +557,20 @@ class PlaybackService : MediaSessionService() {
         val titleToProcess = if (isActuallyPlaying) (lastRdsTitle ?: info) else null
         
         val (displayTitle, displaySubtitle) = if (titleToProcess != null) {
-            MediaMetadataMapper.getEffectiveMetadata(
-                streamTitle = titleToProcess,
-                streamArtist = null,
-                stationName = stationName
-            )
+            // Check if RDS info accidentally matches another station's name (common in network switches)
+            val otherStation = (repository.stations.value as? NetworkResult.Success)?.data?.find { 
+                it.name.equals(titleToProcess, ignoreCase = true) && it.name != stationName 
+            }
+            
+            if (otherStation != null) {
+                stationName to ""
+            } else {
+                MediaMetadataMapper.getEffectiveMetadata(
+                    streamTitle = titleToProcess,
+                    streamArtist = null,
+                    stationName = stationName
+                )
+            }
         } else {
             stationName to ""
         }

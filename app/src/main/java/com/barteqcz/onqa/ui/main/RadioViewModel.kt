@@ -54,6 +54,7 @@ class RadioViewModel @Inject constructor(
     private var lastNetworkId: String? = null
     private val _uiState = MutableStateFlow<RadioUiState>(RadioUiState.Loading)
     private val _selectedStationUrl = MutableStateFlow<String?>(null)
+    private val _selectedStationName = MutableStateFlow<String?>(null)
     private val _isScrollable = MutableStateFlow(value = false)
 
     private val connectivityStatus = connectivityObserver.observe()
@@ -82,14 +83,19 @@ class RadioViewModel @Inject constructor(
         radioPlayer.stationInfo,
         _uiState,
         favoriteStations,
-    ) { info, state, favorites ->
-        val url = info.url ?: return@combine null
+        _selectedStationUrl,
+        _selectedStationName
+    ) { info, state, favorites, selectedUrl, selectedName ->
+        val url = info.url ?: selectedUrl ?: return@combine null
+        val name = info.name ?: selectedName
 
         val stations = (state as? RadioUiState.Success)?.stations ?: emptyList()
-        val station = stations.find { it.name == info.name }
-            ?: stations.find { (it.streamUrl == url) || (it.streamUrlHq == url) }
+        val normalizedUrl = url.trimEnd('/')
+        
+        val station = stations.find { it.name == name && (it.streamUrl?.trimEnd('/') == normalizedUrl || it.streamUrlHq?.trimEnd('/') == normalizedUrl) }
+            ?: stations.find { (it.streamUrl?.trimEnd('/') == normalizedUrl) || (it.streamUrlHq?.trimEnd('/') == normalizedUrl) }
             ?: RadioStation(
-                name = info.name ?: "",
+                name = name ?: "",
                 streamUrl = url,
                 logo = info.logo,
                 network = info.network,
@@ -285,7 +291,10 @@ class RadioViewModel @Inject constructor(
 
         radioPlayer.stationInfo
             .onEach { info ->
-                info.url?.let { _selectedStationUrl.value = it }
+                info.url?.let { 
+                    _selectedStationUrl.value = it
+                    _selectedStationName.value = info.name
+                }
             }
             .launchIn(viewModelScope)
     }
@@ -334,7 +343,7 @@ class RadioViewModel @Inject constructor(
         viewModelScope.launch { settingsRepository.toggleFavorite(station.name) }
     }
 
-    fun toggleStation(url: String) {
+    fun toggleStation(url: String, stationName: String? = null) {
         val stations = (_uiState.value as? RadioUiState.Success)?.stations ?: emptyList()
         val station = stations.find { it.streamUrl == url || it.streamUrlHq == url }
 
@@ -344,11 +353,13 @@ class RadioViewModel @Inject constructor(
             if (radioPlayer.isPlaying.value || radioPlayer.isBuffering.value) radioPlayer.pause()
             else {
                 _selectedStationUrl.value = streamUrl
-                radioPlayer.play(station?.name, streamUrl, station?.logo, station?.network)
+                _selectedStationName.value = station?.name ?: stationName
+                radioPlayer.play(station?.name ?: stationName, streamUrl, station?.logo, station?.network)
             }
         } else {
             _selectedStationUrl.value = streamUrl
-            radioPlayer.play(station?.name, streamUrl, station?.logo, station?.network)
+            _selectedStationName.value = station?.name ?: stationName
+            radioPlayer.play(station?.name ?: stationName, streamUrl, station?.logo, station?.network)
         }
     }
 
@@ -360,6 +371,7 @@ class RadioViewModel @Inject constructor(
         stations[nextIndex].let { s ->
             s.getStreamUrl(settings.value.useHqStream)?.let { url ->
                 _selectedStationUrl.value = url
+                _selectedStationName.value = s.name
                 radioPlayer.play(s.name, url, s.logo, s.network)
             }
         }
@@ -373,6 +385,7 @@ class RadioViewModel @Inject constructor(
         stations[prevIndex].let { s ->
             s.getStreamUrl(settings.value.useHqStream)?.let { url ->
                 _selectedStationUrl.value = url
+                _selectedStationName.value = s.name
                 radioPlayer.play(s.name, url, s.logo, s.network)
             }
         }
@@ -380,7 +393,7 @@ class RadioViewModel @Inject constructor(
 
     private fun currentIndex(): Int {
         val stations = (_uiState.value as? RadioUiState.Success)?.stations ?: return -1
-        return stations.indexOfFirst { (it.streamUrl == _selectedStationUrl.value) || (it.streamUrlHq == _selectedStationUrl.value) }
+        return stations.indexOfFirst { (it.name == _selectedStationName.value) && ((it.streamUrl == _selectedStationUrl.value) || (it.streamUrlHq == _selectedStationUrl.value)) }
     }
 
     companion object {
