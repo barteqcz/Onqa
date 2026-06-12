@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
+import com.barteqcz.onqa.data.model.UpdateInfo
 import com.barteqcz.onqa.ui.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,6 +34,7 @@ fun RadioScreen(
     onSettingsClick: () -> Unit,
 ) {
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -77,6 +79,14 @@ fun RadioScreen(
                 }
                 
                 LocationHeader(viewState.locationInfo)
+                
+                viewState.updateInfo?.let { updateInfo ->
+                    UpdateBanner(
+                        updateInfo = updateInfo,
+                        accentColor = viewState.settings.accentColor,
+                        onDownloadClick = { viewModel.startUpdateDownload(context, it) }
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -256,6 +266,50 @@ fun RadioScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun UpdateBanner(updateInfo: UpdateInfo, accentColor: Color, onDownloadClick: (String) -> Unit) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        color = accentColor.copy(alpha = 0.15f),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.3f)),
+        tonalElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.update_available_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = stringResource(R.string.update_available_message_simple),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            TextButton(
+                onClick = { onDownloadClick(updateInfo.downloadUrl) },
+                colors = ButtonDefaults.textButtonColors(contentColor = accentColor)
+            ) {
+                Text(
+                    text = stringResource(R.string.update_action_download),
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }

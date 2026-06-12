@@ -48,4 +48,7 @@
     <string name="theme_mode_light">Light</string>
     <string name="theme_mode_dark">Dark</string>
     <string name="unknown_location">&#129517; We got no clue where you are</string>
+    <string name="update_available_title">Update available</string>
+    <string name="update_available_message_simple">A new version is available</string>
+    <string name="update_action_download">Download</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.barteqcz.onqa.ui.main
 
+import android.content.Context
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import com.barteqcz.onqa.data.model.*
 import com.barteqcz.onqa.player.RadioPlayer
 import com.barteqcz.onqa.data.repository.RadioRepository
 import com.barteqcz.onqa.data.repository.SettingsRepository
+import com.barteqcz.onqa.data.repository.UpdateRepository
 import com.barteqcz.onqa.data.util.NetworkResult
 import com.barteqcz.onqa.domain.GetSortedStationsUseCase
 import com.barteqcz.onqa.ui.theme.OnqaGreen
@@ -39,6 +41,7 @@ data class RadioViewState(
     val isNetworkAvailable: Boolean = true,
     val isScrollable: Boolean = false,
     val metadata: String? = null,
+    val updateInfo: UpdateInfo? = null,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -47,6 +50,7 @@ class RadioViewModel @Inject constructor(
     private val repository: RadioRepository,
     private val radioPlayer: RadioPlayer,
     private val settingsRepository: SettingsRepository,
+    private val updateRepository: UpdateRepository,
     private val getSortedStations: GetSortedStationsUseCase,
     connectivityObserver: ConnectivityObserver,
 ) : ViewModel() {
@@ -56,6 +60,7 @@ class RadioViewModel @Inject constructor(
     private val _selectedStationUrl = MutableStateFlow<String?>(null)
     private val _selectedStationName = MutableStateFlow<String?>(null)
     private val _isScrollable = MutableStateFlow(value = false)
+    private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
 
     private val connectivityStatus = connectivityObserver.observe()
         .stateIn(
@@ -116,6 +121,7 @@ class RadioViewModel @Inject constructor(
         connectivityStatus,
         _isScrollable,
         radioPlayer.metadata,
+        _updateInfo,
     ) { args ->
         val state = args[0] as RadioUiState
         val selectedUrl = args[1] as String?
@@ -128,6 +134,7 @@ class RadioViewModel @Inject constructor(
         val status = args[8] as ConnectivityObserver.Status
         val scrollable = args[9] as Boolean
         val meta = args[10] as String?
+        val update = args[11] as UpdateInfo?
 
         RadioViewState(
             uiState = state,
@@ -141,6 +148,7 @@ class RadioViewModel @Inject constructor(
             isNetworkAvailable = status is ConnectivityObserver.Status.Available,
             isScrollable = scrollable,
             metadata = if (isPlaying || isBuffering) meta else null,
+            updateInfo = update,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
@@ -151,6 +159,16 @@ class RadioViewModel @Inject constructor(
         setupLocationTracking()
         setupPlayerListeners()
         setupStationListUpdates()
+        checkForUpdates()
+    }
+
+    private fun checkForUpdates() {
+        viewModelScope.launch {
+            val info = updateRepository.checkForUpdates()
+            if (info.isUpdateAvailable) {
+                _updateInfo.value = info
+            }
+        }
     }
 
     private fun observeStations() {
@@ -334,6 +352,10 @@ class RadioViewModel @Inject constructor(
     fun setScrollable(scrollable: Boolean) { _isScrollable.value = scrollable }
     fun completeOnboarding() = viewModelScope.launch { settingsRepository.updateOnboardingCompleted(completed = true) }
     fun resetOnboarding() = viewModelScope.launch { settingsRepository.updateOnboardingCompleted(completed = false) }
+
+    fun startUpdateDownload(context: Context, url: String) {
+        com.barteqcz.onqa.update.UpdateDownloader.start(context, url)
+    }
 
     fun refresh() {
         repository.currentLocation.value?.let { viewModelScope.launch { repository.updateNearbyStations(it) } }
