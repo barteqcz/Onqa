@@ -14,7 +14,6 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Suppress("unused")
 object RepositoryModule {
 
     @Provides
@@ -23,7 +22,7 @@ object RepositoryModule {
         apiService: RadioApiService,
         locationManager: LocationManager,
         @ApplicationContext context: Context,
-        @ApplicationScope scope: CoroutineScope
+        @ApplicationScope scope: CoroutineScope,
     ): RadioRepository {
         return RadioRepository(apiService, locationManager, context, scope)
     }

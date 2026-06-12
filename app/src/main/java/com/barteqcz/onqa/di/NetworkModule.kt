@@ -16,7 +16,6 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Suppress("unused")
 object NetworkModule {
 
     private const val BASE_URL = "https://onqa-api.barteq.cz/"

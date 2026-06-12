@@ -16,13 +16,13 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Suppress("unused")
 abstract class AppModule {
 
     @Binds
     @Singleton
+    @Suppress("unused")
     abstract fun bindConnectivityObserver(
-        observer: NetworkConnectivityObserver
+        observer: NetworkConnectivityObserver,
     ): ConnectivityObserver
 
     companion object {
