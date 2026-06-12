@@ -36,6 +36,7 @@ private val DarkColorScheme = darkColorScheme(
     surfaceVariant = CardBackground,
     onSurfaceVariant = TextGrey,
     outline = TextGrey,
+    error = FavoriteRed,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -52,6 +53,7 @@ private val LightColorScheme = lightColorScheme(
     surfaceVariant = LightCardBackground,
     onSurfaceVariant = TextGreyLight,
     outline = TextGreyLight,
+    error = FavoriteRed,
 )
 
 fun Color.applyLightVariant(): Color {

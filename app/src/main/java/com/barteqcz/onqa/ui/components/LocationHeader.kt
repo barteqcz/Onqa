@@ -18,10 +18,7 @@ import com.barteqcz.onqa.data.model.LocationInfo
 
 @Composable
 fun LocationHeader(info: LocationInfo) {
-    if (info.city == null) {
-        Spacer(modifier = Modifier.height(0.dp))
-        return
-    }
+    val cityText = info.city ?: stringResource(R.string.unknown_location)
 
     Column(
         modifier = Modifier
@@ -39,7 +36,7 @@ fun LocationHeader(info: LocationInfo) {
         )
 
         AnimatedContent(
-            targetState = info.city,
+            targetState = cityText,
             transitionSpec = {
                 fadeIn(tween(1000)).togetherWith(fadeOut(tween(1000)))
             },

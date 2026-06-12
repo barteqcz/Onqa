@@ -75,7 +75,7 @@ fun MiniPlayer(
         animationSpec = tween(durationMillis = 500),
         label = "miniPlayerBorderAlpha"
     )
-    val borderColor = (if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary)
+    val borderColor = (if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
         .copy(alpha = borderAlpha)
 
     val elevation by animateDpAsState(
@@ -236,7 +236,7 @@ fun MiniPlayer(
 
                 Column(modifier = Modifier.weight(1f)) {
                     val infoColor by animateColorAsState(
-                        targetValue = if (targetStation.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary,
+                        targetValue = if (targetStation.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                         label = "miniPlayerIconColor"
                     )
                     Row(

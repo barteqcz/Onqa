@@ -62,7 +62,7 @@ fun FavoriteHeart(
             imageVector = Icons.Rounded.Favorite,
             contentDescription = null,
             modifier = modifier.size(24.dp),
-            tint = Color(0xFFE57373),
+            tint = MaterialTheme.colorScheme.error,
         )
     }
 }
@@ -86,14 +86,14 @@ fun StationCard(
     )
 
     val borderColor by animateColorAsState(
-        targetValue = if (station.isFavorite) Color(0xFFE57373).copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+        targetValue = if (station.isFavorite) MaterialTheme.colorScheme.error.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
         animationSpec = tween(durationMillis = 300),
         label = "borderColor"
     )
 
     val activeOverlayColor by animateColorAsState(
         targetValue = when {
-            isActive && station.isFavorite -> Color(0xFFE57373).copy(alpha = 0.15f)
+            isActive && station.isFavorite -> MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
             isActive -> MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
             else -> Color.Transparent
         },
@@ -165,7 +165,7 @@ fun StationCard(
 
                 Column(modifier = Modifier.weight(1f)) {
                     val infoColor by animateColorAsState(
-                        targetValue = if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary,
+                        targetValue = if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                         label = "stationIconColor",
                     )
                     Row(
@@ -220,7 +220,7 @@ fun StationCard(
                     contentAlignment = Alignment.Center
                 ) {
                     if (isPlaying) {
-                        EqualizerAnimation(color = if (station.isFavorite) Color(0xFFE57373) else MaterialTheme.colorScheme.primary)
+                        EqualizerAnimation(color = if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
                     } else {
                         FavoriteHeart(visible = station.isFavorite)
                     }

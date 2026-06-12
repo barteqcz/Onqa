@@ -23,6 +23,14 @@ data class StationInfo(
     val network: String? = null,
 )
 
+data class PlayerState(
+    val isPlaying: Boolean = false,
+    val isBuffering: Boolean = false,
+    val playbackError: Boolean = false,
+    val metadata: String? = null,
+    val stationInfo: StationInfo = StationInfo(),
+)
+
 @Singleton
 class RadioPlayer @Inject constructor(
     @param:ApplicationContext private val context: Context,
@@ -31,20 +39,8 @@ class RadioPlayer @Inject constructor(
     private var controller: MediaController? = null
     private var lastPauseActionTime: Long = 0
 
-    private val _isPlaying = MutableStateFlow(value = false)
-    val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
-
-    private val _isBuffering = MutableStateFlow(value = false)
-    val isBuffering: StateFlow<Boolean> = _isBuffering.asStateFlow()
-
-    private val _playbackError = MutableStateFlow(value = false)
-    val playbackError: StateFlow<Boolean> = _playbackError.asStateFlow()
-
-    private val _metadata = MutableStateFlow<String?>(null)
-    val metadata: StateFlow<String?> = _metadata.asStateFlow()
-
-    private val _stationInfo = MutableStateFlow(StationInfo())
-    val stationInfo: StateFlow<StationInfo> = _stationInfo.asStateFlow()
+    private val _state = MutableStateFlow(PlayerState())
+    val state: StateFlow<PlayerState> = _state.asStateFlow()
 
     val requestNext = playbackEvents.requestNext
     val requestPrevious = playbackEvents.requestPrevious
@@ -66,32 +62,34 @@ class RadioPlayer @Inject constructor(
     }
 
     private fun setupController(player: MediaController) {
-        player.addListener(object : Player.Listener {
-            override fun onIsPlayingChanged(playing: Boolean) {
-                _isPlaying.value = playing
-            }
-            override fun onPlaybackStateChanged(state: Int) {
-                val buffering = state == Player.STATE_BUFFERING
-                if ((state != Player.STATE_IDLE) && (state != Player.STATE_ENDED)) {
-                    _isBuffering.value = buffering
+        player.addListener(
+            object : Player.Listener {
+                override fun onIsPlayingChanged(playing: Boolean) {
+                    _state.update { it.copy(isPlaying = playing) }
                 }
-                if (state == Player.STATE_READY) _playbackError.value = false
-            }
-            override fun onPlayerError(error: PlaybackException) {
-                _playbackError.value = true
-                _isPlaying.value = false
-                _isBuffering.value = false
-            }
-            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                syncWithMediaItem(mediaItem)
-            }
-            override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                syncWithMediaItem(player.currentMediaItem)
-            }
-        })
+                override fun onPlaybackStateChanged(state: Int) {
+                    val buffering = state == Player.STATE_BUFFERING
+                    if ((state != Player.STATE_IDLE) && (state != Player.STATE_ENDED)) {
+                        _state.update { it.copy(isBuffering = buffering) }
+                    }
+                    if (state == Player.STATE_READY) _state.update { it.copy(playbackError = false) }
+                }
+                override fun onPlayerError(error: PlaybackException) {
+                    _state.update { it.copy(playbackError = true, isPlaying = false, isBuffering = false) }
+                }
+                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                    syncWithMediaItem(mediaItem)
+                }
+                override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+                    syncWithMediaItem(player.currentMediaItem)
+                }
+            },
+        )
         
-        _isPlaying.value = player.isPlaying
-        _isBuffering.value = player.playbackState == Player.STATE_BUFFERING
+        _state.update { it.copy(
+            isPlaying = player.isPlaying,
+            isBuffering = player.playbackState == Player.STATE_BUFFERING,
+        ) }
         syncWithMediaItem(player.currentMediaItem)
     }
 
@@ -100,24 +98,25 @@ class RadioPlayer @Inject constructor(
         val title = metadata?.title?.toString()
         val stationName = metadata?.albumArtist?.toString() ?: metadata?.artist?.toString()
         
-        _stationInfo.value = StationInfo(
+        val info = StationInfo(
             url = item?.mediaId,
             name = stationName,
             logo = metadata?.artworkUri?.toString(),
             network = metadata?.extras?.getString("network")
         )
         
-        _metadata.value = if (!title.isNullOrBlank() && (title != stationName)) title else null
+        val meta = if (!title.isNullOrBlank() && (title != stationName)) title else null
+
+        _state.update { it.copy(stationInfo = info, metadata = meta) }
     }
 
     fun play(stationName: String?, url: String, logoUrl: String?, network: String? = null, forceReload: Boolean = false) {
-        if (_stationInfo.value.url != url) {
-            _metadata.value = null
+        if (_state.value.stationInfo.url != url) {
+            _state.update { it.copy(metadata = null) }
         }
 
         lastPauseActionTime = 0
-        _playbackError.value = false
-        _isBuffering.value = true
+        _state.update { it.copy(playbackError = false, isBuffering = true) }
         
         val player = controller ?: return
         

@@ -2,7 +2,6 @@ package com.barteqcz.onqa.di
 
 import android.content.Context
 import com.barteqcz.onqa.data.repository.RadioRepository
-import com.barteqcz.onqa.data.repository.SettingsRepository
 import com.barteqcz.onqa.data.remote.RadioApiService
 import com.barteqcz.onqa.location.LocationManager
 import dagger.Module
@@ -23,10 +22,9 @@ object RepositoryModule {
     fun provideRadioRepository(
         apiService: RadioApiService,
         locationManager: LocationManager,
-        settingsRepository: SettingsRepository,
         @ApplicationContext context: Context,
         @ApplicationScope scope: CoroutineScope
     ): RadioRepository {
-        return RadioRepository(apiService, locationManager, settingsRepository, context, scope)
+        return RadioRepository(apiService, locationManager, context, scope)
     }
 }

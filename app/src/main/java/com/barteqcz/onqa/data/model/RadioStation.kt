@@ -26,4 +26,15 @@ data class RadioStation(
     fun getStreamUrl(useHq: Boolean): String? {
         return if (useHq && !streamUrlHq.isNullOrBlank()) streamUrlHq else streamUrl
     }
+
+    fun matchesUrl(url: String?): Boolean {
+        if (url == null) return false
+        val normalized = url.trimEnd('/')
+        return normalizedStreamUrl == normalized || normalizedStreamUrlHq == normalized
+    }
+
+    fun matches(name: String?, url: String?): Boolean {
+        if (url != null && matchesUrl(url)) return true
+        return name != null && this.name == name
+    }
 }

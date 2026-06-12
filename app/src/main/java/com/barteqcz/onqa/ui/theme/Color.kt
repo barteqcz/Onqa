@@ -19,3 +19,6 @@ val TextWhite = Color(0xFFFFFFFF)
 val TextBlack = Color(0xFF1C1B21)
 val TextGrey = Color(0xFF8E8E93)
 val TextGreyLight = Color(0xFF636366)
+
+val FavoriteRed = Color(0xFFE57373)
+

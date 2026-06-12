@@ -48,10 +48,10 @@ class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
     ) { permissions ->
-        val locationGranted = (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) ||
-                (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true)
+        val locationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
 
-        if (locationGranted && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)) {
+        if (locationGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             showBackgroundLocationDisclosure = true
         } else {
             checkPermissionsAndCompleteOnboarding()
@@ -73,11 +73,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun hasAllPermissions(): Boolean {
-        val location = (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) ||
-                (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        val location = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        
         val background = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
         } else true
+
         return location && background
     }
 

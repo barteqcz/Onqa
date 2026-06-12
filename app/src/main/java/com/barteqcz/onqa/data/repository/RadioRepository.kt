@@ -24,7 +24,6 @@ import javax.inject.Singleton
 class RadioRepository @Inject constructor(
     private val apiService: RadioApiService,
     private val locationManager: LocationManager,
-    private val settingsRepository: SettingsRepository,
     @param:ApplicationContext private val context: Context,
     @param:ApplicationScope private val scope: CoroutineScope,
 ) {
@@ -39,14 +38,9 @@ class RadioRepository @Inject constructor(
 
     init {
         scope.launch {
-            val settings = settingsRepository.settingsFlow.first()
-            val hasLastLocation = settings.lastLatitude != null && settings.lastLongitude != null
-            
-            if (!settings.isOnboardingCompleted || !hasLastLocation) {
-                fetchAllStations()
-            } else {
-                Timber.d("Onboarding completed and last location exists, skipping initial full fetch to allow nearby fetch.")
-            }
+            // No initial fetch here. We wait for startLocationTracking() 
+            // to be called from ViewModel, which will trigger updateNearbyStations via observationJob.
+            Timber.d("RadioRepository initialized. Waiting for location tracking to start.")
         }
     }
 
@@ -76,58 +70,36 @@ class RadioRepository @Inject constructor(
         observationJob = null
     }
 
-    suspend fun fetchAllStations() {
-        if (isFetching) {
-            Timber.d("Already fetching stations, skipping.")
-            return
-        }
-        isFetching = true
-
-        try {
-            Timber.d("Fetching all stations...")
-            val result = apiService.getAllStations()
-            _stations.value = NetworkResult.Success(result)
-            Timber.i("Successfully fetched ${result.size} stations.")
-        } catch (e: IOException) {
-            Timber.e(e, "IO error fetching all stations")
-            val isServerError = e !is UnknownHostException
-            val message = e.message ?: context.getString(R.string.error_io)
-            _stations.value = NetworkResult.Error(message, e, isServerError = isServerError)
-        } catch (e: HttpException) {
-            Timber.e(e, "HTTP error fetching all stations (code: ${e.code()})")
-            _stations.value = NetworkResult.Error(context.getString(R.string.error_server_with_code, e.code()), e, isServerError = true)
-        } catch (e: Exception) {
-            Timber.e(e, "Unexpected error fetching all stations")
-            val message = e.message ?: context.getString(R.string.error_unknown)
-            _stations.value = NetworkResult.Error(message, e, isServerError = true)
-        } finally {
-            isFetching = false
-        }
+    suspend fun updateNearbyStations(location: Location) = safeApiCall("updateNearbyStations") {
+        val request = LocationRequest(location.latitude, location.longitude)
+        apiService.getNearbyStations(request)
     }
 
-    suspend fun updateNearbyStations(location: Location) {
+    private suspend fun safeApiCall(
+        actionName: String,
+        call: suspend () -> List<RadioStation>,
+    ) {
         if (isFetching) {
-            Timber.d("Already fetching stations, skipping.")
+            Timber.d("Already fetching stations ($actionName), skipping.")
             return
         }
         isFetching = true
 
         try {
-            Timber.d("Fetching nearby stations for: ${location.latitude}, ${location.longitude}")
-            val request = LocationRequest(location.latitude, location.longitude)
-            val result = apiService.getNearbyStations(request)
+            Timber.d("Action $actionName started...")
+            val result = call()
             _stations.value = NetworkResult.Success(result)
-            Timber.i("Successfully fetched ${result.size} stations.")
+            Timber.i("Successfully completed $actionName with ${result.size} stations.")
         } catch (e: IOException) {
-            Timber.e(e, "IO error fetching stations")
+            Timber.e(e, "IO error in $actionName")
             val isServerError = e !is UnknownHostException
             val message = e.message ?: context.getString(R.string.error_io)
             _stations.value = NetworkResult.Error(message, e, isServerError = isServerError)
         } catch (e: HttpException) {
-            Timber.e(e, "HTTP error fetching stations (code: ${e.code()})")
+            Timber.e(e, "HTTP error in $actionName (code: ${e.code()})")
             _stations.value = NetworkResult.Error(context.getString(R.string.error_server_with_code, e.code()), e, isServerError = true)
         } catch (e: Exception) {
-            Timber.e(e, "Unexpected error fetching stations")
+            Timber.e(e, "Unexpected error in $actionName")
             val message = e.message ?: context.getString(R.string.error_unknown)
             _stations.value = NetworkResult.Error(message, e, isServerError = true)
         } finally {

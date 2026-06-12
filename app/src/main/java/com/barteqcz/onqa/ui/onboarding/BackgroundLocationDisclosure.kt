@@ -1,5 +1,6 @@
 package com.barteqcz.onqa.ui.onboarding
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.*
@@ -18,7 +19,8 @@ fun BackgroundLocationDisclosure(
     onDismiss: () -> Unit
 ) {
     AlertDialog(
-        properties = DialogProperties(usePlatformDefaultWidth = true),
+        modifier = androidx.compose.ui.Modifier.fillMaxWidth(0.95f),
+        properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Rounded.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
         title = {

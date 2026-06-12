@@ -1,14 +1,11 @@
 package com.barteqcz.onqa.location
 
-import android.content.Context
 import android.location.Location
-import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.repository.SettingsRepository
 import com.barteqcz.onqa.data.model.LocationInfo
 import com.barteqcz.onqa.data.util.NetworkResult
 import com.barteqcz.onqa.di.ApplicationScope
 import com.google.android.gms.location.Priority
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
@@ -17,7 +14,6 @@ import javax.inject.Singleton
 
 @Singleton
 class LocationManager @Inject constructor(
-    @param:ApplicationContext private val context: Context,
     private val locationClient: LocationClient,
     private val locationRepository: LocationRepository,
     private val settingsRepository: SettingsRepository,
@@ -28,6 +24,12 @@ class LocationManager @Inject constructor(
 
     private val _locationInfo = MutableStateFlow(LocationInfo())
     val locationInfo: StateFlow<LocationInfo> = _locationInfo.asStateFlow()
+
+    init {
+        scope.launch {
+            loadSavedLocation()
+        }
+    }
 
     private var trackingJob: Job? = null
     private var geocodingJob: Job? = null
@@ -46,8 +48,6 @@ class LocationManager @Inject constructor(
 
         Timber.i("Starting location tracking...")
         trackingJob = scope.launch {
-            loadSavedLocation()
-
             locationClient.getLastLocation()?.let { location ->
                 updateLocation(location)
             }
@@ -160,7 +160,7 @@ class LocationManager @Inject constructor(
 
     private fun updateToUnknownLocation() {
         val unknownInfo = LocationInfo(
-            city = context.getString(R.string.unknown_location),
+            city = null,
             countryCode = null
         )
         if (_locationInfo.value != unknownInfo) {
