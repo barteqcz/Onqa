@@ -210,7 +210,7 @@ fun RadioScreen(
                                                 StationCard(
                                                     station = station,
                                                     isActive = viewState.selectedUrl != null && (station.streamUrl == viewState.selectedUrl || station.streamUrlHq == viewState.selectedUrl),
-                                                    isPlaying = viewState.selectedUrl != null && (station.streamUrl == viewState.selectedUrl || station.streamUrlHq == viewState.selectedUrl) && viewState.isPlaying,
+                                                    isPlaying = viewState.selectedUrl != null && (station.streamUrl == viewState.selectedUrl || station.streamUrlHq == viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
                                                     showHqIcon = !station.streamUrlHq.isNullOrBlank(),
                                                     onClick = {
                                                         val url = station.streamUrl ?: station.streamUrlHq

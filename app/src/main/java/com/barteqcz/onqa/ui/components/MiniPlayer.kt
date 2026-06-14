@@ -42,6 +42,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.barteqcz.onqa.R
@@ -67,6 +70,23 @@ fun MiniPlayer(
         animationSpec = spring(dampingRatio = 0.8f, stiffness = 400f),
         label = "swipeOffset"
     )
+    
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var isResuming by remember { mutableStateOf(false) }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                isResuming = true
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    if (isResuming) {
+        SideEffect { isResuming = false }
+    }
     
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -155,6 +175,10 @@ fun MiniPlayer(
         AnimatedContent(
             targetState = station to showHqIcon,
             transitionSpec = {
+                if (isResuming) {
+                    return@AnimatedContent EnterTransition.None togetherWith ExitTransition.None
+                }
+
                 val (initialStation, initialHq) = initialState
                 val (targetStation, targetHq) = targetState
 
