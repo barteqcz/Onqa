@@ -70,7 +70,7 @@ fun SettingsScreen(
 
     val showShadow by remember {
         derivedStateOf {
-            (selectedUrl != null) && scrollState.canScrollForward
+            selectedUrl != null
         }
     }
 

@@ -168,7 +168,7 @@ fun RadioScreen(
                                 val bottomNavPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                                 val showShadow by remember {
                                     derivedStateOf {
-                                        (viewState.selectedUrl != null) && listState.canScrollForward
+                                        viewState.selectedUrl != null
                                     }
                                 }
 
