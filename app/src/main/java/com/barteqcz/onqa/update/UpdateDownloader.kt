@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
-import com.barteqcz.onqa.R
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
@@ -88,7 +87,7 @@ class UpdateDownloader : Service() {
                     totalRead += bytesRead
                     if (totalBytes > 0) {
                         val progress = (totalRead * 100 / totalBytes).toInt()
-                        updateNotification(progress)
+                        updateNotification(progress, progress == 100)
                     }
                 }
             }
@@ -96,18 +95,18 @@ class UpdateDownloader : Service() {
         return destinationFile
     }
 
-    private fun updateNotification(progress: Int) {
-        val notification = createNotification(progress)
+    private fun updateNotification(progress: Int, isComplete: Boolean = false) {
+        val notification = createNotification(progress, isComplete)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
-    private fun createNotification(progress: Int) = NotificationCompat.Builder(this, CHANNEL_ID)
-        .setContentTitle("Downloading update")
-        .setSmallIcon(R.drawable.ic_notification_update)
+    private fun createNotification(progress: Int, isComplete: Boolean = false) = NotificationCompat.Builder(this, CHANNEL_ID)
+        .setContentTitle(if (isComplete) "Update downloaded" else "Downloading update")
+        .setSmallIcon(if (isComplete) android.R.drawable.stat_sys_download_done else android.R.drawable.stat_sys_download)
         .setPriority(NotificationCompat.PRIORITY_LOW)
-        .setOngoing(true)
-        .setProgress(100, progress, progress == 0)
+        .setOngoing(!isComplete)
+        .setProgress(100, progress, !isComplete && progress == 0)
         .build()
 
     private fun createNotificationChannel() {
