@@ -123,6 +123,8 @@ fun OnqaTheme(
                 background = if (darkTheme) DarkBackground else LightBackground,
                 surface = if (darkTheme) DarkBackground else LightBackground,
                 surfaceVariant = if (darkTheme) CardBackground else LightCardBackground,
+                onSurface = if (darkTheme) TextWhite else TextBlack,
+                onSurfaceVariant = if (darkTheme) TextGrey else TextGreyLight,
             )
         }
         darkTheme -> DarkColorScheme.copy(primary = accentColor)
@@ -131,7 +133,7 @@ fun OnqaTheme(
 
     val colorScheme = animateColorScheme(targetColorScheme)
     val view = LocalView.current
-    
+
     if (!view.isInEditMode) {
         val useDarkIcons = colorScheme.background.luminance() > 0.5f
         SideEffect {
