@@ -13,10 +13,9 @@ The name is inspired by the Spanish words *onda* (“wave”) and *cerca* (“ne
 
 ## Screenshots
 
-<img width="200" alt="Screenshot_2026-06-01-19-58-52-855_com barteqcz onqa" src="https://github.com/user-attachments/assets/7cc3a0b8-de45-404f-9d69-fdb3808de2a3" />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<img width="200" alt="Screenshot_2026-06-01-19-58-46-148_com barteqcz onqa" src="https://github.com/user-attachments/assets/cfd432c9-d301-4602-88bf-972e4f963811" />
-
+<img width="300" alt="Screenshot_20260721_165240_Onqa" src="https://github.com/user-attachments/assets/ac3c6cd5-0edd-40e5-b5ee-8f3fcd22eece" />
+&nbsp;
+<img width="300" alt="Screenshot_20260721_165248_Onqa" src="https://github.com/user-attachments/assets/2b2278e5-3551-4675-ad34-ab925c44ecca" />
 
 ## Features
 
