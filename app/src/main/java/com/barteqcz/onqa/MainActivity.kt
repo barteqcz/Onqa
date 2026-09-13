@@ -287,8 +287,8 @@ class MainActivity : AppCompatActivity() {
 
                             AnimatedVisibility(
                                 visible = viewState.isMiniPlayerActive && !isMapPickerVisible,
-                                enter = slideInVertically(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(),
-                                exit = slideOutVertically(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(),
+                                enter = slideInVertically(AnimationSystem.RelaxedSpringIntOffset) { it } + fadeIn(),
+                                exit = slideOutVertically(AnimationSystem.RelaxedSpringIntOffset) { it } + fadeOut(),
                                 modifier = Modifier.align(Alignment.BottomCenter),
                             ) {
                                 viewState.displayStation?.let {

@@ -67,7 +67,7 @@ fun MiniPlayer(
     var offsetX by remember { mutableFloatStateOf(0f) }
     val animatedOffsetX by animateFloatAsState(
         targetValue = offsetX,
-        animationSpec = AnimationSystem.VividSpring,
+        animationSpec = AnimationSystem.RelaxedSpring,
         label = "swipeOffset"
     )
     
@@ -92,7 +92,7 @@ fun MiniPlayer(
 
     val borderAlpha by animateFloatAsState(
         targetValue = if (isPlaying || isBuffering || kotlin.math.abs(animatedOffsetX) > 0.5f) 0.5f else 0f,
-        animationSpec = AnimationSystem.vividTween(300),
+        animationSpec = AnimationSystem.relaxedTween(),
         label = "miniPlayerBorderAlpha"
     )
     val borderColor = (if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
@@ -100,7 +100,7 @@ fun MiniPlayer(
 
     val elevation by animateDpAsState(
         targetValue = if (isScrollable) 16.dp else 12.dp,
-        animationSpec = AnimationSystem.vividTween(300),
+        animationSpec = AnimationSystem.relaxedTween(),
         label = "miniPlayerElevation"
     )
 
@@ -217,11 +217,11 @@ fun MiniPlayer(
                     }
 
                     if (isNext) {
-                        (slideInHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(AnimationSystem.vividTween(300)))
-                            .togetherWith(slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { -it } + fadeOut(AnimationSystem.vividTween(300)))
+                        (slideInHorizontally(AnimationSystem.RelaxedSpringIntOffset) { it } + fadeIn(AnimationSystem.relaxedTween()))
+                            .togetherWith(slideOutHorizontally(AnimationSystem.RelaxedSpringIntOffset) { -it } + fadeOut(AnimationSystem.relaxedTween()))
                     } else {
-                        (slideInHorizontally(AnimationSystem.VividSpringIntOffset) { -it } + fadeIn(AnimationSystem.vividTween(300)))
-                            .togetherWith(slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(AnimationSystem.vividTween(300)))
+                        (slideInHorizontally(AnimationSystem.RelaxedSpringIntOffset) { -it } + fadeIn(AnimationSystem.relaxedTween()))
+                            .togetherWith(slideOutHorizontally(AnimationSystem.RelaxedSpringIntOffset) { it } + fadeOut(AnimationSystem.relaxedTween()))
                     }
                 }
             },
@@ -233,7 +233,7 @@ fun MiniPlayer(
             ) {
                 val scale by animateFloatAsState(
                     targetValue = if (isPlaying) 1.05f else 1f,
-                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow),
                     label = "logoScale"
                 )
                 var isImageLoaded by remember(targetStation.logo) { mutableStateOf(false) }
@@ -305,8 +305,8 @@ fun MiniPlayer(
                     AnimatedContent(
                         targetState = metadataState,
                         transitionSpec = {
-                            (fadeIn(AnimationSystem.vividTween(300)) + slideInVertically(AnimationSystem.VividSpringIntOffset) { it / 2 })
-                                .togetherWith(fadeOut(AnimationSystem.vividTween(300)) + slideOutVertically(AnimationSystem.VividSpringIntOffset) { -it / 2 })
+                            (fadeIn(AnimationSystem.relaxedTween()) + slideInVertically(AnimationSystem.RelaxedSpringIntOffset) { it / 2 })
+                                .togetherWith(fadeOut(AnimationSystem.relaxedTween()) + slideOutVertically(AnimationSystem.RelaxedSpringIntOffset) { -it / 2 })
                         },
                         label = "metadataTransition"
                     ) { state ->

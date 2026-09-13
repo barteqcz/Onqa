@@ -209,9 +209,9 @@ fun RadioScreen(
                                                     isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
                                                     showHqIcon = !station.streamUrlHq.isNullOrBlank(),
                                                     modifier = Modifier.animateItem(
-                                                        fadeInSpec = AnimationSystem.VividSpring,
-                                                        fadeOutSpec = AnimationSystem.VividSpring,
-                                                        placementSpec = if (viewState.isSearchActive) null else AnimationSystem.VividSpringIntOffset
+                                                        fadeInSpec = AnimationSystem.RelaxedSpring,
+                                                        fadeOutSpec = AnimationSystem.RelaxedSpring,
+                                                        placementSpec = if (viewState.isSearchActive) null else AnimationSystem.RelaxedSpringIntOffset
                                                     ),
                                                     onClick = {
                                                         focusManager.clearFocus()
