@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -43,6 +44,7 @@ import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.ThemeMode
+import com.barteqcz.onqa.ui.main.LanguageDownloadState
 import com.barteqcz.onqa.ui.main.RadioViewModel
 import com.barteqcz.onqa.ui.theme.*
 
@@ -71,6 +73,14 @@ fun SettingsScreen(
     BackHandler(enabled = isManualWithoutLocation) {
         showLocationValidationError = true
     }
+
+    val languageDownloadState = viewState.languageDownloadState
+
+    LanguageDownloadProgressDialog(downloadState = languageDownloadState)
+    LanguageDownloadErrorDialog(
+        error = languageDownloadState.error,
+        onDismiss = { viewModel.dismissLanguageDownloadError() }
+    )
 
     LaunchedEffect(scrollState.canScrollForward, scrollState.canScrollBackward) {
         viewModel.setScrollable(scrollState.canScrollForward || scrollState.canScrollBackward)
@@ -855,4 +865,107 @@ private fun SettingCategory(title: String) {
         letterSpacing = 1.5.sp,
         modifier = Modifier.padding(bottom = 16.dp)
     )
+}
+
+@Composable
+private fun LanguageDownloadProgressDialog(
+    downloadState: LanguageDownloadState
+) {
+    if (downloadState.isDownloading) {
+        Dialog(
+            onDismissRequest = { /* Prevent dismiss during active download */ },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        ) {
+            Surface(
+                shape = RoundedCornerShape(28.dp),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 6.dp,
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .wrapContentHeight()
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 4.dp
+                    )
+
+                    Text(
+                        text = stringResource(R.string.language_downloading_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center
+                    )
+
+                    val targetLang = downloadState.targetLanguage
+                    val langName = if (targetLang != null) stringResource(targetLang.labelRes) else ""
+                    Text(
+                        text = stringResource(R.string.language_downloading_desc, langName),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+
+                    if (downloadState.progress > 0f) {
+                        LinearProgressIndicator(
+                            progress = { downloadState.progress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp)),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    } else {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp)),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LanguageDownloadErrorDialog(
+    error: String?,
+    onDismiss: () -> Unit
+) {
+    if (error != null) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(
+                    text = stringResource(R.string.language_download_failed),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.alright))
+                }
+            },
+            shape = RoundedCornerShape(28.dp),
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    }
 }

@@ -111,4 +111,7 @@
     <string name="language_romansh" translatable="false">Rumantsch</string>
     <string name="location_validation_title">Location required</string>
     <string name="location_validation_message">You have selected manual location mode but haven\'t picked a location yet. Please pick a location on the map to continue.</string>
+    <string name="language_downloading_title" translatable="false">Downloading language pack</string>
+    <string name="language_downloading_desc" translatable="false">Downloading %1$s from Google Play…</string>
+    <string name="language_download_failed" translatable="false">Failed to download language pack</string>
 </resources>

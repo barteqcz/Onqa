@@ -112,6 +112,7 @@ dependencies {
 
     implementation(libs.osmdroid.android)
     implementation(libs.play.services.location)
+    implementation(libs.play.feature.delivery.ktx)
     implementation(libs.okhttp)
     implementation(libs.retrofit)
     implementation(libs.kotlinx.serialization.json)

@@ -2,7 +2,6 @@ package com.barteqcz.onqa.ui.main
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Immutable
-import androidx.core.os.LocaleListCompat
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,6 +36,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
+import com.barteqcz.onqa.util.LanguageDownloadManager
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -46,6 +46,16 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
+
+@Immutable
+data class LanguageDownloadState(
+    val isDownloading: Boolean = false,
+    val targetLanguage: AppLanguage? = null,
+    val progress: Float = 0f,
+    val bytesDownloaded: Long = 0,
+    val totalBytes: Long = 0,
+    val error: String? = null
+)
 
 @Immutable
 data class RadioViewState(
@@ -71,6 +81,7 @@ data class RadioViewState(
     val isSearchActive: Boolean = false,
     val displayStation: RadioStation? = null,
     val isMiniPlayerActive: Boolean = false,
+    val languageDownloadState: LanguageDownloadState = LanguageDownloadState(),
 )
 
 @Immutable
@@ -85,6 +96,7 @@ class RadioViewModel @Inject constructor(
     private val radioPlayer: RadioPlayer,
     private val settingsRepository: SettingsRepository,
     private val getSortedStations: GetSortedStationsUseCase,
+    private val languageDownloadManager: LanguageDownloadManager,
     connectivityObserver: ConnectivityObserver,
 ) : ViewModel() {
 
@@ -95,6 +107,7 @@ class RadioViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     private val _isSearchActive = MutableStateFlow(value = false)
     private val _currentLanguage = MutableStateFlow(getCurrentAppLanguage())
+    private val _languageDownloadState = MutableStateFlow(LanguageDownloadState())
     private val _events = MutableSharedFlow<RadioUiEvent>()
     val events = _events.asSharedFlow()
 
@@ -212,6 +225,7 @@ class RadioViewModel @Inject constructor(
         _searchQuery,
         _isSearchActive,
         _currentLanguage,
+        _languageDownloadState,
     ) { args ->
         val uiState = args[0] as RadioUiState
         val selectedUrl = args[1] as String?
@@ -224,6 +238,7 @@ class RadioViewModel @Inject constructor(
         val searchQuery = args[8] as String
         val isSearchActive = args[9] as Boolean
         val lang = args[10] as AppLanguage
+        val langDownloadState = args[11] as LanguageDownloadState
 
         val stations = (uiState as? RadioUiState.Success)?.stations ?: emptyList()
         val allStations = (uiState as? RadioUiState.Success)?.allStations ?: emptyList()
@@ -250,6 +265,7 @@ class RadioViewModel @Inject constructor(
             isSearchActive = isSearchActive,
             displayStation = displayStation,
             isMiniPlayerActive = (selectedUrl != null) && !isNoStationsSuccess,
+            languageDownloadState = langDownloadState,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
@@ -422,13 +438,25 @@ class RadioViewModel @Inject constructor(
     }
 
     fun updateLanguage(language: AppLanguage) {
-        val locales = if (language == AppLanguage.SYSTEM) {
-            LocaleListCompat.getEmptyLocaleList()
-        } else {
-            LocaleListCompat.forLanguageTags(language.code)
+        viewModelScope.launch {
+            languageDownloadManager.downloadAndApplyLanguage(language).collect { progress ->
+                _languageDownloadState.value = LanguageDownloadState(
+                    isDownloading = progress.isDownloading,
+                    targetLanguage = progress.language,
+                    progress = progress.progress,
+                    bytesDownloaded = progress.bytesDownloaded,
+                    totalBytes = progress.totalBytes,
+                    error = progress.error
+                )
+                if (progress.isInstalled) {
+                    _currentLanguage.value = getCurrentAppLanguage()
+                }
+            }
         }
-        AppCompatDelegate.setApplicationLocales(locales)
-        _currentLanguage.value = language
+    }
+
+    fun dismissLanguageDownloadError() {
+        _languageDownloadState.value = _languageDownloadState.value.copy(error = null)
     }
 
     fun syncLanguage() {
