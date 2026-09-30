@@ -26,7 +26,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.barteqcz.onqa.ui.navigation.MapPickerRoute
 import com.barteqcz.onqa.ui.navigation.RadioRoute
@@ -142,7 +141,7 @@ class MainActivity : AppCompatActivity() {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
                     var lastNavigationTime by remember { mutableLongStateOf(0L) }
-                    val navigationDebounce = 500L
+                    val navigationDebounce = 250L
 
                     fun safeNavigate(route: Any) {
                         val currentTime = System.currentTimeMillis()
@@ -194,10 +193,10 @@ class MainActivity : AppCompatActivity() {
                         }
                     } else {
                         val focusManager = LocalFocusManager.current
-                        val navBackStackEntry by navController.currentBackStackEntryAsState()
-                        val currentDestination = navBackStackEntry?.destination
-                        
-                        val isMapPickerVisible = currentDestination?.hasRoute<MapPickerRoute>() == true
+                        val visibleEntries by navController.visibleEntries.collectAsStateWithLifecycle()
+                        val isMapPickerVisible = remember(visibleEntries) {
+                            visibleEntries.any { it.destination.hasRoute<MapPickerRoute>() }
+                        }
 
                         Box(modifier = Modifier.fillMaxSize()) {
                             NavHost(
