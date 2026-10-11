@@ -20,7 +20,7 @@ import javax.inject.Singleton
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 @Singleton
-class SettingsRepository @Inject constructor(
+open class SettingsRepository @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) {
 
@@ -44,29 +44,31 @@ class SettingsRepository @Inject constructor(
         val MANUAL_COUNTRY_CODE = stringPreferencesKey("manual_country_code")
     }
 
-    val settingsFlow: Flow<AppSettings> = context.dataStore.data
-        .map { preferences ->
-            AppSettings(
-                themeMode = ThemeMode.valueOf(preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.DARK.name),
-                isMaterialYouEnabled = preferences[PreferencesKeys.MATERIAL_YOU] ?: false,
-                accentColor = Color(preferences[PreferencesKeys.ACCENT_COLOR] ?: OnqaGreen.toArgb()),
-                lastCity = preferences[PreferencesKeys.LAST_CITY],
-                lastCountryCode = preferences[PreferencesKeys.LAST_COUNTRY_CODE],
-                isOnboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
-                favoriteStations = preferences[PreferencesKeys.FAVORITE_STATIONS]?.toPersistentSet() ?: kotlinx.collections.immutable.persistentSetOf(),
-                useHqStream = preferences[PreferencesKeys.USE_HQ_STREAM] ?: true,
-                showLocationHeader = preferences[PreferencesKeys.SHOW_LOCATION_HEADER] ?: true,
-                lastLatitude = preferences[PreferencesKeys.LAST_LATITUDE],
-                lastLongitude = preferences[PreferencesKeys.LAST_LONGITUDE],
-                isAmoledModeEnabled = preferences[PreferencesKeys.AMOLED_MODE] ?: false,
-                locationSource = LocationSource.valueOf(preferences[PreferencesKeys.LOCATION_SOURCE] ?: LocationSource.GPS.name),
-                manualLatitude = preferences[PreferencesKeys.MANUAL_LATITUDE],
-                manualLongitude = preferences[PreferencesKeys.MANUAL_LONGITUDE],
-                manualCity = preferences[PreferencesKeys.MANUAL_CITY],
-                manualCountryCode = preferences[PreferencesKeys.MANUAL_COUNTRY_CODE],
-                isInitialValue = false
-            )
-        }
+    open val settingsFlow: Flow<AppSettings> by lazy {
+        context.dataStore.data
+            .map { preferences ->
+                AppSettings(
+                    themeMode = ThemeMode.valueOf(preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.DARK.name),
+                    isMaterialYouEnabled = preferences[PreferencesKeys.MATERIAL_YOU] ?: false,
+                    accentColor = Color(preferences[PreferencesKeys.ACCENT_COLOR] ?: OnqaGreen.toArgb()),
+                    lastCity = preferences[PreferencesKeys.LAST_CITY],
+                    lastCountryCode = preferences[PreferencesKeys.LAST_COUNTRY_CODE],
+                    isOnboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
+                    favoriteStations = preferences[PreferencesKeys.FAVORITE_STATIONS]?.toPersistentSet() ?: kotlinx.collections.immutable.persistentSetOf(),
+                    useHqStream = preferences[PreferencesKeys.USE_HQ_STREAM] ?: true,
+                    showLocationHeader = preferences[PreferencesKeys.SHOW_LOCATION_HEADER] ?: true,
+                    lastLatitude = preferences[PreferencesKeys.LAST_LATITUDE],
+                    lastLongitude = preferences[PreferencesKeys.LAST_LONGITUDE],
+                    isAmoledModeEnabled = preferences[PreferencesKeys.AMOLED_MODE] ?: false,
+                    locationSource = LocationSource.valueOf(preferences[PreferencesKeys.LOCATION_SOURCE] ?: LocationSource.GPS.name),
+                    manualLatitude = preferences[PreferencesKeys.MANUAL_LATITUDE],
+                    manualLongitude = preferences[PreferencesKeys.MANUAL_LONGITUDE],
+                    manualCity = preferences[PreferencesKeys.MANUAL_CITY],
+                    manualCountryCode = preferences[PreferencesKeys.MANUAL_COUNTRY_CODE],
+                    isInitialValue = false
+                )
+            }
+    }
 
     suspend fun updateUseHqStream(useHq: Boolean) {
         context.dataStore.edit { preferences ->

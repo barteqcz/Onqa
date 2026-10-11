@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import com.barteqcz.onqa.util.LanguageDownloadManager
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -54,7 +53,7 @@ data class LanguageDownloadState(
     val progress: Float = 0f,
     val bytesDownloaded: Long = 0,
     val totalBytes: Long = 0,
-    val error: String? = null
+    val error: String? = null,
 )
 
 @Immutable
@@ -96,7 +95,6 @@ class RadioViewModel @Inject constructor(
     private val radioPlayer: RadioPlayer,
     private val settingsRepository: SettingsRepository,
     private val getSortedStations: GetSortedStationsUseCase,
-    private val languageDownloadManager: LanguageDownloadManager,
     connectivityObserver: ConnectivityObserver,
 ) : ViewModel() {
 
@@ -377,44 +375,44 @@ class RadioViewModel @Inject constructor(
                 val playerState = radioPlayer.state.value
                 val isActuallyActive = playerState.isPlaying || playerState.isBuffering || playerState.playbackError
                 val currentUrl = _selectedStationUrl.value ?: return@onEach
-                val currentName = _selectedStationName.value
-                
-                val allStations = state.allStations
-                val stationInNewLocation = allStations.find { it.matches(currentName, currentUrl) }
-                val isStillAvailable = stationInNewLocation != null
+                val currentName = _selectedStationName.value ?: return@onEach
 
-                if (isStillAvailable) {
-                    if (isActuallyActive) {
-                        val currentNetwork = stationInNewLocation.network
-                        val bestInNetwork = state.stations.find { it.network == currentNetwork && it.name == currentName }
-                        val bestUrl = bestInNetwork?.getStreamUrl(settings.value.useHqStream)
-                        
-                        if (bestUrl != null && bestUrl != currentUrl) {
-                            Timber.i("Switching to better transmitter for $currentName: $bestUrl")
-                            playStation(bestInNetwork, bestInNetwork.name, bestUrl)
-                        }
-                    }
-                } else {
-                    if (isActuallyActive) {
-                        // Current station completely gone, but we were playing.
-                        // Switch to the first station in the new list (closest)
-                        val closest = state.stations.firstOrNull()
-                        if (closest != null) {
-                            val closestUrl = closest.getStreamUrl(settings.value.useHqStream)
-                            if (closestUrl != null) {
-                                Timber.i("Station $currentName gone. Switching to closest: ${closest.name}")
-                                playStation(closest, closest.name, closestUrl)
-                            }
+                if (isActuallyActive) {
+                    // When playback is active, PlaybackService handles network-aware coverage switching
+                    return@onEach
+                }
+
+                // When playback is NOT active, update selected station in UI if current station is out of coverage
+                val allStations = state.allStations
+                val playingStation = allStations.find { it.name == currentName || it.matchesUrl(currentUrl) }
+
+                fun RadioStation.isInCoverage(): Boolean {
+                    val notZero = coverageKm == null || coverageKm > 0.0
+                    val distanceOk = distance == null || coverageKm == null || distance <= coverageKm
+                    return notZero && distanceOk
+                }
+
+                val isInCoverage = playingStation != null && playingStation.isInCoverage()
+
+                if (!isInCoverage) {
+                    val effectiveNetwork = (playingStation?.network ?: currentStation.value?.network)?.takeIf { it.isNotBlank() }
+
+                    val nextNetworkStation = if (effectiveNetwork != null) {
+                        allStations.asSequence()
+                            .filter { it.network == effectiveNetwork && it.isInCoverage() }
+                            .minByOrNull { it.distance ?: Double.MAX_VALUE }
+                    } else null
+
+                    if (nextNetworkStation != null) {
+                        val url = nextNetworkStation.getStreamUrl(settings.value.useHqStream)
+                        if (url != null) {
+                            _selectedStationUrl.value = url
+                            _selectedStationName.value = nextNetworkStation.name
                         } else {
-                            // No stations available in this region at all
-                            Timber.i("No stations available. Stopping.")
-                            radioPlayer.pause()
                             _selectedStationUrl.value = null
                             _selectedStationName.value = null
                         }
                     } else {
-                        // Current station gone and we were NOT playing. Hide miniplayer.
-                        Timber.i("Station $currentName gone and not playing. Hiding miniplayer.")
                         _selectedStationUrl.value = null
                         _selectedStationName.value = null
                     }
@@ -438,21 +436,13 @@ class RadioViewModel @Inject constructor(
     }
 
     fun updateLanguage(language: AppLanguage) {
-        viewModelScope.launch {
-            languageDownloadManager.downloadAndApplyLanguage(language).collect { progress ->
-                _languageDownloadState.value = LanguageDownloadState(
-                    isDownloading = progress.isDownloading,
-                    targetLanguage = progress.language,
-                    progress = progress.progress,
-                    bytesDownloaded = progress.bytesDownloaded,
-                    totalBytes = progress.totalBytes,
-                    error = progress.error
-                )
-                if (progress.isInstalled) {
-                    _currentLanguage.value = getCurrentAppLanguage()
-                }
-            }
+        val appLocales = if (language == AppLanguage.SYSTEM) {
+            androidx.core.os.LocaleListCompat.getEmptyLocaleList()
+        } else {
+            androidx.core.os.LocaleListCompat.forLanguageTags(language.code)
         }
+        AppCompatDelegate.setApplicationLocales(appLocales)
+        _currentLanguage.value = getCurrentAppLanguage()
     }
 
     fun dismissLanguageDownloadError() {
