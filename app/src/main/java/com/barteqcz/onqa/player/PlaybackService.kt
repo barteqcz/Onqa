@@ -10,6 +10,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.media.AudioManager
+import android.media.audiofx.AudioEffect
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.OptIn
@@ -83,6 +84,28 @@ class PlaybackService : MediaSessionService() {
     private var currentArtworkData: ByteArray? = null
     private var lastRdsTitle: String? = null
     private var isUpdatingMetadata = false
+    private var currentAudioSessionId: Int = AudioManager.AUDIO_SESSION_ID_GENERATE
+
+    @OptIn(UnstableApi::class)
+    private fun openAudioEffectSession(sessionId: Int) {
+        if (sessionId == C.AUDIO_SESSION_ID_UNSET) return
+        val intent = Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
+            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, sessionId)
+            putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
+            putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
+        }
+        sendBroadcast(intent)
+    }
+
+    @OptIn(UnstableApi::class)
+    private fun closeAudioEffectSession(sessionId: Int) {
+        if (sessionId == C.AUDIO_SESSION_ID_UNSET) return
+        val intent = Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
+            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, sessionId)
+            putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
+        }
+        sendBroadcast(intent)
+    }
 
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var playbackJob: Job? = null
@@ -256,8 +279,23 @@ class PlaybackService : MediaSessionService() {
                 .setWakeMode(C.WAKE_MODE_NETWORK)
                 .build()
 
+            exoPlayer?.audioSessionId?.let { sessionId ->
+                if (sessionId != C.AUDIO_SESSION_ID_UNSET && sessionId != currentAudioSessionId) {
+                    closeAudioEffectSession(currentAudioSessionId)
+                    currentAudioSessionId = sessionId
+                    openAudioEffectSession(sessionId)
+                }
+            }
+
             exoPlayer?.addListener(
                 object : Player.Listener {
+                    override fun onAudioSessionIdChanged(audioSessionId: Int) {
+                        if (currentAudioSessionId != audioSessionId) {
+                            closeAudioEffectSession(currentAudioSessionId)
+                            currentAudioSessionId = audioSessionId
+                            openAudioEffectSession(audioSessionId)
+                        }
+                    }
                     override fun onPlayerError(error: PlaybackException) {
                         retryPlayback()
                     }
@@ -709,6 +747,8 @@ class PlaybackService : MediaSessionService() {
             unregisterReceiver(noisyReceiver)
         } catch (_: Exception) {
         }
+        closeAudioEffectSession(currentAudioSessionId)
+        currentAudioSessionId = AudioManager.AUDIO_SESSION_ID_GENERATE
         mediaSession?.run {
             player.release()
             release()
