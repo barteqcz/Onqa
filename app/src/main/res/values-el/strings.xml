@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Αναζήτηση σταθμών…</string>
     <string name="search_location_placeholder">Αναζήτηση τοποθεσίας…</string>
     <string name="category_general">Γενικά</string>
+    <string name="category_regional">Περιφερειακά</string>
+    <string name="distance_unit_title">Μονάδα απόστασης</string>
+    <string name="distance_unit_desc">Επιλέξτε μονάδα για την εμφάνιση αποστάσεων σταθμών</string>
+    <string name="distance_unit_kilometers">Χιλιόμετρα</string>
+    <string name="distance_unit_miles">Μίλια</string>
     <string name="category_location">Τοποθεσία</string>
     <string name="location_source_title">Πηγή τοποθεσίας</string>
     <string name="location_source_desc">Επιλέξτε πώς η εφαρμογή λαμβάνει τη θέση σας</string>

@@ -6,7 +6,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.AppSettings
+import com.barteqcz.onqa.data.model.DistanceUnit
 import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.ui.theme.OnqaGreen
@@ -42,11 +44,31 @@ open class SettingsRepository @Inject constructor(
         val MANUAL_LONGITUDE = doublePreferencesKey("manual_longitude")
         val MANUAL_CITY = stringPreferencesKey("manual_city")
         val MANUAL_COUNTRY_CODE = stringPreferencesKey("manual_country_code")
+        val LANGUAGE = stringPreferencesKey("language")
+        val DISTANCE_UNIT = stringPreferencesKey("distance_unit")
     }
 
     open val settingsFlow: Flow<AppSettings> by lazy {
         context.dataStore.data
             .map { preferences ->
+                val savedLanguageStr = preferences[PreferencesKeys.LANGUAGE]
+                val language = savedLanguageStr?.let { str ->
+                    try {
+                        AppLanguage.valueOf(str)
+                    } catch (_: IllegalArgumentException) {
+                        AppLanguage.entries.find { it.code.equals(str, ignoreCase = true) } ?: AppLanguage.SYSTEM
+                    }
+                } ?: AppLanguage.SYSTEM
+
+                val savedUnitStr = preferences[PreferencesKeys.DISTANCE_UNIT]
+                val distanceUnit = savedUnitStr?.let { str ->
+                    try {
+                        DistanceUnit.valueOf(str)
+                    } catch (_: IllegalArgumentException) {
+                        DistanceUnit.KILOMETERS
+                    }
+                } ?: DistanceUnit.KILOMETERS
+
                 AppSettings(
                     themeMode = ThemeMode.valueOf(preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.DARK.name),
                     isMaterialYouEnabled = preferences[PreferencesKeys.MATERIAL_YOU] ?: false,
@@ -59,6 +81,8 @@ open class SettingsRepository @Inject constructor(
                     showLocationHeader = preferences[PreferencesKeys.SHOW_LOCATION_HEADER] ?: true,
                     lastLatitude = preferences[PreferencesKeys.LAST_LATITUDE],
                     lastLongitude = preferences[PreferencesKeys.LAST_LONGITUDE],
+                    language = language,
+                    distanceUnit = distanceUnit,
                     isAmoledModeEnabled = preferences[PreferencesKeys.AMOLED_MODE] ?: false,
                     locationSource = LocationSource.valueOf(preferences[PreferencesKeys.LOCATION_SOURCE] ?: LocationSource.GPS.name),
                     manualLatitude = preferences[PreferencesKeys.MANUAL_LATITUDE],
@@ -97,6 +121,18 @@ open class SettingsRepository @Inject constructor(
     suspend fun updateThemeMode(mode: ThemeMode) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME_MODE] = mode.name
+        }
+    }
+
+    suspend fun updateLanguage(language: AppLanguage) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.LANGUAGE] = language.name
+        }
+    }
+
+    suspend fun updateDistanceUnit(unit: DistanceUnit) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.DISTANCE_UNIT] = unit.name
         }
     }
 

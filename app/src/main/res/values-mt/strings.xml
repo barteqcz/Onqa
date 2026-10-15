@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Fittex stazzjonijiet…</string>
     <string name="search_location_placeholder">Fittex post…</string>
     <string name="category_general">Ġenerali</string>
+    <string name="category_regional">Reġjonali</string>
+    <string name="distance_unit_title">Unità ta\' distanza</string>
+    <string name="distance_unit_desc">Agħżel l-unità biex turik id-distanzi tal-istazzjonijiet</string>
+    <string name="distance_unit_kilometers">Chilometri</string>
+    <string name="distance_unit_miles">Mili</string>
     <string name="category_location">Post</string>
     <string name="location_source_title">Sors tal-lokazzjoni</string>
     <string name="location_source_desc">Agħżel kif l-app tikseb il-pożizzjoni tiegħek</string>

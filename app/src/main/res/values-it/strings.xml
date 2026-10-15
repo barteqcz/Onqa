@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Cerca stazioni…</string>
     <string name="search_location_placeholder">Cerca posizione…</string>
     <string name="category_general">Generale</string>
+    <string name="category_regional">Regionale</string>
+    <string name="distance_unit_title">Unità di distanza</string>
+    <string name="distance_unit_desc">Scegli l\'unità per mostrare le distanze delle stazioni</string>
+    <string name="distance_unit_kilometers">Chilometri</string>
+    <string name="distance_unit_miles">Miglia</string>
     <string name="category_location">Posizione</string>
     <string name="location_source_title">Origine posizione</string>
     <string name="location_source_desc">Scegli come l\'app ottiene la tua posizione</string>

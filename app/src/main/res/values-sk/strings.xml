@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Hľadať stanice…</string>
     <string name="search_location_placeholder">Hľadať polohu…</string>
     <string name="category_general">Všeobecné</string>
+    <string name="category_regional">Regionálne</string>
+    <string name="distance_unit_title">Jednotka vzdialenosti</string>
+    <string name="distance_unit_desc">Vyberte jednotku na zobrazovanie vzdialeností staníc</string>
+    <string name="distance_unit_kilometers">Kilometre</string>
+    <string name="distance_unit_miles">Míle</string>
     <string name="category_location">Poloha</string>
     <string name="location_source_title">Zdroj polohy</string>
     <string name="location_source_desc">Vyberte, ako aplikácia zisťuje vašu polohu</string>

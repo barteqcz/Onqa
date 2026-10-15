@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Otsi jaamu…</string>
     <string name="search_location_placeholder">Otsi asukohta…</string>
     <string name="category_general">Üldine</string>
+    <string name="category_regional">Regionaalne</string>
+    <string name="distance_unit_title">Kauguse ühik</string>
+    <string name="distance_unit_desc">Vali ühik jaamade kauguse kuvamiseks</string>
+    <string name="distance_unit_kilometers">Kilomeetrid</string>
+    <string name="distance_unit_miles">Miilid</string>
     <string name="category_location">Asukoht</string>
     <string name="location_source_title">Asukoha allikas</string>
     <string name="location_source_desc">Vali, kuidas rakendus sinu asukoha tuvastab</string>

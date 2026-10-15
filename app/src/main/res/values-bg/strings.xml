@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Търсене на станции…</string>
     <string name="search_location_placeholder">Търсене на местоположение…</string>
     <string name="category_general">Общи</string>
+    <string name="category_regional">Регионални</string>
+    <string name="distance_unit_title">Единица за разстояние</string>
+    <string name="distance_unit_desc">Изберете единица за показване на разстоянието до станциите</string>
+    <string name="distance_unit_kilometers">Километри</string>
+    <string name="distance_unit_miles">Мили</string>
     <string name="category_location">Местоположение</string>
     <string name="location_source_title">Източник на местоположение</string>
     <string name="location_source_desc">Изберете как приложението да получава позицията ви</string>

@@ -60,6 +60,11 @@
     <string name="search_stations_hint">İstasyon ara…</string>
     <string name="search_location_placeholder">Konum ara…</string>
     <string name="category_general">Genel</string>
+    <string name="category_regional">Bölgesel</string>
+    <string name="distance_unit_title">Mesafe birimi</string>
+    <string name="distance_unit_desc">İstasyon mesafelerini görüntülemek için birim seçin</string>
+    <string name="distance_unit_kilometers">Kilometre</string>
+    <string name="distance_unit_miles">Mil</string>
     <string name="category_location">Konum</string>
     <string name="location_source_title">Konum kaynağı</string>
     <string name="location_source_desc">Uygulamanın konumunuzu nasıl alacağını seçin</string>

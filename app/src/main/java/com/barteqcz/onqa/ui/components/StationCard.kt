@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.barteqcz.onqa.R
+import com.barteqcz.onqa.data.model.DistanceUnit
 import com.barteqcz.onqa.data.model.RadioStation
 import kotlin.math.roundToInt
 
@@ -74,6 +75,7 @@ fun StationCard(
     isPlaying: Boolean,
     showHqIcon: Boolean,
     modifier: Modifier = Modifier,
+    distanceUnit: DistanceUnit = DistanceUnit.KILOMETERS,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
@@ -194,13 +196,22 @@ fun StationCard(
                     if ((station.transmitterName != null) || (station.distance != null)) {
                         val infoText = buildString {
                             station.transmitterName?.let { append(it) }
-                            station.distance?.let {
-                                val dist = it.roundToInt()
+                            station.distance?.let { distKm ->
                                 if (isNotEmpty()) append(" ")
-                                if (dist == 0) {
-                                    append(stringResource(R.string.less_than_one_km_with_dot))
+                                if (distanceUnit == DistanceUnit.MILES) {
+                                    val distMiles = (distKm * 0.621371).roundToInt()
+                                    if (distMiles == 0) {
+                                        append(stringResource(R.string.less_than_one_mi_with_dot))
+                                    } else {
+                                        append(stringResource(R.string.distance_mi_with_dot, distMiles))
+                                    }
                                 } else {
-                                    append(stringResource(R.string.distance_with_dot, dist))
+                                    val dist = distKm.roundToInt()
+                                    if (dist == 0) {
+                                        append(stringResource(R.string.less_than_one_km_with_dot))
+                                    } else {
+                                        append(stringResource(R.string.distance_with_dot, dist))
+                                    }
                                 }
                             }
                         }

@@ -22,13 +22,14 @@ data class AppSettings(
     val lastLatitude: Double? = null,
     val lastLongitude: Double? = null,
     val language: AppLanguage = AppLanguage.SYSTEM,
+    val distanceUnit: DistanceUnit = DistanceUnit.KILOMETERS,
     val isAmoledModeEnabled: Boolean = false,
     val locationSource: LocationSource = LocationSource.GPS,
     val manualLatitude: Double? = null,
     val manualLongitude: Double? = null,
     val manualCity: String? = null,
     val manualCountryCode: String? = null,
-    val isInitialValue: Boolean = true
+    val isInitialValue: Boolean = true,
 )
 
 enum class ThemeMode {
@@ -39,9 +40,13 @@ enum class LocationSource {
     GPS, MANUAL
 }
 
+enum class DistanceUnit {
+    KILOMETERS, MILES
+}
+
 enum class AppLanguage(val code: String, @StringRes val labelRes: Int) {
     SYSTEM("", R.string.language_system),
-    BELARUSIAN("be", R.string.language_belarussian),
+    BELARUSIAN("be", R.string.language_belarusian),
     BOSNIAN("bs", R.string.language_bosnian),
     BULGARIAN("bg", R.string.language_bulgarian),
     CZECH("cs", R.string.language_czech),

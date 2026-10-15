@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Ieškoti stočių…</string>
     <string name="search_location_placeholder">Ieškoti vietos…</string>
     <string name="category_general">Bendra</string>
+    <string name="category_regional">Regioniniai</string>
+    <string name="distance_unit_title">Atstumo vienetas</string>
+    <string name="distance_unit_desc">Pasirinkite vienetą stočių atstumams rodyti</string>
+    <string name="distance_unit_kilometers">Kilometrai</string>
+    <string name="distance_unit_miles">Mylios</string>
     <string name="category_location">Vietovė</string>
     <string name="location_source_title">Vietovės šaltinis</string>
     <string name="location_source_desc">Pasirinkite, kaip programėlė nustato jūsų vietą</string>

@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Traži stanice…</string>
     <string name="search_location_placeholder">Traži lokaciju…</string>
     <string name="category_general">Opšte</string>
+    <string name="category_regional">Regionalno</string>
+    <string name="distance_unit_title">Jedinica udaljenosti</string>
+    <string name="distance_unit_desc">Odaberite jedinicu za prikaz udaljenosti stanica</string>
+    <string name="distance_unit_kilometers">Kilometri</string>
+    <string name="distance_unit_miles">Milje</string>
     <string name="category_location">Lokacija</string>
     <string name="location_source_title">Izvor lokacije</string>
     <string name="location_source_desc">Izaberite kako aplikacija preuzima vašu poziciju</string>

@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Stations zoeken…</string>
     <string name="search_location_placeholder">Locatie zoeken…</string>
     <string name="category_general">Algemeen</string>
+    <string name="category_regional">Regionaal</string>
+    <string name="distance_unit_title">Afstandseenheid</string>
+    <string name="distance_unit_desc">Kies eenheid voor het weergeven van stationafstanden</string>
+    <string name="distance_unit_kilometers">Kilometer</string>
+    <string name="distance_unit_miles">Mijlen</string>
     <string name="category_location">Locatie</string>
     <string name="location_source_title">Locatiebron</string>
     <string name="location_source_desc">Kies hoe de app je positie ophaalt</string>

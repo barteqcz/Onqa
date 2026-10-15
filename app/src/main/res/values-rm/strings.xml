@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Tscherchar emischuns…</string>
     <string name="search_location_placeholder">Tscherchar lieu…</string>
     <string name="category_general">General</string>
+    <string name="category_regional">Regional</string>
+    <string name="distance_unit_title">Unitad da distanza</string>
+    <string name="distance_unit_desc">Tscherni l\'unitad per mussar la distanza da las staziuns</string>
+    <string name="distance_unit_kilometers">Kilometers</string>
+    <string name="distance_unit_miles">Miglias</string>
     <string name="category_location">Posiziun</string>
     <string name="location_source_title">Funtauna da posiziun</string>
     <string name="location_source_desc">Tscherna co l\'app survegn tia posiziun</string>

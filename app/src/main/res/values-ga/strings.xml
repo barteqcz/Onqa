@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Cuardaigh stáisiúin…</string>
     <string name="search_location_placeholder">Cuardaigh suíomh…</string>
     <string name="category_general">Ginearálta</string>
+    <string name="category_regional">Réigiúnach</string>
+    <string name="distance_unit_title">Aonad fad</string>
+    <string name="distance_unit_desc">Roghnaigh aonad chun fad na stáisiún a thaispeáint</string>
+    <string name="distance_unit_kilometers">Ciliméadair</string>
+    <string name="distance_unit_miles">Míle</string>
     <string name="category_location">Suíomh</string>
     <string name="location_source_title">Foinse suímh</string>
     <string name="location_source_desc">Roghnaigh an chaoi a bhfaigheann an aip do shuíomh</string>

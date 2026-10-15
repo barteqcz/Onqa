@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Állomások keresése…</string>
     <string name="search_location_placeholder">Hely keresése…</string>
     <string name="category_general">Általános</string>
+    <string name="category_regional">Regionális</string>
+    <string name="distance_unit_title">Távolságegység</string>
+    <string name="distance_unit_desc">Válassza ki az állomások távolságának mértékegységét</string>
+    <string name="distance_unit_kilometers">Kilométer</string>
+    <string name="distance_unit_miles">Mérföld</string>
     <string name="category_location">Helyszín</string>
     <string name="location_source_title">Helymeghatározás forrása</string>
     <string name="location_source_desc">Válassza ki, hogyan határozza meg a helyzetét az app</string>

@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Leita að stöðvum…</string>
     <string name="search_location_placeholder">Leita að staðsetningu…</string>
     <string name="category_general">Almennt</string>
+    <string name="category_regional">Svæðisbundið</string>
+    <string name="distance_unit_title">Fjarlægðareining</string>
+    <string name="distance_unit_desc">Veldu einingu til að sýna fjarlægðir stöðva</string>
+    <string name="distance_unit_kilometers">Kílómetrar</string>
+    <string name="distance_unit_miles">Mílur</string>
     <string name="category_location">Staðsetning</string>
     <string name="location_source_title">Uppruni staðsetningar</string>
     <string name="location_source_desc">Veldu hvernig appið nær í staðsetningu þína</string>

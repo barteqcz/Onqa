@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Kërko stacione…</string>
     <string name="search_location_placeholder">Kërko vendndodhjen…</string>
     <string name="category_general">Të përgjithshme</string>
+    <string name="category_regional">Rajonale</string>
+    <string name="distance_unit_title">Njësia e distancës</string>
+    <string name="distance_unit_desc">Zgjidhni njësinë për shfaqjen e distancave të stacioneve</string>
+    <string name="distance_unit_kilometers">Kilometra</string>
+    <string name="distance_unit_miles">Mje</string>
     <string name="category_location">Vendndodhja</string>
     <string name="location_source_title">Burimi i vendndodhjes</string>
     <string name="location_source_desc">Zgjidhni se si e merr pozicionin tuaj aplikacioni</string>

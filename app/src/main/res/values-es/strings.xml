@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Buscar emisoras…</string>
     <string name="search_location_placeholder">Buscar ubicación…</string>
     <string name="category_general">General</string>
+    <string name="category_regional">Regional</string>
+    <string name="distance_unit_title">Unidad de distancia</string>
+    <string name="distance_unit_desc">Elige la unidad para mostrar las distancias de las emisoras</string>
+    <string name="distance_unit_kilometers">Kilómetros</string>
+    <string name="distance_unit_miles">Millas</string>
     <string name="category_location">Ubicación</string>
     <string name="location_source_title">Fuente de ubicación</string>
     <string name="location_source_desc">Elige cómo obtiene la app tu posición</string>

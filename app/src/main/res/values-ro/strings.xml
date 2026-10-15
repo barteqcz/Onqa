@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Caută posturi…</string>
     <string name="search_location_placeholder">Caută locația…</string>
     <string name="category_general">General</string>
+    <string name="category_regional">Regional</string>
+    <string name="distance_unit_title">Unitate de distanță</string>
+    <string name="distance_unit_desc">Alegeți unitatea pentru afișarea distanțelor stațiilor</string>
+    <string name="distance_unit_kilometers">Kilometri</string>
+    <string name="distance_unit_miles">Mile</string>
     <string name="category_location">Locație</string>
     <string name="location_source_title">Sursă locație</string>
     <string name="location_source_desc">Alegeți cum obține aplicația poziția dvs.</string>

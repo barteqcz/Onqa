@@ -9,6 +9,8 @@
     <string name="buffering">Buffering…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_mi_with_dot" translatable="false">"• %d mi"</string>
+    <string name="less_than_one_mi_with_dot" translatable="false">"• &lt; 1 mi"</string>
     <string name="back">Back</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Use system dynamic accent colors</string>
@@ -60,6 +62,11 @@
     <string name="search_stations_hint">Search stations…</string>
     <string name="search_location_placeholder">Search location…</string>
     <string name="category_general">General</string>
+    <string name="category_regional">Regional</string>
+    <string name="distance_unit_title">Distance unit</string>
+    <string name="distance_unit_desc">Choose unit for displaying station distances</string>
+    <string name="distance_unit_kilometers">Kilometers</string>
+    <string name="distance_unit_miles">Miles</string>
     <string name="category_location">Location</string>
     <string name="location_source_title">Location source</string>
     <string name="location_source_desc">Choose how the app gets your position</string>
@@ -105,13 +112,10 @@
     <string name="language_serbian" translatable="false">Srpski</string>
     <string name="language_bosnian" translatable="false">Bosanski</string>
     <string name="language_macedonian" translatable="false">Македонски</string>
-    <string name="language_belarussian" translatable="false">Беларуская</string>
+    <string name="language_belarusian" translatable="false">Беларуская</string>
     <string name="language_turkish" translatable="false">Türkçe</string>
     <string name="language_luxembourgish" translatable="false">Lëtzebuergesch</string>
     <string name="language_romansh" translatable="false">Rumantsch</string>
     <string name="location_validation_title">Location required</string>
     <string name="location_validation_message">You have selected manual location mode but haven\'t picked a location yet. Please pick a location on the map to continue.</string>
-    <string name="language_downloading_title" translatable="false">Downloading language pack</string>
-    <string name="language_downloading_desc" translatable="false">Downloading %1$s from Google Play…</string>
-    <string name="language_download_failed" translatable="false">Failed to download language pack</string>
 </resources>

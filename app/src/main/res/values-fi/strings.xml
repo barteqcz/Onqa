@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Hae asemia…</string>
     <string name="search_location_placeholder">Hae sijaintia…</string>
     <string name="category_general">Yleiset</string>
+    <string name="category_regional">Alueellinen</string>
+    <string name="distance_unit_title">Etäisyysyksikkö</string>
+    <string name="distance_unit_desc">Valitse yksikkö asemien etäisyyksien näyttämiseen</string>
+    <string name="distance_unit_kilometers">Kilometrit</string>
+    <string name="distance_unit_miles">Mailit</string>
     <string name="category_location">Sijainti</string>
     <string name="location_source_title">Sijaintilähde</string>
     <string name="location_source_desc">Valitse, miten sovellus noutaa sijaintisi</string>

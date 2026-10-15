@@ -208,6 +208,7 @@ fun RadioScreen(
                                                     isActive = station.matchesUrl(viewState.selectedUrl),
                                                     isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
                                                     showHqIcon = !station.streamUrlHq.isNullOrBlank(),
+                                                    distanceUnit = viewState.settings.distanceUnit,
                                                     modifier = Modifier.animateItem(
                                                         fadeInSpec = AnimationSystem.RelaxedSpring,
                                                         fadeOutSpec = AnimationSystem.RelaxedSpring,

@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Пошук станцый…</string>
     <string name="search_location_placeholder">Пошук месцазнаходжання…</string>
     <string name="category_general">Агульныя</string>
+    <string name="category_regional">Регіянальныя</string>
+    <string name="distance_unit_title">Адзінка адлегласці</string>
+    <string name="distance_unit_desc">Выберыце адзінку вымярэння адлегласці да станцый</string>
+    <string name="distance_unit_kilometers">Кіламетры</string>
+    <string name="distance_unit_miles">Мілі</string>
     <string name="category_location">Месцапалажэнне</string>
     <string name="location_source_title">Крыніца месцапалажэння</string>
     <string name="location_source_desc">Выберыце, як праграма вызначае ваша становішча</string>

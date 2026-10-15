@@ -20,6 +20,8 @@ import androidx.compose.material.icons.rounded.Map
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.Straighten
+import com.barteqcz.onqa.data.model.DistanceUnit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,7 +36,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -44,7 +45,6 @@ import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.ThemeMode
-import com.barteqcz.onqa.ui.main.LanguageDownloadState
 import com.barteqcz.onqa.ui.main.RadioViewModel
 import com.barteqcz.onqa.ui.theme.*
 
@@ -73,14 +73,6 @@ fun SettingsScreen(
     BackHandler(enabled = isManualWithoutLocation) {
         showLocationValidationError = true
     }
-
-    val languageDownloadState = viewState.languageDownloadState
-
-    LanguageDownloadProgressDialog(downloadState = languageDownloadState)
-    LanguageDownloadErrorDialog(
-        error = languageDownloadState.error,
-        onDismiss = { viewModel.dismissLanguageDownloadError() }
-    )
 
     LaunchedEffect(scrollState.canScrollForward, scrollState.canScrollBackward) {
         viewModel.setScrollable(scrollState.canScrollForward || scrollState.canScrollBackward)
@@ -120,11 +112,18 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(80.dp))
 
             Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                SettingCategory(title = stringResource(R.string.category_general))
+                SettingCategory(title = stringResource(R.string.category_regional))
 
                 LanguageSettings(
                     currentLanguage = settings.language,
                     onLanguageSelect = { viewModel.updateLanguage(it) }
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                DistanceUnitSettings(
+                    currentUnit = settings.distanceUnit,
+                    onUnitSelect = { viewModel.updateDistanceUnit(it) }
                 )
 
                 Spacer(modifier = Modifier.height(48.dp))
@@ -513,10 +512,17 @@ private fun LanguageSettings(
             }
             Switch(
                 checked = isSystem,
-                onCheckedChange = {
+                onCheckedChange = { checked ->
                     focusManager.clearFocus()
-                    if (it) onLanguageSelect(AppLanguage.SYSTEM)
-                    else onLanguageSelect(AppLanguage.ENGLISH)
+                    if (checked) {
+                        onLanguageSelect(AppLanguage.SYSTEM)
+                    } else {
+                        val sysCode = java.util.Locale.getDefault().language
+                        val matchedLang = AppLanguage.entries.find { lang ->
+                            lang != AppLanguage.SYSTEM && lang.code.equals(sysCode, ignoreCase = true)
+                        } ?: AppLanguage.ENGLISH
+                        onLanguageSelect(matchedLang)
+                    }
                 },
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.primary,
@@ -603,6 +609,10 @@ private fun LanguageDropdown(
     }
 
     if (showDialog) {
+        val availableLanguages = remember {
+            AppLanguage.entries.filter { it != AppLanguage.SYSTEM }
+        }
+
         Dialog(
             onDismissRequest = { showDialog = false },
             properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -636,7 +646,7 @@ private fun LanguageDropdown(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         contentPadding = PaddingValues(bottom = 12.dp)
                     ) {
-                        items(AppLanguage.entries.filter { it != AppLanguage.SYSTEM }) { language ->
+                        items(availableLanguages, key = { it.code }) { language ->
                             val isSelected = currentLanguage == language
                             Surface(
                                 onClick = {
@@ -677,7 +687,7 @@ private fun LanguageDropdown(
                                         text = stringResource(language.labelRes),
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (isSelected) MaterialTheme.colorScheme.primary
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary 
                                                 else MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.weight(1f)
                                     )
@@ -707,6 +717,73 @@ private fun LanguageDropdown(
             }
         }
     }
+}
+
+@Composable
+private fun DistanceUnitSettings(
+    currentUnit: DistanceUnit,
+    onUnitSelect: (DistanceUnit) -> Unit
+) {
+    Column {
+        Text(
+            text = stringResource(R.string.distance_unit_title),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = stringResource(R.string.distance_unit_desc),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        DistanceUnitSwitcher(
+            currentUnit = currentUnit,
+            onUnitSelect = onUnitSelect
+        )
+    }
+}
+
+@Composable
+private fun DistanceUnitSwitcher(
+    currentUnit: DistanceUnit,
+    onUnitSelect: (DistanceUnit) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        DistanceUnit.entries.forEach { unit ->
+            DistanceUnitOption(
+                unit = unit,
+                isSelected = currentUnit == unit,
+                onClick = { onUnitSelect(unit) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun DistanceUnitOption(
+    unit: DistanceUnit,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val icon = Icons.Rounded.Straighten
+    val label = when (unit) {
+        DistanceUnit.KILOMETERS -> stringResource(R.string.distance_unit_kilometers)
+        DistanceUnit.MILES -> stringResource(R.string.distance_unit_miles)
+    }
+
+    SelectableOption(
+        icon = icon,
+        label = label,
+        isSelected = isSelected,
+        onClick = onClick,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -865,107 +942,4 @@ private fun SettingCategory(title: String) {
         letterSpacing = 1.5.sp,
         modifier = Modifier.padding(bottom = 16.dp)
     )
-}
-
-@Composable
-private fun LanguageDownloadProgressDialog(
-    downloadState: LanguageDownloadState
-) {
-    if (downloadState.isDownloading) {
-        Dialog(
-            onDismissRequest = { /* Prevent dismiss during active download */ },
-            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
-        ) {
-            Surface(
-                shape = RoundedCornerShape(28.dp),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 6.dp,
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .wrapContentHeight()
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        strokeWidth = 4.dp
-                    )
-
-                    Text(
-                        text = stringResource(R.string.language_downloading_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
-                    )
-
-                    val targetLang = downloadState.targetLanguage
-                    val langName = if (targetLang != null) stringResource(targetLang.labelRes) else ""
-                    Text(
-                        text = stringResource(R.string.language_downloading_desc, langName),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
-
-                    if (downloadState.progress > 0f) {
-                        LinearProgressIndicator(
-                            progress = { downloadState.progress },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(8.dp)
-                                .clip(RoundedCornerShape(4.dp)),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    } else {
-                        LinearProgressIndicator(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(8.dp)
-                                .clip(RoundedCornerShape(4.dp)),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun LanguageDownloadErrorDialog(
-    error: String?,
-    onDismiss: () -> Unit
-) {
-    if (error != null) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = {
-                Text(
-                    text = stringResource(R.string.language_download_failed),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Text(
-                    text = error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.alright))
-                }
-            },
-            shape = RoundedCornerShape(28.dp),
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    }
 }

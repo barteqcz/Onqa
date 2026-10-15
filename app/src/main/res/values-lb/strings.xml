@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Sender sichen…</string>
     <string name="search_location_placeholder">Standuert sichen…</string>
     <string name="category_general">Allgemeng</string>
+    <string name="category_regional">Regional</string>
+    <string name="distance_unit_title">Distanzseenheet</string>
+    <string name="distance_unit_desc">Wielt d\'Eenheet fir d\'Distanz vun de Sender unzeweisen</string>
+    <string name="distance_unit_kilometers">Kilometer</string>
+    <string name="distance_unit_miles">Meilen</string>
     <string name="category_location">Standuert</string>
     <string name="location_source_title">Standuertquell</string>
     <string name="location_source_desc">Wielt aus, wéi d\'App Är Positioun kritt</string>

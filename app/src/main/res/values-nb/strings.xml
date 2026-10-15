@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Søk etter stasjoner…</string>
     <string name="search_location_placeholder">Søk etter posisjon…</string>
     <string name="category_general">Generelt</string>
+    <string name="category_regional">Regionalt</string>
+    <string name="distance_unit_title">Avstandsenhet</string>
+    <string name="distance_unit_desc">Velg enhet for visning av stasjonsavstander</string>
+    <string name="distance_unit_kilometers">Kilometer</string>
+    <string name="distance_unit_miles">Miles</string>
     <string name="category_location">Posisjon</string>
     <string name="location_source_title">Posisjonskilde</string>
     <string name="location_source_desc">Velg hvordan appen henter posisjonen din</string>

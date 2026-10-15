@@ -60,6 +60,11 @@
     <string name="search_stations_hint">Meklēt stacijas…</string>
     <string name="search_location_placeholder">Meklēt atrašanās vietu…</string>
     <string name="category_general">Vispārīgi</string>
+    <string name="category_regional">Reģionālie</string>
+    <string name="distance_unit_title">Attāluma mērvienība</string>
+    <string name="distance_unit_desc">Izvēlieties mērvienību staciju attāluma attēlošanai</string>
+    <string name="distance_unit_kilometers">Kilometri</string>
+    <string name="distance_unit_miles">Jūdzes</string>
     <string name="category_location">Atrašanās vieta</string>
     <string name="location_source_title">Atrašanās vietas avots</string>
     <string name="location_source_desc">Izvēlieties, kā lietotne nosaka jūsu pozīciju</string>

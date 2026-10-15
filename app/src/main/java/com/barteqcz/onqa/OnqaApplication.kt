@@ -70,11 +70,11 @@ class OnqaApplication : Application(), ImageLoaderFactory {
                 val cache = Cache(cacheDirectory, cacheSize)
 
                 val userAgent = "Onqa/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.MODEL})"
-                val acceptLanguage = Locale.getDefault().toLanguageTag()
 
                 OkHttpClient.Builder()
                     .cache(cache)
                     .addInterceptor { chain ->
+                        val acceptLanguage = Locale.getDefault().toLanguageTag()
                         val request = chain.request().newBuilder()
                             .header("User-Agent", userAgent)
                             .header("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8")
