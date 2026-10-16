@@ -41,7 +41,7 @@ import com.barteqcz.onqa.R
 import com.barteqcz.onqa.ui.components.*
 import com.barteqcz.onqa.ui.theme.AnimationSystem
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun RadioScreen(
     viewModel: RadioViewModel,
@@ -54,11 +54,27 @@ fun RadioScreen(
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    val isImeVisible = WindowInsets.isImeVisible
+    var wasImeVisible by remember { mutableStateOf(value = false) }
+
     BackHandler(viewState.isSearchActive) {
         if (isSearchFocused) {
             focusManager.clearFocus()
         } else {
             viewModel.setSearchActive(false)
+        }
+    }
+
+    LaunchedEffect(isImeVisible, viewState.isSearchActive) {
+        if (!viewState.isSearchActive) {
+            wasImeVisible = false
+        } else if (isImeVisible) {
+            wasImeVisible = true
+        } else if (wasImeVisible) {
+            wasImeVisible = false
+            if (isSearchFocused) {
+                focusManager.clearFocus()
+            }
         }
     }
 
