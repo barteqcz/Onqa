@@ -36,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.ui.components.*
@@ -324,7 +323,8 @@ fun RadioScreen(
                                 )
                             }
                         },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .then(if (viewState.isSearchActive) Modifier.weight(1f) else Modifier),
                         label = "TopBarSearchTransition",
                     ) { isSearchActive ->
                         if (isSearchActive) {
@@ -402,14 +402,25 @@ fun RadioScreen(
                                 )
                             }
                         } else {
-                            Text(
-                                stringResource(R.string.app_name),
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = (-0.5).sp,
-                                modifier = Modifier.padding(start = 4.dp)
-                            )
+                            Surface(
+                                shape = RoundedCornerShape(24.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                tonalElevation = 2.dp,
+                                shadowElevation = 2.dp,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                            ) {
+                                IconButton(
+                                    onClick = { viewModel.setSearchActive(true) },
+                                    modifier = Modifier.size(40.dp),
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Search,
+                                        contentDescription = stringResource(R.string.search_stations_hint),
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        modifier = Modifier.size(20.dp),
+                                    )
+                                }
+                            }
                         }
                     }
 
@@ -421,33 +432,16 @@ fun RadioScreen(
                             shadowElevation = 2.dp,
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                            IconButton(
+                                onClick = { onSettingsClick() },
+                                modifier = Modifier.size(40.dp),
                             ) {
-                                IconButton(
-                                    onClick = { viewModel.setSearchActive(true) },
-                                    modifier = Modifier.size(40.dp),
-                                ) {
-                                    Icon(
-                                        Icons.Rounded.Search,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.size(20.dp),
-                                    )
-                                }
-
-                                IconButton(
-                                    onClick = { onSettingsClick() },
-                                    modifier = Modifier.size(40.dp),
-                                ) {
-                                    Icon(
-                                        Icons.Rounded.Settings,
-                                        contentDescription = stringResource(R.string.settings_title),
-                                        tint = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.size(20.dp),
-                                    )
-                                }
+                                Icon(
+                                    Icons.Rounded.Settings,
+                                    contentDescription = stringResource(R.string.settings_title),
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.size(20.dp),
+                                )
                             }
                         }
                     }
