@@ -81,4 +81,12 @@
     <string name="language_system_desc">Nota tungumál úr stillingum tækis</string>
     <string name="location_validation_title">Staðsetning nauðsynleg</string>
     <string name="location_validation_message">Þú hefur valið handvirkan staðsetningarham en hefur ekki valið staðsetningu ennþá. Vinsamlegast veldu staðsetningu á kortinu til að halda áfram.</string>
+    <string name="category_data">Gögn &amp; Afritun</string>
+    <string name="export_favorites_title">Flytja út uppáhaldsstöðvar</string>
+    <string name="export_favorites_desc">Vista uppáhaldsstöðvarnar þínar í JSON skrá</string>
+    <string name="import_favorites_title">Flytja inn uppáhaldsstöðvar</string>
+    <string name="import_favorites_desc">Endurheimta uppáhaldsstöðvar úr afritunarskrá</string>
+    <string name="favorites_exported_toast">Flutti út %d uppáhaldsstöðvar</string>
+    <string name="favorites_imported_toast">Flutti inn %d uppáhaldsstöðvar</string>
+    <string name="favorites_import_error">Ekki tókst að vinna úr uppáhaldsskránni</string>
 </resources>

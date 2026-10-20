@@ -81,4 +81,12 @@
     <string name="language_system_desc">Kasuta seadme seadete keelt</string>
     <string name="location_validation_title">Asukoht on vajalik</string>
     <string name="location_validation_message">Olete valinud manuaalse asukoharežiimi, kuid pole veel asukohta valinud. Jätkamiseks valige palun asukoht kaardil.</string>
+    <string name="category_data">Andmed ja varukoopia</string>
+    <string name="export_favorites_title">Ekspordi lemmikjaamad</string>
+    <string name="export_favorites_desc">Salvesta lemmikjaamad JSON-faili</string>
+    <string name="import_favorites_title">Impordi lemmikjaamad</string>
+    <string name="import_favorites_desc">Taasta lemmikjaamad varukoopiafailist</string>
+    <string name="favorites_exported_toast">Eksporditud %d lemmikjaama</string>
+    <string name="favorites_imported_toast">Imporditud %d lemmikjaama</string>
+    <string name="favorites_import_error">Lemmikute faili töötlemine ebaõnnestus</string>
 </resources>

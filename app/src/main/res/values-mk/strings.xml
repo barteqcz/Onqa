@@ -81,4 +81,12 @@
     <string name="language_system_desc">Користи јазик од поставките на уредот</string>
     <string name="location_validation_title">Потребна е локација</string>
     <string name="location_validation_message">Избравте рачен режим за локација, но сè уште не сте избрале локација. Ве молиме изберете локација на мапата за да продолжите.</string>
+    <string name="category_data">Податоци и резервна копија</string>
+    <string name="export_favorites_title">Испортирај омилени станици</string>
+    <string name="export_favorites_desc">Зачувајте ги вашите омилени станици во JSON датотека</string>
+    <string name="import_favorites_title">Увези омилени станици</string>
+    <string name="import_favorites_desc">Обновете ги омилените станици од датотека за резервна копија</string>
+    <string name="favorites_exported_toast">Извезени %d омилени станици</string>
+    <string name="favorites_imported_toast">Увезени %d омилени станици</string>
+    <string name="favorites_import_error">Не успеа обработката на датотеката со омилени</string>
 </resources>

@@ -81,4 +81,12 @@
     <string name="language_system_desc">Úsáid teanga ó shocruithe an ghléis</string>
     <string name="location_validation_title">Suíomh ag teastáil</string>
     <string name="location_validation_message">Roghnaigh tú mód suímh láimhe ach níor roghnaigh tú suíomh fós. Roghnaigh suíomh ar an léarscáil le do thoil chun leanúint ar aghaidh.</string>
+    <string name="category_data">Sonraí &amp; Cúltaca</string>
+    <string name="export_favorites_title">Easpórtáil stáisiúin le haghaidh fabhar</string>
+    <string name="export_favorites_desc">Sábháil do stáisiúin le haghaidh fabhar go comhad JSON</string>
+    <string name="import_favorites_title">Iompórtáil stáisiúin le haghaidh fabhar</string>
+    <string name="import_favorites_desc">Athchóirigh stáisiúin le haghaidh fabhar ó chomhad cúltaca</string>
+    <string name="favorites_exported_toast">Easpórtáladh %d stáisiún fabhar</string>
+    <string name="favorites_imported_toast">Iompórtáladh %d stáisiún fabhar</string>
+    <string name="favorites_import_error">Teip ar phróiseáil comhaid na bhfabhar</string>
 </resources>

@@ -81,4 +81,12 @@
     <string name="language_system_desc">Sprache aus den Geräteeinstellungen verwenden</string>
     <string name="location_validation_title">Standort erforderlich</string>
     <string name="location_validation_message">Sie haben den manuellen Standortmodus ausgewählt, aber noch keinen Standort gewählt. Bitte wählen Sie einen Standort auf der Karte aus, um fortzufahren.</string>
+    <string name="category_data">Daten &amp; Backup</string>
+    <string name="export_favorites_title">Favoriten exportieren</string>
+    <string name="export_favorites_desc">Deine Lieblingssender in einer JSON-Datei speichern</string>
+    <string name="import_favorites_title">Favoriten importieren</string>
+    <string name="import_favorites_desc">Lieblingssender aus einer Backup-Datei wiederherstellen</string>
+    <string name="favorites_exported_toast">%d Lieblingssender exportiert</string>
+    <string name="favorites_imported_toast">%d Lieblingssender importiert</string>
+    <string name="favorites_import_error">Fehler beim Verarbeiten der Favoriten-Datei</string>
 </resources>

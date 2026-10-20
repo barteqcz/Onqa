@@ -81,4 +81,12 @@
     <string name="language_system_desc">Usar el idioma de los ajustes del dispositivo</string>
     <string name="location_validation_title">Ubicación requerida</string>
     <string name="location_validation_message">Has seleccionado el modo de ubicación manual pero aún no has elegido una ubicación. Por favor, elige una ubicación en el mapa para continuar.</string>
+    <string name="category_data">Datos y copia de seguridad</string>
+    <string name="export_favorites_title">Exportar emisoras favoritas</string>
+    <string name="export_favorites_desc">Guarda tus emisoras favoritas en un archivo JSON</string>
+    <string name="import_favorites_title">Importar emisoras favoritas</string>
+    <string name="import_favorites_desc">Restaura emisoras favoritas desde un archivo de copia de seguridad</string>
+    <string name="favorites_exported_toast">Se han exportado %d emisoras favoritas</string>
+    <string name="favorites_imported_toast">Se han importado %d emisoras favoritas</string>
+    <string name="favorites_import_error">Error al procesar el archivo de favoritos</string>
 </resources>

@@ -501,6 +501,16 @@ class RadioViewModel @Inject constructor(
         }
     }
 
+    fun getFavoriteStations(): Set<String> {
+        return settings.value.favoriteStations
+    }
+
+    fun importFavorites(stations: Set<String>) {
+        viewModelScope.launch {
+            settingsRepository.setFavorites(stations)
+        }
+    }
+
     fun toggleStation(url: String, stationName: String? = null) {
         val playerState = radioPlayer.state.value
         val stations = (processedStations.value as? RadioUiState.Success)?.stations ?: emptyList()

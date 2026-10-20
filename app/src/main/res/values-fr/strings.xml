@@ -81,4 +81,12 @@
     <string name="language_system_desc">Utiliser la langue des paramètres de l\'appareil</string>
     <string name="location_validation_title">Localisation requise</string>
     <string name="location_validation_message">Vous avez sélectionné le mode de localisation manuel mais n\'avez pas encore choisi d\'emplacement. Veuillez choisir un emplacement sur la carte pour continuer.</string>
+    <string name="category_data">Données et sauvegarde</string>
+    <string name="export_favorites_title">Exporter les stations favorites</string>
+    <string name="export_favorites_desc">Enregistrer vos stations favorites dans un fichier JSON</string>
+    <string name="import_favorites_title">Importer des stations favorites</string>
+    <string name="import_favorites_desc">Restaurer les stations favorites à partir d\'un fichier de sauvegarde</string>
+    <string name="favorites_exported_toast">%d stations favorites exportées</string>
+    <string name="favorites_imported_toast">%d stations favorites importées</string>
+    <string name="favorites_import_error">Échec du traitement du fichier de favoris</string>
 </resources>

@@ -81,4 +81,12 @@
     <string name="language_system_desc">Naudoti kalbą iš įrenginio nustatymų</string>
     <string name="location_validation_title">Reikalinga vieta</string>
     <string name="location_validation_message">Pasirinkote rankinį vietos nustatymo režimą, bet dar nepasirinkote vietos. Norėdami tęsti, žemėlapyje pasirinkite vietą.</string>
+    <string name="category_data">Duomenys ir atsarginė kopija</string>
+    <string name="export_favorites_title">Eksportuoti mėgstamas stotis</string>
+    <string name="export_favorites_desc">Išsaugokite mėgstamas stotis į JSON failą</string>
+    <string name="import_favorites_title">Importuoti mėgstamas stotis</string>
+    <string name="import_favorites_desc">Atkurkite mėgstamas stotis iš atsarginės kopijos failo</string>
+    <string name="favorites_exported_toast">Eksportuota mėgstamų stočių: %d</string>
+    <string name="favorites_imported_toast">Importuota mėgstamų stočių: %d</string>
+    <string name="favorites_import_error">Nepavyko apdoroti mėgstamų stočių failo</string>
 </resources>

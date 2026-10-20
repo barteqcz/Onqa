@@ -81,4 +81,12 @@
     <string name="language_system_desc">Bruk språk fra enhetsinnstillingene</string>
     <string name="location_validation_title">Posisjon påkrevd</string>
     <string name="location_validation_message">Du har valgt manuell posisjonsmodus, men har ikke valgt en posisjon ennå. Vennligst velg en posisjon på kartet for å fortsette.</string>
+    <string name="category_data">Data &amp; Backup</string>
+    <string name="export_favorites_title">Eksporter favorittstasjoner</string>
+    <string name="export_favorites_desc">Lagre favorittstasjonene dine til en JSON-fil</string>
+    <string name="import_favorites_title">Importer favorittstasjoner</string>
+    <string name="import_favorites_desc">Gjenopprett favorittstasjoner fra en sikkerhetskopi</string>
+    <string name="favorites_exported_toast">Eksporterte %d favorittstasjoner</string>
+    <string name="favorites_imported_toast">Importerte %d favorittstasjoner</string>
+    <string name="favorites_import_error">Kunne ikke behandle favorittfilen</string>
 </resources>

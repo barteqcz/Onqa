@@ -81,4 +81,12 @@
     <string name="language_system_desc">Usar o idioma das definições do dispositivo</string>
     <string name="location_validation_title">Localização necessária</string>
     <string name="location_validation_message">Selecionou o modo de localização manual, mas ainda não escolheu uma localização. Escolha uma localização no mapa para continuar.</string>
+    <string name="category_data">Dados e cópia de segurança</string>
+    <string name="export_favorites_title">Exportar estações favoritas</string>
+    <string name="export_favorites_desc">Guardar as suas estações favoritas num ficheiro JSON</string>
+    <string name="import_favorites_title">Importar estações favoritas</string>
+    <string name="import_favorites_desc">Restaurar estações favoritas a partir de um ficheiro de cópia de segurança</string>
+    <string name="favorites_exported_toast">%d estações favoritas exportadas</string>
+    <string name="favorites_imported_toast">%d estações favoritas importadas</string>
+    <string name="favorites_import_error">Falha ao processar o ficheiro de favoritos</string>
 </resources>

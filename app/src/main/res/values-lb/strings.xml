@@ -81,4 +81,12 @@
     <string name="language_system_desc">Sprooch aus den Apparatsastellunge benotzen</string>
     <string name="location_validation_title">Standuert erfuerderlech</string>
     <string name="location_validation_message">Dir hutt de manuelle Standuertmodus gewielt, awer nach kee Standuert gewielt. Wielt w.e.g. e Standuert op der Kaart fir weiderzemaachen.</string>
+    <string name="category_data">Donnéeën &amp; Backup</string>
+    <string name="export_favorites_title">Liiblingssender exportéieren</string>
+    <string name="export_favorites_desc">Späichert Är Liiblingssender an enger JSON-Datei</string>
+    <string name="import_favorites_title">Liiblingssender importéieren</string>
+    <string name="import_favorites_desc">Liiblingssender aus enger Backup-Datei wéi herstelle</string>
+    <string name="favorites_exported_toast">%d Liiblingssender exportéiert</string>
+    <string name="favorites_imported_toast">%d Liiblingssender importéiert</string>
+    <string name="favorites_import_error">Feeler beim Veraarbechte vun der Favoritten-Datei</string>
 </resources>

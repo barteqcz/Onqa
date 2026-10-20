@@ -81,4 +81,12 @@
     <string name="language_system_desc">Folosiți limba din setările dispozitivului</string>
     <string name="location_validation_title">Locație necesară</string>
     <string name="location_validation_message">Ați selectat modul de locație manuală, dar nu ați ales încă o locație. Vă rugăm să alegeți o locație pe hartă pentru a continua.</string>
+    <string name="category_data">Date și backup</string>
+    <string name="export_favorites_title">Exportă posturile favorite</string>
+    <string name="export_favorites_desc">Salvează posturile favorite într-un fișier JSON</string>
+    <string name="import_favorites_title">Importă posturile favorite</string>
+    <string name="import_favorites_desc">Restaurează posturile favorite dintr-un fișier de backup</string>
+    <string name="favorites_exported_toast">Au fost exportate %d posturi favorite</string>
+    <string name="favorites_imported_toast">Au fost importate %d posturi favorite</string>
+    <string name="favorites_import_error">Procesarea fișierului cu favorite a eșuat</string>
 </resources>

@@ -81,4 +81,12 @@
     <string name="language_system_desc">Použiť jazyk z nastavení zariadenia</string>
     <string name="location_validation_title">Vyžaduje sa poloha</string>
     <string name="location_validation_message">Vybrali ste manuálny režim polohy, ale ešte ste nevybrali žiadne miesto. Ak chcete pokračovať, vyberte polohu na mape.</string>
+    <string name="category_data">Dáta a záloha</string>
+    <string name="export_favorites_title">Exportovať obľúbené stanice</string>
+    <string name="export_favorites_desc">Uložiť obľúbené stanice do súboru JSON</string>
+    <string name="import_favorites_title">Importovať obľúbené stanice</string>
+    <string name="import_favorites_desc">Obnoviť obľúbené stanice zo záložného súboru</string>
+    <string name="favorites_exported_toast">Bolo exportovaných %d obľúbených staníc</string>
+    <string name="favorites_imported_toast">Bolo importovaných %d obľúbených staníc</string>
+    <string name="favorites_import_error">Nepodarilo sa spracovať súbor s obľúbenými</string>
 </resources>

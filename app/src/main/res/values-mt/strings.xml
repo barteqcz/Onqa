@@ -81,4 +81,12 @@
     <string name="language_system_desc">Uża l-lingwa mis-settings tal-apparat</string>
     <string name="location_validation_title">Post meħtieġ</string>
     <string name="location_validation_message">Għażilt il-modalità tal-post manwali imma għadek ma għażiltx post. Jekk jogħġbok agħżel post fuq il-mappa biex tkompli.</string>
+    <string name="category_data">Data &amp; Backup</string>
+    <string name="export_favorites_title">Esporta stazzjonijiet favoriti</string>
+    <string name="export_favorites_desc">Issejvja l-istazzjonijiet favoriti tiegħek f\'fajl JSON</string>
+    <string name="import_favorites_title">Importa stazzjonijiet favoriti</string>
+    <string name="import_favorites_desc">Irrestawra l-istazzjonijiet favoriti minn fajl ta\' backup</string>
+    <string name="favorites_exported_toast">Ġew esportati %d stazzjonijiet favoriti</string>
+    <string name="favorites_imported_toast">Ġew importati %d stazzjonijiet favoriti</string>
+    <string name="favorites_import_error">Naqset milli tipproċessa l-fajl tal-favoriti</string>
 </resources>

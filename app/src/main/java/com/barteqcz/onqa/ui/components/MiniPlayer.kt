@@ -109,8 +109,10 @@ fun MiniPlayer(
     
     val playerHeight = if (isLandscape) 72.dp else 88.dp
     val playerCorner = if (isLandscape) 22.dp else 28.dp
-    val logoSize = if (isLandscape) 48.dp else 60.dp
-    val logoIconSize = if (isLandscape) 28.dp else 36.dp
+    val logoSize = if (isLandscape) 44.dp else 52.dp
+    val logoStartPadding = if (isLandscape) 14.dp else 18.dp
+    val logoIconSize = if (isLandscape) 24.dp else 32.dp
+    val logoCorner = if (isLandscape) 8.dp else 10.dp
     val actionButtonSize = if (isLandscape) 44.dp else 52.dp
     val actionIconSize = if (isLandscape) 28.dp else 36.dp
 
@@ -228,7 +230,7 @@ fun MiniPlayer(
             label = "stationChange"
         ) { (targetStation, targetShowHqIcon) ->
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(start = logoStartPadding, end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val scale by animateFloatAsState(
@@ -245,7 +247,7 @@ fun MiniPlayer(
                             scaleX = scale
                             scaleY = scale
                         }
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(logoCorner))
                         .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
                     contentAlignment = Alignment.Center
                 ) {

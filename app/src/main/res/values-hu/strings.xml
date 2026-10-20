@@ -81,4 +81,12 @@
     <string name="language_system_desc">Az eszköz beállításaiban szereplő nyelv használata</string>
     <string name="location_validation_title">Helymeghatározás szükséges</string>
     <string name="location_validation_message">Manuális helymeghatározási módot választott, de még nem jelölt ki helyet. A folytatáshoz kérjük, válasszon egy helyet a térképen.</string>
+    <string name="category_data">Adatok és biztonsági mentés</string>
+    <string name="export_favorites_title">Kedvenc állomások exportálása</string>
+    <string name="export_favorites_desc">Kedvenc állomások mentése JSON fájlba</string>
+    <string name="import_favorites_title">Kedvenc állomások importálása</string>
+    <string name="import_favorites_desc">Kedvenc állomások visszaállítása biztonsági mentésből</string>
+    <string name="favorites_exported_toast">%d kedvenc állomás exportálva</string>
+    <string name="favorites_imported_toast">%d kedvenc állomás importálva</string>
+    <string name="favorites_import_error">Nem sikerült feldolgozni a kedvencek fájlt</string>
 </resources>

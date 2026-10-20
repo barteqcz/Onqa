@@ -81,4 +81,12 @@
     <string name="language_system_desc">Выкарыстоўваць мову з налад прылады</string>
     <string name="location_validation_title">Патрабуецца месцазнаходжанне</string>
     <string name="location_validation_message">Вы выбралі ручны рэжым месцазнаходжання, але яшчэ не выбралі месца. Калі ласка, выберыце месца на карце, каб працягнуць.</string>
+    <string name="category_data">Даныя і рэзервовая копія</string>
+    <string name="export_favorites_title">Экспартаваць любімыя станцыі</string>
+    <string name="export_favorites_desc">Захаваць любімыя станцыі ў файл JSON</string>
+    <string name="import_favorites_title">Імпартаваць любімыя станцыі</string>
+    <string name="import_favorites_desc">Аднавіць любімыя станцыі з файла рэзервовай копіі</string>
+    <string name="favorites_exported_toast">Экспартавана любімых станцый: %d</string>
+    <string name="favorites_imported_toast">Імпартавана любімых станцый: %d</string>
+    <string name="favorites_import_error">Не ўдалося апрацаваць файл любімых станцый</string>
 </resources>

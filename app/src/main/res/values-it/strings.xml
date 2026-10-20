@@ -81,4 +81,12 @@
     <string name="language_system_desc">Usa la lingua dalle impostazioni del dispositivo</string>
     <string name="location_validation_title">Posizione richiesta</string>
     <string name="location_validation_message">Hai selezionato la modalità di posizione manuale ma non hai ancora scelto una posizione. Scegli una posizione sulla mappa per continuare.</string>
+    <string name="category_data">Dati e backup</string>
+    <string name="export_favorites_title">Esporta stazioni preferite</string>
+    <string name="export_favorites_desc">Salva le tue stazioni preferite in un file JSON</string>
+    <string name="import_favorites_title">Importa stazioni preferite</string>
+    <string name="import_favorites_desc">Ripristina le stazioni preferite da un file di backup</string>
+    <string name="favorites_exported_toast">Esportate %d stazioni preferite</string>
+    <string name="favorites_imported_toast">Importate %d stazioni preferite</string>
+    <string name="favorites_import_error">Impossibile elaborare il file dei preferiti</string>
 </resources>

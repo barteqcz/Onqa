@@ -81,4 +81,12 @@
     <string name="language_system_desc">Χρήση γλώσσας από τις ρυθμίσεις της συσκευής</string>
     <string name="location_validation_title">Απαιτείται τοποθεσία</string>
     <string name="location_validation_message">Έχετε επιλέξει τη χειροκίνητη λειτουργία τοποθεσίας, αλλά δεν έχετε επιλέξει ακόμα τοποθεσία. Παρακαλούμε επιλέξτε μια τοποθεσία στον χάρτη για να συνεχίσετε.</string>
+    <string name="category_data">Δεδομένα &amp; Αντίγραφο ασφαλείας</string>
+    <string name="export_favorites_title">Εξαγωγή αγαπημένων σταθμών</string>
+    <string name="export_favorites_desc">Αποθήκευση των αγαπημένων σας σταθμών σε αρχείο JSON</string>
+    <string name="import_favorites_title">Εισαγωγή αγαπημένων σταθμών</string>
+    <string name="import_favorites_desc">Επαναφορά αγαπημένων σταθμών από αρχείο αντιγράφου ασφαλείας</string>
+    <string name="favorites_exported_toast">Έξοδος %d αγαπημένων σταθμών</string>
+    <string name="favorites_imported_toast">Εισήχθησαν %d αγαπημένοι σταθμοί</string>
+    <string name="favorites_import_error">Αποτυχία επεξεργασίας αρχείου αγαπημένων</string>
 </resources>

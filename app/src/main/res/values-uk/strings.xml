@@ -81,4 +81,12 @@
     <string name="language_system_desc">Використовувати мову з налаштувань пристрою</string>
     <string name="location_validation_title">Потрібне місцезнаходження</string>
     <string name="location_validation_message">Ви вибрали ручний режим місцезнаходження, але ще не вибрали місце. Будь ласка, виберіть місце на карті, щоб продовжити.</string>
+    <string name="category_data">Дані та резервна копія</string>
+    <string name="export_favorites_title">Експортувати улюблені станції</string>
+    <string name="export_favorites_desc">Зберегти улюблені станції у файл JSON</string>
+    <string name="import_favorites_title">Імпортувати улюблені станції</string>
+    <string name="import_favorites_desc">Відновити улюблені станції з файла резервної копії</string>
+    <string name="favorites_exported_toast">Експортовано улюблених станцій: %d</string>
+    <string name="favorites_imported_toast">Імпортовано улюблених станцій: %d</string>
+    <string name="favorites_import_error">Не вдалося обробити файл улюблених станцій</string>
 </resources>

@@ -81,4 +81,12 @@
     <string name="language_system_desc">Käytä laitteen asetusten kieltä</string>
     <string name="location_validation_title">Sijainti vaaditaan</string>
     <string name="location_validation_message">Olet valinnut manuaalisen sijaintitilan, mutta et ole vielä valinnut sijaintia. Valitse sijainti kartalta jatkaaksesi.</string>
+    <string name="category_data">Tiedot ja varmuuskopio</string>
+    <string name="export_favorites_title">Vie suosikkiasemat</string>
+    <string name="export_favorites_desc">Tallenna suosikkiasemat JSON-tiedostoon</string>
+    <string name="import_favorites_title">Tuo suosikkiasemat</string>
+    <string name="import_favorites_desc">Palauta suosikkiasemat varmuuskopiotiedostosta</string>
+    <string name="favorites_exported_toast">Viety %d suosikkiasemaa</string>
+    <string name="favorites_imported_toast">Tuotu %d suosikkiasemaa</string>
+    <string name="favorites_import_error">Suosikkitiedoston käsittely epäonnistui</string>
 </resources>

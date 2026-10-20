@@ -81,4 +81,12 @@
     <string name="language_system_desc">Përdor gjuhën nga cilësimet e pajisjes</string>
     <string name="location_validation_title">Kërkohet vendndodhja</string>
     <string name="location_validation_message">Keni zgjedhur modalitetin manual të vendndodhjes, por nuk keni zgjedhur ende një vendndodhje. Ju lutemi zgjidhni një vendndodhje në hartë për të vazhduar.</string>
+    <string name="category_data">Të dhënat &amp; Kopja rezervë</string>
+    <string name="export_favorites_title">Eksporto stacionet e preferuara</string>
+    <string name="export_favorites_desc">Ruani stacionet tuaja të preferuara në një skedar JSON</string>
+    <string name="import_favorites_title">Importo stacionet e preferuara</string>
+    <string name="import_favorites_desc">Rivendosni stacionet e preferuara nga një skedar kopjeje rezervë</string>
+    <string name="favorites_exported_toast">U eksportuan %d stacione të preferuara</string>
+    <string name="favorites_imported_toast">U importuan %d stacione të preferuara</string>
+    <string name="favorites_import_error">Dështoi përpunimi i skedarit të të preferuarave</string>
 </resources>

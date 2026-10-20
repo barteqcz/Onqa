@@ -81,4 +81,12 @@
     <string name="language_system_desc">Izmantot valodu no ierīces iestatījumiem</string>
     <string name="location_validation_title">Nepieciešama atrašanās vieta</string>
     <string name="location_validation_message">Esat izvēlējies manuālo atrašanās vietas režīmu, taču vēl neesat izvēlējies atrašanās vietu. Lūdzu, izvēlieties atrašanās vietu kartē, lai turpinātu.</string>
+    <string name="category_data">Dati un dublējums</string>
+    <string name="export_favorites_title">Eksportēt iecienītās stacijas</string>
+    <string name="export_favorites_desc">Saglabājiet savas iecienītās stacijas JSON failā</string>
+    <string name="import_favorites_title">Importēt iecienītās stacijas</string>
+    <string name="import_favorites_desc">Atjaunojiet iecienītās stacijas no dublējuma faila</string>
+    <string name="favorites_exported_toast">Eksportētas %d iecienītās stacijas</string>
+    <string name="favorites_imported_toast">Importētas %d iecienītās stacijas</string>
+    <string name="favorites_import_error">Neizdevās apstrādāt izlašu failu</string>
 </resources>

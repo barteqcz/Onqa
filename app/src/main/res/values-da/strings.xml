@@ -81,4 +81,12 @@
     <string name="language_system_desc">Brug sprog fra enhedens indstillinger</string>
     <string name="location_validation_title">Placering påkrævet</string>
     <string name="location_validation_message">Du har valgt manuel placeringstilstand, men har ikke valgt en placering endnu. Vælg venligst en placering på kortet for at fortsætte.</string>
+    <string name="category_data">Data &amp; Backup</string>
+    <string name="export_favorites_title">Eksporter favoritter</string>
+    <string name="export_favorites_desc">Gem dine favoritter til en JSON-fil</string>
+    <string name="import_favorites_title">Importer favoritter</string>
+    <string name="import_favorites_desc">Gendan favoritter fra en sikkerhedskopi</string>
+    <string name="favorites_exported_toast">Eksporterede %d favoritter</string>
+    <string name="favorites_imported_toast">Importerede %d favoritter</string>
+    <string name="favorites_import_error">Kunne ikke behandle favoritfilen</string>
 </resources>

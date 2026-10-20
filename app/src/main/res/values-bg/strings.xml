@@ -81,4 +81,12 @@
     <string name="language_system_desc">Използване на език от настройките на устройството</string>
     <string name="location_validation_title">Изисква се местоположение</string>
     <string name="location_validation_message">Избрали сте ръчен режим за местоположение, но все още не сте избрали такова. Моля, изберете местоположение на картата, за да продължите.</string>
+    <string name="category_data">Данни и архиv</string>
+    <string name="export_favorites_title">Експортиране на любими станции</string>
+    <string name="export_favorites_desc">Запазете любимите си станции в JSON файл</string>
+    <string name="import_favorites_title">Импортиране на любими станции</string>
+    <string name="import_favorites_desc">Възстановете любимите станции от файл за архивиране</string>
+    <string name="favorites_exported_toast">Експортирани са %d любими станции</string>
+    <string name="favorites_imported_toast">Импортирани са %d любими станции</string>
+    <string name="favorites_import_error">Неуспешна обработка на файла с любими станции</string>
 </resources>

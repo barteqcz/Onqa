@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import android.content.res.Configuration
@@ -305,7 +306,7 @@ fun RadioScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
+                        .padding(horizontal = 20.dp)
                         .padding(top = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -327,18 +328,31 @@ fun RadioScreen(
                         label = "TopBarSearchTransition",
                     ) { isSearchActive ->
                         if (isSearchActive) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                IconButton(
-                                    onClick = { viewModel.setSearchActive(false) },
-                                    modifier = Modifier.size(48.dp)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Surface(
+                                    shape = RoundedCornerShape(24.dp),
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    tonalElevation = 2.dp,
+                                    shadowElevation = 2.dp,
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                                 ) {
-                                    Icon(
-                                        Icons.AutoMirrored.Rounded.ArrowBack,
-                                        contentDescription = stringResource(R.string.back),
-                                        tint = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.size(24.dp)
-                                    )
+                                    IconButton(
+                                        onClick = { viewModel.setSearchActive(false) },
+                                        modifier = Modifier.size(40.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.AutoMirrored.Rounded.ArrowBack,
+                                            contentDescription = stringResource(R.string.back),
+                                            tint = MaterialTheme.colorScheme.onBackground,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
                                 }
+
+                                Spacer(modifier = Modifier.width(8.dp))
 
                                 TextField(
                                     value = viewState.searchQuery,
@@ -374,13 +388,13 @@ fun RadioScreen(
                                         if (viewState.searchQuery.isNotEmpty()) {
                                             IconButton(
                                                 onClick = { viewModel.setSearchQuery("") },
-                                                modifier = Modifier.size(48.dp)
+                                                modifier = Modifier.size(40.dp)
                                             ) {
                                                 Icon(
                                                     Icons.Rounded.Close,
                                                     contentDescription = null,
                                                     tint = MaterialTheme.colorScheme.onBackground,
-                                                    modifier = Modifier.size(24.dp)
+                                                    modifier = Modifier.size(20.dp)
                                                 )
                                             }
                                         }
@@ -394,37 +408,46 @@ fun RadioScreen(
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = (-0.5).sp,
-                                modifier = Modifier.padding(start = 12.dp)
+                                modifier = Modifier.padding(start = 4.dp)
                             )
                         }
                     }
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (!viewState.isSearchActive) {
-                            IconButton(
-                                onClick = { viewModel.setSearchActive(true) },
-                                modifier = Modifier.size(48.dp),
+                    if (!viewState.isSearchActive) {
+                        Surface(
+                            shape = RoundedCornerShape(24.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            tonalElevation = 2.dp,
+                            shadowElevation = 2.dp,
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
                             ) {
-                                Icon(
-                                    Icons.Rounded.Search,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onBackground,
-                                    modifier = Modifier.size(24.dp),
-                                )
-                            }
-                        }
+                                IconButton(
+                                    onClick = { viewModel.setSearchActive(true) },
+                                    modifier = Modifier.size(40.dp),
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Search,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        modifier = Modifier.size(20.dp),
+                                    )
+                                }
 
-                        if (!viewState.isSearchActive) {
-                            IconButton(
-                                onClick = { onSettingsClick() },
-                                modifier = Modifier.size(48.dp),
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Settings,
-                                    contentDescription = stringResource(R.string.settings_title),
-                                    tint = MaterialTheme.colorScheme.onBackground,
-                                    modifier = Modifier.size(24.dp),
-                                )
+                                IconButton(
+                                    onClick = { onSettingsClick() },
+                                    modifier = Modifier.size(40.dp),
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Settings,
+                                        contentDescription = stringResource(R.string.settings_title),
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        modifier = Modifier.size(20.dp),
+                                    )
+                                }
                             }
                         }
                     }

@@ -81,4 +81,12 @@
     <string name="language_system_desc">Utilisar la lingua tenor las preselecziuns dal recurs</string>
     <string name="location_validation_title">Posiziun necessaria</string>
     <string name="location_validation_message">Vus avais tschernì il modus da posiziun manual, ma n\'avais anc betg tschernì ina posiziun. Per plaschair tschernì ina posiziun sin la carta per cuntinuar.</string>
+    <string name="category_data">Datas &amp; Backup</string>
+    <string name="export_favorites_title">Exportar staziun favurita</string>
+    <string name="export_favorites_desc">Cundiziunar tias staziuns favuritas en in file JSON</string>
+    <string name="import_favorites_title">Importar staziuns favuritas</string>
+    <string name="import_favorites_desc">Restituir staziuns favuritas dad in file da backup</string>
+    <string name="favorites_exported_toast">Exportà %d staziuns favuritas</string>
+    <string name="favorites_imported_toast">Importà %d staziuns favuritas</string>
+    <string name="favorites_import_error">Errur cun tractar il file da favuritas</string>
 </resources>

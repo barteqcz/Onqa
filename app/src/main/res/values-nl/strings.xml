@@ -81,4 +81,12 @@
     <string name="language_system_desc">Gebruik taal uit apparaatinstellingen</string>
     <string name="location_validation_title">Locatie vereist</string>
     <string name="location_validation_message">U hebt de handmatige locatiemodus geselecteerd, maar nog geen locatie gekozen. Kies een locatie op de kaart om door te gaan.</string>
+    <string name="category_data">Gegevens &amp; Backup</string>
+    <string name="export_favorites_title">Favoriete stations exporteren</string>
+    <string name="export_favorites_desc">Sla uw favoriete stations op in een JSON-bestand</string>
+    <string name="import_favorites_title">Favoriete stations importeren</string>
+    <string name="import_favorites_desc">Herstel favoriete stations vanuit een back-upbestand</string>
+    <string name="favorites_exported_toast">%d favoriete stations geëxporteerd</string>
+    <string name="favorites_imported_toast">%d favoriete stations geïmporteerd</string>
+    <string name="favorites_import_error">Verwerken van favorietenbestand mislukt</string>
 </resources>

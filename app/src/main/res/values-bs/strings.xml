@@ -81,4 +81,12 @@
     <string name="language_system_desc">Koristi jezik iz postavki uređaja</string>
     <string name="location_validation_title">Potrebna lokacija</string>
     <string name="location_validation_message">Odabrali ste ručni način rada za lokaciju, ali još niste odabrali lokaciju. Molimo odaberite lokaciju na karti za nastavak.</string>
+    <string name="category_data">Podaci i sigurnosna kopija</string>
+    <string name="export_favorites_title">Izvezi omiljene stanice</string>
+    <string name="export_favorites_desc">Spremite omiljene stanice u JSON datoteku</string>
+    <string name="import_favorites_title">Uvezi omiljene stanice</string>
+    <string name="import_favorites_desc">Vratite omiljene stanice iz sigurnosne datoteke</string>
+    <string name="favorites_exported_toast">Izvezeno %d omiljenih stanica</string>
+    <string name="favorites_imported_toast">Uvezeno %d omiljenih stanica</string>
+    <string name="favorites_import_error">Neuspješna obrada datoteke omiljenih stanica</string>
 </resources>

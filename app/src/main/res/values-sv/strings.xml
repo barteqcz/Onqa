@@ -81,4 +81,12 @@
     <string name="language_system_desc">Använd språk från enhetsinställningarna</string>
     <string name="location_validation_title">Plats krävs</string>
     <string name="location_validation_message">Du har valt manuellt platsläge men har inte valt en plats än. Vänligen välj en plats på kartan för att fortsätta.</string>
+    <string name="category_data">Data &amp; Backup</string>
+    <string name="export_favorites_title">Exportera favoritstationer</string>
+    <string name="export_favorites_desc">Spara dina favoritstationer till en JSON-fil</string>
+    <string name="import_favorites_title">Importera favoritstationer</string>
+    <string name="import_favorites_desc">Återställ favoritstationer från en säkerhetskopia</string>
+    <string name="favorites_exported_toast">Exporterade %d favoritstationer</string>
+    <string name="favorites_imported_toast">Importerade %d favoritstationer</string>
+    <string name="favorites_import_error">Kunde inte bearbeta favoritfilen</string>
 </resources>

@@ -81,4 +81,12 @@
     <string name="language_system_desc">Użyj języka z ustawień urządzenia</string>
     <string name="location_validation_title">Lokalizacja wymagana</string>
     <string name="location_validation_message">Wybrano tryb ręcznej lokalizacji, ale nie wybrano jeszcze miejsca. Wybierz lokalizację na mapie, aby kontynuować.</string>
+    <string name="category_data">Dane i kopia zapasowa</string>
+    <string name="export_favorites_title">Eksportuj ulubione stacje</string>
+    <string name="export_favorites_desc">Zapisz swoje ulubione stacje do pliku JSON</string>
+    <string name="import_favorites_title">Importuj ulubione stacje</string>
+    <string name="import_favorites_desc">Przywróć ulubione stacje z pliku kopii zapasowej</string>
+    <string name="favorites_exported_toast">Wyeksportowano %d ulubionych stacji</string>
+    <string name="favorites_imported_toast">Zaimportowano %d ulubionych stacji</string>
+    <string name="favorites_import_error">Nie udało się przetworzyć pliku z ulubionymi</string>
 </resources>

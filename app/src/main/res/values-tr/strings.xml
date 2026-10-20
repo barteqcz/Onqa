@@ -81,4 +81,12 @@
     <string name="language_system_desc">Cihaz ayarlarındaki dili kullan</string>
     <string name="location_validation_title">Konum gerekli</string>
     <string name="location_validation_message">Manuel konum modunu seçtiniz ancak henüz bir konum seçmediniz. Devam etmek için lütfen harita üzerinden bir konum seçin.</string>
+    <string name="category_data">Veri ve Yedekleme</string>
+    <string name="export_favorites_title">Favori istasyonları dışa aktar</string>
+    <string name="export_favorites_desc">Favori istasyonlarınızı bir JSON dosyasına kaydedin</string>
+    <string name="import_favorites_title">Favori istasyonları içe aktar</string>
+    <string name="import_favorites_desc">Favori istasyonları bir yedekleme dosyasından geri yükleyin</string>
+    <string name="favorites_exported_toast">%d favori istasyon dışa aktarıldı</string>
+    <string name="favorites_imported_toast">%d favori istasyon içe aktarıldы</string>
+    <string name="favorites_import_error">Favoriler dosyası işlenemedi</string>
 </resources>

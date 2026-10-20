@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="alright">Alright!</string>
     <string name="app_name">Onqa</string>
     <string name="notification_channel_name">Radio playback</string>
@@ -118,4 +118,12 @@
     <string name="language_romansh" translatable="false">Rumantsch</string>
     <string name="location_validation_title">Location required</string>
     <string name="location_validation_message">You have selected manual location mode but haven\'t picked a location yet. Please pick a location on the map to continue.</string>
+    <string name="category_data">Data &amp; Backup</string>
+    <string name="export_favorites_title">Export favorite stations</string>
+    <string name="export_favorites_desc">Save your favorite stations to a JSON file</string>
+    <string name="import_favorites_title">Import favorite stations</string>
+    <string name="import_favorites_desc">Restore favorite stations from a backup file</string>
+    <string name="favorites_exported_toast">Exported %d favorite stations</string>
+    <string name="favorites_imported_toast">Imported %d favorite stations</string>
+    <string name="favorites_import_error">Failed to process favorites file</string>
 </resources>

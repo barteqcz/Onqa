@@ -184,4 +184,10 @@ open class SettingsRepository @Inject constructor(
             preferences[PreferencesKeys.FAVORITE_STATIONS] = newFavorites
         }
     }
+
+    suspend fun setFavorites(stations: Set<String>) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.FAVORITE_STATIONS] = stations
+        }
+    }
 }
