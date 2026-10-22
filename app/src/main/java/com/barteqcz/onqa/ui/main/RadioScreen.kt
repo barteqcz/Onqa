@@ -11,7 +11,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import android.content.res.Configuration
@@ -41,7 +41,7 @@ import com.barteqcz.onqa.R
 import com.barteqcz.onqa.ui.components.*
 import com.barteqcz.onqa.ui.theme.AnimationSystem
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RadioScreen(
     viewModel: RadioViewModel,
@@ -217,7 +217,7 @@ fun RadioScreen(
 
                                             items(
                                                 items = state.stations,
-                                                key = { "${it.streamUrl ?: it.name}|${it.network}" }
+                                                key = { "${it.name}|${it.network}" }
                                             ) { station ->
                                                 StationCard(
                                                     station = station,
@@ -333,7 +333,7 @@ fun RadioScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Surface(
-                                    shape = RoundedCornerShape(24.dp),
+                                    shape = CircleShape,
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     tonalElevation = 2.dp,
                                     shadowElevation = 2.dp,
@@ -341,13 +341,13 @@ fun RadioScreen(
                                 ) {
                                     IconButton(
                                         onClick = { viewModel.setSearchActive(false) },
-                                        modifier = Modifier.size(40.dp)
+                                        modifier = Modifier.size(46.dp)
                                     ) {
                                         Icon(
                                             Icons.AutoMirrored.Rounded.ArrowBack,
                                             contentDescription = stringResource(R.string.back),
                                             tint = MaterialTheme.colorScheme.onBackground,
-                                            modifier = Modifier.size(20.dp)
+                                            modifier = Modifier.size(22.dp)
                                         )
                                     }
                                 }
@@ -388,13 +388,13 @@ fun RadioScreen(
                                         if (viewState.searchQuery.isNotEmpty()) {
                                             IconButton(
                                                 onClick = { viewModel.setSearchQuery("") },
-                                                modifier = Modifier.size(40.dp)
+                                                modifier = Modifier.size(46.dp)
                                             ) {
                                                 Icon(
                                                     Icons.Rounded.Close,
                                                     contentDescription = null,
                                                     tint = MaterialTheme.colorScheme.onBackground,
-                                                    modifier = Modifier.size(20.dp)
+                                                    modifier = Modifier.size(22.dp)
                                                 )
                                             }
                                         }
@@ -403,7 +403,7 @@ fun RadioScreen(
                             }
                         } else {
                             Surface(
-                                shape = RoundedCornerShape(24.dp),
+                                shape = CircleShape,
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 tonalElevation = 2.dp,
                                 shadowElevation = 2.dp,
@@ -411,13 +411,13 @@ fun RadioScreen(
                             ) {
                                 IconButton(
                                     onClick = { viewModel.setSearchActive(true) },
-                                    modifier = Modifier.size(40.dp),
+                                    modifier = Modifier.size(46.dp),
                                 ) {
                                     Icon(
                                         Icons.Rounded.Search,
                                         contentDescription = stringResource(R.string.search_stations_hint),
                                         tint = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.size(20.dp),
+                                        modifier = Modifier.size(22.dp),
                                     )
                                 }
                             }
@@ -426,7 +426,7 @@ fun RadioScreen(
 
                     if (!viewState.isSearchActive) {
                         Surface(
-                            shape = RoundedCornerShape(24.dp),
+                            shape = CircleShape,
                             color = MaterialTheme.colorScheme.surfaceVariant,
                             tonalElevation = 2.dp,
                             shadowElevation = 2.dp,
@@ -434,13 +434,13 @@ fun RadioScreen(
                         ) {
                             IconButton(
                                 onClick = { onSettingsClick() },
-                                modifier = Modifier.size(40.dp),
+                                modifier = Modifier.size(46.dp),
                             ) {
                                 Icon(
                                     Icons.Rounded.Settings,
                                     contentDescription = stringResource(R.string.settings_title),
                                     tint = MaterialTheme.colorScheme.onBackground,
-                                    modifier = Modifier.size(20.dp),
+                                    modifier = Modifier.size(22.dp),
                                 )
                             }
                         }

@@ -10,7 +10,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.MarqueeAnimationMode
@@ -67,7 +66,6 @@ fun FavoriteHeart(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StationCard(
     station: RadioStation,
@@ -134,7 +132,14 @@ fun StationCard(
                 modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val context = LocalContext.current
                 var isImageLoaded by remember(station.logo) { mutableStateOf(false) }
+                val imageModel = remember(station.logo) {
+                    ImageRequest.Builder(context)
+                        .data(station.logo)
+                        .crossfade(true)
+                        .build()
+                }
                 Box(
                     modifier = Modifier
                         .size(52.dp)
@@ -151,10 +156,7 @@ fun StationCard(
                         )
                     }
                     AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(station.logo)
-                            .crossfade(true)
-                            .build(),
+                        model = imageModel,
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit,

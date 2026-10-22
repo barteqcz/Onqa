@@ -78,10 +78,14 @@ class RadioRepository @Inject constructor(
         observationJob = null
     }
 
-    suspend fun updateNearbyStations(location: Location) = safeApiCall("updateNearbyStations") {
-        _stations.value = NetworkResult.Loading
-        val request = LocationRequest(location.latitude, location.longitude)
-        apiService.getNearbyStations(request)
+    suspend fun updateNearbyStations(location: Location) {
+        if (_stations.value !is NetworkResult.Success) {
+            _stations.value = NetworkResult.Loading
+        }
+        safeApiCall("updateNearbyStations") {
+            val request = LocationRequest(location.latitude, location.longitude)
+            apiService.getNearbyStations(request)
+        }
     }
 
     private suspend fun safeApiCall(
@@ -99,11 +103,13 @@ class RadioRepository @Inject constructor(
                     Timber.i("Successfully completed $actionName with ${result.size} stations on attempt ${attempt + 1}.")
                     return // Success
                 } catch (e: Exception) {
-                    if (e is CancellationException) throw e
+                    if (e is CancellationException) {
+                        throw e
+                    }
                     
                     val shouldRetry = when (e) {
                         is IOException -> e !is UnknownHostException
-                        is HttpException -> e.code() in 500..599
+                        is HttpException -> (e.code() in 500..599)
                         else -> false
                     }
 
@@ -118,19 +124,25 @@ class RadioRepository @Inject constructor(
             }
         } catch (e: IOException) {
             Timber.e(e, "IO error in $actionName after retries")
-            val isServerError = e !is UnknownHostException
-            val message = e.message ?: context.getString(R.string.error_io)
-            _stations.value = NetworkResult.Error(message, e, isServerError = isServerError)
+            if (_stations.value !is NetworkResult.Success) {
+                val isServerError = e !is UnknownHostException
+                val message = e.message ?: context.getString(R.string.error_io)
+                _stations.value = NetworkResult.Error(message, e, isServerError = isServerError)
+            }
         } catch (e: HttpException) {
             Timber.e(e, "HTTP error in $actionName (code: ${e.code()}) after retries")
-            _stations.value = NetworkResult.Error(context.getString(R.string.error_server_with_code, e.code()), e, isServerError = true)
+            if (_stations.value !is NetworkResult.Success) {
+                _stations.value = NetworkResult.Error(context.getString(R.string.error_server_with_code, e.code()), e, isServerError = true)
+            }
         } catch (e: CancellationException) {
             Timber.d("Action $actionName was cancelled.")
             throw e
         } catch (e: Exception) {
             Timber.e(e, "Unexpected error in $actionName after retries")
-            val message = e.message ?: context.getString(R.string.error_unknown)
-            _stations.value = NetworkResult.Error(message, e, isServerError = true)
+            if (_stations.value !is NetworkResult.Success) {
+                val message = e.message ?: context.getString(R.string.error_unknown)
+                _stations.value = NetworkResult.Error(message, e, isServerError = true)
+            }
         }
     }
 }
