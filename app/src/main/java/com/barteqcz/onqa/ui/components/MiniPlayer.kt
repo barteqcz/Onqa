@@ -243,19 +243,23 @@ fun MiniPlayer(
                 modifier = Modifier.padding(start = logoStartPadding, end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val scale by animateFloatAsState(
-                    targetValue = if (isPlaying) 1.05f else 1f,
-                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow),
-                    label = "logoScale"
-                )
+                val scaleState = remember(targetStation) { Animatable(1f) }
+                val targetScale = if (isPlaying && !isBuffering) 1.05f else 1f
+
+                LaunchedEffect(targetScale) {
+                    scaleState.animateTo(
+                        targetValue = targetScale,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow)
+                    )
+                }
                 var isImageLoaded by remember(targetStation.logo) { mutableStateOf(false) }
 
                 Box(
                     modifier = Modifier
                         .size(logoSize)
                         .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
+                            scaleX = scaleState.value
+                            scaleY = scaleState.value
                         }
                         .clip(RoundedCornerShape(logoCorner))
                         .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),

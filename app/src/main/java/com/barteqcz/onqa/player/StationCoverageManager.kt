@@ -58,7 +58,7 @@ class StationCoverageManager @Inject constructor(
         }
 
         val effectiveNetwork = currentNetwork ?: matchingStations.firstOrNull()?.network
-        val sortedStations = StationProcessor.groupAndSortStations(stations, currentUrl, favorites)
+        val sortedStations = StationProcessor.groupAndSortStations(stations, favorites)
 
         val nextNetworkStation = if (effectiveNetwork != null) {
             sortedStations.filter { it.network == effectiveNetwork && it.isInCoverage() }.minByOrNull { it.distance ?: Double.MAX_VALUE }

@@ -15,10 +15,8 @@ object StationProcessor {
         .thenBy { it.transmitterId ?: Int.MAX_VALUE }
         .thenBy { it.displayOrder ?: Int.MAX_VALUE }
 
-    @Suppress("UNUSED_PARAMETER")
     fun groupAndSortStations(
         allStations: List<RadioStation>,
-        activeUrl: String?,
         favorites: Set<String>
     ): ImmutableList<RadioStation> {
         if (allStations.isEmpty()) return kotlinx.collections.immutable.persistentListOf()

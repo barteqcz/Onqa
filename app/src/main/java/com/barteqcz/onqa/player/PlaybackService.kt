@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
+import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
@@ -19,12 +20,24 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Metadata
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.extractor.metadata.icy.IcyHeaders
+import androidx.media3.extractor.metadata.icy.IcyInfo
+import androidx.media3.extractor.metadata.id3.TextInformationFrame
+import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
+import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionCommands
+import androidx.media3.session.SessionResult
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
@@ -45,6 +58,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
@@ -52,6 +66,7 @@ import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
+@OptIn(UnstableApi::class)
 @AndroidEntryPoint
 class PlaybackService : MediaSessionService() {
 
@@ -89,7 +104,7 @@ class PlaybackService : MediaSessionService() {
         stallJob = serviceScope.launch {
             delay(10000.milliseconds) // 10 seconds timeout for buffering stall
             val player = exoPlayer ?: return@launch
-            if (player.playbackState == Player.STATE_BUFFERING && !player.isPlaying) {
+            if ((player.playbackState == Player.STATE_BUFFERING) && !player.isPlaying) {
                 Timber.w("Playback stalled in buffering state for 10s. Triggering automatic reconnect...")
                 retryPlayback()
             }
@@ -121,6 +136,9 @@ class PlaybackService : MediaSessionService() {
         const val EXTRA_LOGO = "logo"
         const val EXTRA_NETWORK = "network"
 
+        private const val SESSION_ACTION_PREVIOUS = "ACTION_PREV"
+        private const val SESSION_ACTION_NEXT = "ACTION_NEXT"
+
         private const val RETRY_DELAY_MS = 5000L
 
         private const val FADE_IN_MS = 400L
@@ -133,7 +151,7 @@ class PlaybackService : MediaSessionService() {
         createNotificationChannel()
         initializePlayer()
         observeStations()
-        
+
         if (hasLocationPermission()) {
             try {
                 repository.startLocationTracking()
@@ -195,7 +213,7 @@ class PlaybackService : MediaSessionService() {
 
     private suspend fun fadeIn(durationMs: Long = FADE_IN_MS) {
         val player = exoPlayer ?: return
-        
+
         try {
             withTimeout(FADE_READY_TIMEOUT_MS.milliseconds) {
                 while ((player.playbackState != Player.STATE_READY) || (!player.isPlaying)) {
@@ -212,7 +230,7 @@ class PlaybackService : MediaSessionService() {
         val steps = 20
         val stepDuration = durationMs / steps
         val totalDelta = 1f - currentVol
-        
+
         for (i in 1..steps) {
             delay(stepDuration.milliseconds)
             exoPlayer?.volume = (currentVol + ((totalDelta * i) / steps)).coerceIn(0f, 1f)
@@ -224,7 +242,7 @@ class PlaybackService : MediaSessionService() {
         val player = exoPlayer ?: return
         val startVol = player.volume
         if (startVol <= 0f) return
-        
+
         val steps = 20
         val stepDuration = durationMs / steps
         for (i in (steps - 1) downTo 0) {
@@ -256,7 +274,15 @@ class PlaybackService : MediaSessionService() {
                 .setUsage(C.USAGE_MEDIA)
                 .build()
 
+            val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+                .setDefaultRequestProperties(mapOf("Icy-MetaData" to "1"))
+                .setAllowCrossProtocolRedirects(true)
+
+            val dataSourceFactory = DefaultDataSource.Factory(this, httpDataSourceFactory)
+            val mediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
+
             exoPlayer = ExoPlayer.Builder(this)
+                .setMediaSourceFactory(mediaSourceFactory)
                 .setAudioAttributes(audioAttributes, true)
                 .setWakeMode(C.WAKE_MODE_NETWORK)
                 .build()
@@ -282,13 +308,43 @@ class PlaybackService : MediaSessionService() {
                             else -> {}
                         }
                     }
-                    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+                    override fun onMetadata(metadata: Metadata) {
                         if (isUpdatingMetadata) return
-                        
+
                         val player = exoPlayer ?: return
                         val currentItemUrl = player.currentMediaItem?.mediaId
                         if (currentItemUrl != currentStationUrl) return
-                        
+
+                        for (i in 0 until metadata.length()) {
+                            when (val entry = metadata[i]) {
+                                is IcyInfo -> {
+                                    val title = entry.title
+                                    Timber.d("In-stream ICY metadata received for $currentStationName: $title")
+                                    if (!title.isNullOrBlank()) {
+                                        processStreamTitle(title)
+                                    }
+                                }
+                                is TextInformationFrame -> {
+                                    val value = entry.values.firstOrNull()
+                                    Timber.d("In-stream ID3 metadata received for $currentStationName: $value")
+                                    if (!value.isNullOrBlank()) {
+                                        processStreamTitle(value)
+                                    }
+                                }
+                                is IcyHeaders -> {
+                                    Timber.d("In-stream ICY headers received: station=${entry.name}, genre=${entry.genre}")
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+                        if (isUpdatingMetadata) return
+
+                        val player = exoPlayer ?: return
+                        val currentItemUrl = player.currentMediaItem?.mediaId
+                        if (currentItemUrl != currentStationUrl) return
+
                         if ((player.isPlaying) || (player.playbackState == Player.STATE_BUFFERING)) {
                             processMetadata(mediaMetadata)
                         } else {
@@ -316,6 +372,21 @@ class PlaybackService : MediaSessionService() {
                 .setSessionActivity(pendingIntent)
                 .setCallback(
                     object : MediaSession.Callback {
+                        override fun onConnect(
+                            session: MediaSession,
+                            controller: MediaSession.ControllerInfo,
+                        ): MediaSession.ConnectionResult {
+                            val availableSessionCommands = SessionCommands.Builder()
+                                .add(SessionCommand(SESSION_ACTION_PREVIOUS, Bundle.EMPTY))
+                                .add(SessionCommand(SESSION_ACTION_NEXT, Bundle.EMPTY))
+                                .build()
+
+                            return MediaSession.ConnectionResult.accept(
+                                availableSessionCommands,
+                                session.player.availableCommands,
+                            )
+                        }
+
                         override fun onAddMediaItems(
                             mediaSession: MediaSession,
                             controller: MediaSession.ControllerInfo,
@@ -334,11 +405,11 @@ class PlaybackService : MediaSessionService() {
                                     }
                                     .build()
                             }.toMutableList()
-                            
+
                             val future = SettableFuture.create<MutableList<MediaItem>>()
                             val firstItem = updatedItems.firstOrNull()
-                            
-                            if ((firstItem != null) && (exoPlayer?.isPlaying == true) && 
+
+                            if ((firstItem != null) && (exoPlayer?.isPlaying == true) &&
                                 (exoPlayer?.currentMediaItem?.mediaId != firstItem.mediaId)) {
                                 serviceScope.launch {
                                     fadeOut()
@@ -349,10 +420,38 @@ class PlaybackService : MediaSessionService() {
                             }
                             return future
                         }
+
+                        override fun onCustomCommand(
+                            mediaSession: MediaSession,
+                            controller: MediaSession.ControllerInfo,
+                            customCommand: SessionCommand,
+                            args: Bundle,
+                        ): ListenableFuture<SessionResult> {
+                            if (customCommand.customAction == SESSION_ACTION_PREVIOUS) {
+                                skipStation(-1)
+                            } else if (customCommand.customAction == SESSION_ACTION_NEXT) {
+                                skipStation(1)
+                            }
+                            return SettableFuture.create<SessionResult>().apply {
+                                set(SessionResult(SessionResult.RESULT_SUCCESS))
+                            }
+                        }
                     },
                 )
                 .build()
-            
+
+            val prevButton = CommandButton.Builder(CommandButton.ICON_PREVIOUS)
+                .setDisplayName("Previous")
+                .setSessionCommand(SessionCommand(SESSION_ACTION_PREVIOUS, Bundle.EMPTY))
+                .build()
+
+            val nextButton = CommandButton.Builder(CommandButton.ICON_NEXT)
+                .setDisplayName("Next")
+                .setSessionCommand(SessionCommand(SESSION_ACTION_NEXT, Bundle.EMPTY))
+                .build()
+
+            mediaSession?.setCustomLayout(listOf(prevButton, nextButton))
+
             mediaSession?.let { addSession(it) }
         }
     }
@@ -374,6 +473,15 @@ class PlaybackService : MediaSessionService() {
                 playInternal(name, url, logo, network, forceReload = true)
             }
         }
+    }
+
+    private fun processStreamTitle(rawTitle: String) {
+        val (displayTitle, _) = MediaMetadataMapper.getEffectiveMetadata(
+            streamTitle = rawTitle,
+            streamArtist = null,
+            stationName = currentStationName,
+        )
+        updateRdsAndNotification(displayTitle)
     }
 
     private fun processMetadata(mediaMetadata: MediaMetadata) {
@@ -398,10 +506,10 @@ class PlaybackService : MediaSessionService() {
         info?.let {
             lastRdsTitle = it
         }
-        
+
         val isActuallyPlaying = (player.playWhenReady) || (player.playbackState == Player.STATE_BUFFERING)
         val titleToProcess = if (isActuallyPlaying) (lastRdsTitle ?: info) else null
-        
+
         val allStations = (repository.stations.value as? NetworkResult.Success)?.data
         val (displayTitle, displaySubtitle) = MediaMetadataMapper.getEffectiveMetadata(
             streamTitle = titleToProcess,
@@ -409,14 +517,14 @@ class PlaybackService : MediaSessionService() {
             stationName = stationName,
             allStations = allStations,
         )
-        
+
         mediaSession?.let { session ->
             val player = session.player
             val index = player.currentMediaItemIndex
             if (index == -1) return
-            
+
             val currentItem = if (index < player.mediaItemCount) player.getMediaItemAt(index) else null
-            
+
             if ((currentItem != null) && (currentItem.mediaId == stationUrl)) {
                 val metadata = MediaMetadataMapper.buildMetadata(
                     title = displayTitle ?: stationName,
@@ -428,17 +536,17 @@ class PlaybackService : MediaSessionService() {
                 )
 
                 if (isUpdatingMetadata) return
-                
+
                 val currentMetadata = currentItem.mediaMetadata
-                val isMetadataDifferent = (currentMetadata.title != metadata.title) || 
-                                         (currentMetadata.artist != metadata.artist) ||
-                                         (!currentMetadata.artworkData.contentEquals(metadata.artworkData)) ||
-                                         (currentMetadata.artworkUri != metadata.artworkUri)
+                val isMetadataDifferent = (currentMetadata.title != metadata.title) ||
+                        (currentMetadata.artist != metadata.artist) ||
+                        (!currentMetadata.artworkData.contentEquals(metadata.artworkData)) ||
+                        (currentMetadata.artworkUri != metadata.artworkUri)
 
                 if (isMetadataDifferent) {
                     isUpdatingMetadata = true
                     try {
-                        Timber.d("Updating media item metadata for $stationName. Has artwork: ${currentArtworkData != null}")
+                        Timber.d("Updating media item & playlist metadata for $stationName: ${metadata.title}. Has artwork: ${currentArtworkData != null}")
                         player.replaceMediaItem(index, currentItem.buildUpon().setMediaMetadata(metadata).build())
                         player.playlistMetadata = metadata
                     } catch (e: Exception) {
@@ -453,25 +561,25 @@ class PlaybackService : MediaSessionService() {
 
     private fun playInternal(name: String, url: String, logo: String?, network: String?, forceReload: Boolean = false) {
         val isItemLoaded = exoPlayer?.currentMediaItem?.mediaId == url
-        
+
         currentStationName = name
         currentStationLogo = logo
         currentStationUrl = url
         currentStationNetwork = network
         currentArtworkData = null
         lastRdsTitle = null
-        
+
         initializePlayer()
         loadArtwork(logo)
 
         playbackJob?.cancel()
         playbackJob = serviceScope.launch {
             val player = exoPlayer ?: return@launch
-            
-            val shouldReload = forceReload || (!isItemLoaded) || (!player.playWhenReady) || 
-                             (player.playbackState == Player.STATE_IDLE) || 
-                             (player.playbackState == Player.STATE_ENDED) ||
-                             (player.playerError != null)
+
+            val shouldReload = forceReload || (!isItemLoaded) || (!player.playWhenReady) ||
+                    (player.playbackState == Player.STATE_IDLE) ||
+                    (player.playbackState == Player.STATE_ENDED) ||
+                    (player.playerError != null)
 
             if (shouldReload) {
                 if (player.isPlaying) {
@@ -518,6 +626,32 @@ class PlaybackService : MediaSessionService() {
         }
     }
 
+    private fun skipStation(delta: Int) {
+        serviceScope.launch {
+            val allStations = (repository.stations.value as? NetworkResult.Success)?.data ?: return@launch
+            if (allStations.isEmpty()) return@launch
+
+            val player = exoPlayer
+            val currentUrl = player?.currentMediaItem?.mediaId ?: currentStationUrl
+            val currentIndex = allStations.indexOfFirst {
+                it.matchesUrl(currentUrl) || it.name.equals(currentStationName, ignoreCase = true)
+            }
+
+            val nextIndex = when {
+                currentIndex == -1 -> 0
+                delta > 0 -> (currentIndex + 1) % allStations.size
+                else -> if (currentIndex == 0) allStations.lastIndex else currentIndex - 1
+            }
+
+            val s = allStations[nextIndex]
+            val useHq = settingsRepository.settingsFlow.first().useHqStream
+            val url = s.getStreamUrl(useHq) ?: s.streamUrl ?: return@launch
+            playInternal(s.name, url, s.logo, s.network, forceReload = true)
+
+            if (delta > 0) playbackEvents.emitNext() else playbackEvents.emitPrevious()
+        }
+    }
+
     private fun stopInternal() {
         playbackJob?.cancel()
         stopStallWatchdog()
@@ -527,7 +661,7 @@ class PlaybackService : MediaSessionService() {
         currentStationNetwork = null
         currentArtworkData = null
         lastRdsTitle = null
-        
+
         playbackJob = serviceScope.launch {
             try {
                 fadeOut()
@@ -561,7 +695,7 @@ class PlaybackService : MediaSessionService() {
                     .build()
                 when (val result = imageLoader.execute(request)) {
                     is SuccessResult -> {
-                        val bitmap = result.drawable.toBitmap()
+                        val bitmap = result.drawable.toBitmap(width = 500, height = 500)
                         val outputStream = ByteArrayOutputStream()
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
                         currentArtworkData = outputStream.toByteArray()

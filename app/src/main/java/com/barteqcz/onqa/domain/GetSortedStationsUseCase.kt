@@ -8,9 +8,8 @@ import javax.inject.Inject
 class GetSortedStationsUseCase @Inject constructor() {
     operator fun invoke(
         allStations: List<RadioStation>,
-        activeUrl: String?,
         favorites: Set<String>
     ): ImmutableList<RadioStation> {
-        return StationProcessor.groupAndSortStations(allStations, activeUrl, favorites)
+        return StationProcessor.groupAndSortStations(allStations, favorites)
     }
 }

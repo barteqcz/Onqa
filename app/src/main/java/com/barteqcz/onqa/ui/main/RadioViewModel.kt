@@ -132,7 +132,7 @@ class RadioViewModel @Inject constructor(
             ),
         )
 
-    private val favoriteStations = settings.map { settings -> settings.favoriteStations }.distinctUntilChanged()
+    private val favoriteStations = settings.map { it.favoriteStations }.distinctUntilChanged()
 
     private val stationsResult = repository.stations
         .combine(repository.currentLocation) { stations, location -> 
@@ -144,26 +144,19 @@ class RadioViewModel @Inject constructor(
         query to active
     }
 
-    private val activeUrlAndLocInfo = combine(
-        radioPlayer.state.map { it.stationInfo.url }.distinctUntilChanged(),
-        repository.locationInfo,
-    ) { activeUrl, locInfo ->
-        activeUrl to locInfo
-    }
-
     private val processedStations: StateFlow<RadioUiState> = combine(
         stationsResult,
         favoriteStations,
         searchFlow,
-        activeUrlAndLocInfo,
-    ) { (res, loc), favorites, (query, searchActive), (activeUrl, locInfo) ->
+        repository.locationInfo,
+    ) { (res, loc), favorites, (query, searchActive), locInfo ->
         if (loc == null) return@combine RadioUiState.Loading
 
         when (res) {
             is NetworkResult.Loading -> RadioUiState.Loading
             is NetworkResult.Success -> {
                 val allStations = res.data
-                val groupedStations = getSortedStations(allStations, activeUrl, favorites)
+                val groupedStations = getSortedStations(allStations, favorites)
                 
                 val filteredStations = if (query.isBlank() || !searchActive) {
                     groupedStations

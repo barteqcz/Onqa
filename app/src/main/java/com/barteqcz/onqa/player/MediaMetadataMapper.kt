@@ -3,6 +3,7 @@ package com.barteqcz.onqa.player
 import android.os.Bundle
 import androidx.core.net.toUri
 import androidx.media3.common.MediaMetadata
+import com.barteqcz.onqa.data.model.RadioStation
 
 object MediaMetadataMapper {
 
@@ -13,7 +14,7 @@ object MediaMetadataMapper {
         artworkUri: String? = null,
         artworkData: ByteArray? = null,
         network: String? = null,
-        extras: Bundle = Bundle()
+        extras: Bundle = Bundle(),
     ): MediaMetadata {
         return MediaMetadata.Builder()
             .setTitle(title)
@@ -24,9 +25,7 @@ object MediaMetadataMapper {
             .setArtworkData(artworkData, MediaMetadata.PICTURE_TYPE_FRONT_COVER)
             .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
             .apply {
-                if (network != null) {
-                    extras.putString("network", network)
-                }
+                network?.let { extras.putString("network", it) }
                 setExtras(extras)
             }
             .build()
@@ -36,31 +35,35 @@ object MediaMetadataMapper {
         streamTitle: String?,
         streamArtist: String?,
         stationName: String?,
-        allStations: List<com.barteqcz.onqa.data.model.RadioStation>? = null
+        allStations: List<RadioStation>? = null,
     ): Pair<String?, String?> {
-        val sName = stationName?.trim() ?: ""
-        val sTitle = streamTitle?.trim() ?: ""
-        val sArtist = streamArtist?.trim() ?: ""
+        val sName = stationName?.trim().orEmpty()
+        val sTitle = streamTitle?.trim().orEmpty()
+        val sArtist = streamArtist?.trim().orEmpty()
 
-        val otherStation = allStations?.find { 
-            it.name.equals(sTitle, ignoreCase = true) && it.name != sName 
+        val otherStation = allStations?.find { station ->
+            station.name.equals(sTitle, ignoreCase = true) && station.name != sName
         }
-        
+
         if (otherStation != null) {
             return sName to ""
         }
 
-        val effectiveArtist = if (sArtist.equals(sName, ignoreCase = true) || sArtist.isEmpty()) null else sArtist
-        val effectiveTitle = if (sTitle.equals(sName, ignoreCase = true) || sTitle.isEmpty()) null else sTitle
+        val effectiveArtist = sArtist.takeUnless {
+            it.equals(sName, ignoreCase = true) || it.isEmpty()
+        }
+        val effectiveTitle = sTitle.takeUnless {
+            it.equals(sName, ignoreCase = true) || it.isEmpty()
+        }
 
         return when {
-            effectiveArtist != null && effectiveTitle != null -> 
+            effectiveArtist != null && effectiveTitle != null ->
                 "$effectiveArtist - $effectiveTitle" to sName
-            
+
             effectiveTitle != null -> effectiveTitle to sName
             effectiveArtist != null -> effectiveArtist to sName
-            
             else -> sName to ""
         }
     }
+
 }

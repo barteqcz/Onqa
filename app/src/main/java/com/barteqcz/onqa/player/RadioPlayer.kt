@@ -2,16 +2,19 @@ package com.barteqcz.onqa.player
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,7 +40,6 @@ class RadioPlayer @Inject constructor(
     private val playbackEvents: PlaybackEvents,
 ) {
     private var controller: MediaController? = null
-    private var lastPauseActionTime: Long = 0
 
     private val _state = MutableStateFlow(PlayerState())
     val state: StateFlow<PlayerState> = _state.asStateFlow()
@@ -54,15 +56,22 @@ class RadioPlayer @Inject constructor(
     }
 
     init {
-        val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
+        val sessionToken = SessionToken(
+            context,
+            ComponentName(context, PlaybackService::class.java),
+        )
         val controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
+
         controllerFuture.addListener(
             {
                 try {
-                    controller = controllerFuture.get()
-                    controller?.let { setupController(it) }
-                } catch (e: Exception) {
-                    Timber.e(e, "Failed to connect MediaController")
+                    val connectedController = controllerFuture.get()
+                    if (controller == null) {
+                        controller = connectedController
+                        setupController(connectedController)
+                    }
+                } catch (exception: Exception) {
+                    Timber.e(exception, "Failed to connect MediaController")
                 }
             },
             ContextCompat.getMainExecutor(context),
@@ -73,100 +82,129 @@ class RadioPlayer @Inject constructor(
         player.addListener(
             object : Player.Listener {
                 override fun onIsPlayingChanged(playing: Boolean) {
-                    _state.update { it.copy(isPlaying = playing) }
-                }
-                override fun onPlaybackStateChanged(state: Int) {
-                    val buffering = state == Player.STATE_BUFFERING
-                    if ((state != Player.STATE_IDLE) && (state != Player.STATE_ENDED)) {
-                        _state.update { 
-                            it.copy(
-                                isBuffering = buffering,
-                                playbackError = if (buffering) false else it.playbackError
-                            ) 
-                        }
-                    }
-                    if (state == Player.STATE_READY) {
-                        _state.update { it.copy(playbackError = false, isBuffering = false) }
+                    _state.update { currentState ->
+                        currentState.copy(isPlaying = playing)
                     }
                 }
+
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isBuffering = playbackState == Player.STATE_BUFFERING,
+                            isPlaying = (playbackState == Player.STATE_READY) && currentState.isPlaying,
+                            playbackError = (playbackState != Player.STATE_READY) && currentState.playbackError,
+                        )
+                    }
+                }
+
                 override fun onPlayerError(error: PlaybackException) {
-                    _state.update { it.copy(playbackError = true, isPlaying = false, isBuffering = false) }
+                    Timber.e(error, "Radio playback failed: %s", error.errorCodeName)
+                    _state.update { currentState ->
+                        currentState.copy(
+                            playbackError = true,
+                            isPlaying = false,
+                            isBuffering = false,
+                        )
+                    }
                 }
+
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                    syncWithMediaItem(mediaItem)
+                    val metadata = player.playlistMetadata.takeIf { !it.title.isNullOrBlank() }
+                        ?: player.mediaMetadata
+                    syncWithMediaItem(mediaItem, metadata)
                 }
+
+                override fun onPlaylistMetadataChanged(playlistMetadata: MediaMetadata) {
+                    syncWithMediaItem(player.currentMediaItem, playlistMetadata)
+                }
+
                 override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                    syncWithMediaItem(player.currentMediaItem)
+                    val metadata = player.playlistMetadata.takeIf { !it.title.isNullOrBlank() }
+                        ?: mediaMetadata
+                    syncWithMediaItem(player.currentMediaItem, metadata)
                 }
             },
         )
-        
-        _state.update { it.copy(
-            isPlaying = player.isPlaying,
-            isBuffering = player.playbackState == Player.STATE_BUFFERING,
-        ) }
-        syncWithMediaItem(player.currentMediaItem)
+
+        _state.update { currentState ->
+            currentState.copy(
+                isPlaying = player.isPlaying,
+                isBuffering = player.playbackState == Player.STATE_BUFFERING,
+            )
+        }
+        val initialMetadata = player.playlistMetadata.takeIf { !it.title.isNullOrBlank() }
+            ?: player.mediaMetadata
+        syncWithMediaItem(player.currentMediaItem, initialMetadata)
     }
 
-    private fun syncWithMediaItem(item: MediaItem?) {
-        val metadata = item?.mediaMetadata
-        val title = metadata?.title?.toString()
-        val stationName = metadata?.albumArtist?.toString() ?: metadata?.artist?.toString()
-        
+    private fun syncWithMediaItem(
+        item: MediaItem?,
+        currentMetadata: MediaMetadata? = controller?.playlistMetadata?.takeIf { !it.title.isNullOrBlank() }
+            ?: controller?.mediaMetadata
+            ?: item?.mediaMetadata,
+    ) {
+        val stationMetadata = item?.mediaMetadata
+        val title = currentMetadata?.title?.toString()
+        val stationName = stationMetadata?.albumArtist?.toString()
+            ?.takeIf { it.isNotBlank() }
+            ?: stationMetadata?.artist?.toString()?.takeIf { it.isNotBlank() }
+            ?: stationMetadata?.title?.toString()?.takeIf { it.isNotBlank() }
+
         val info = StationInfo(
             url = item?.mediaId,
             name = stationName,
-            logo = metadata?.artworkUri?.toString(),
-            network = metadata?.extras?.getString("network")
+            logo = stationMetadata?.artworkUri?.toString(),
+            network = stationMetadata?.extras?.getString(EXTRA_NETWORK_KEY),
         )
-        
-        val meta = if (!title.isNullOrBlank() && (title != stationName)) title else null
+        val trackMetadata = title?.takeIf {
+            it.isNotBlank() && (it != stationName)
+        }
 
-        _state.update { it.copy(stationInfo = info, metadata = meta) }
+        _state.update { currentState ->
+            currentState.copy(
+                stationInfo = info,
+                metadata = trackMetadata,
+            )
+        }
     }
 
-    fun play(stationName: String?, url: String, logoUrl: String?, network: String? = null, forceReload: Boolean = false) {
-        if (_state.value.stationInfo.url != url) {
-            _state.update { it.copy(metadata = null) }
+    fun play(
+        stationName: String?,
+        url: String,
+        logoUrl: String?,
+        network: String? = null,
+        forceReload: Boolean = false,
+    ) {
+        _state.update { currentState ->
+            currentState.copy(
+                metadata = if (forceReload || (currentState.stationInfo.url != url)) {
+                    null
+                } else {
+                    currentState.metadata
+                },
+                playbackError = false,
+                isBuffering = true,
+            )
         }
 
-        lastPauseActionTime = 0
-        _state.update { it.copy(playbackError = false, isBuffering = true) }
-        
-        val player = controller ?: return
-        
-        val extras = android.os.Bundle().apply {
-            if (forceReload) putBoolean("force_reload", true)
+        val intent = Intent(context, PlaybackService::class.java).apply {
+            action = PlaybackService.ACTION_PLAY
+            putExtra(PlaybackService.EXTRA_URL, url)
+            putExtra(PlaybackService.EXTRA_NAME, stationName.orEmpty())
+            putExtra(PlaybackService.EXTRA_LOGO, logoUrl)
+            putExtra(PlaybackService.EXTRA_NETWORK, network)
         }
-        
-        val mediaMetadata = MediaMetadataMapper.buildMetadata(
-            title = stationName,
-            artist = null,
-            stationName = stationName,
-            artworkUri = logoUrl,
-            network = network,
-            extras = extras
-        )
-
-        val mediaItem = MediaItem.Builder()
-            .setMediaId(url)
-            .setUri(url)
-            .setMediaMetadata(mediaMetadata)
-            .apply {
-                if (url.contains("m3u8") || url.contains(".m3u")) {
-                    setMimeType(MimeTypes.APPLICATION_M3U8)
-                }
-            }
-            .build()
-
-        player.setMediaItem(mediaItem)
-        player.seekToDefaultPosition()
-        player.prepare()
-        player.play()
+        ContextCompat.startForegroundService(context, intent)
     }
 
     fun pause() {
-        lastPauseActionTime = System.currentTimeMillis()
-        controller?.pause()
+        val intent = Intent(context, PlaybackService::class.java).apply {
+            action = PlaybackService.ACTION_PAUSE
+        }
+        ContextCompat.startForegroundService(context, intent)
+    }
+
+    private companion object {
+        const val EXTRA_NETWORK_KEY = "network"
     }
 }
