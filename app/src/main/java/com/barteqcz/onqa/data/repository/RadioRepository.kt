@@ -91,7 +91,7 @@ class RadioRepository @Inject constructor(
             Timber.e(e, "Error updating nearby stations from catalog database")
             if (_stations.value !is NetworkResult.Success) {
                 val message = e.message ?: context.getString(R.string.error_unknown)
-                _stations.value = NetworkResult.Error(message, e)
+                _stations.value = NetworkResult.Error(message)
             }
         }
     }

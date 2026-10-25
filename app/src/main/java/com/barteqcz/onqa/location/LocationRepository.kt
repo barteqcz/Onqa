@@ -46,7 +46,7 @@ class LocationRepository @Inject constructor(
             } catch (e: Exception) {
                 Timber.e(e, "Failed to get addresses from location")
                 if (continuation.isActive) {
-                    continuation.resume(NetworkResult.Error(context.getString(R.string.error_resolve_address), e))
+                    continuation.resume(NetworkResult.Error(context.getString(R.string.error_resolve_address)))
                 }
             }
         }
@@ -73,7 +73,7 @@ class LocationRepository @Inject constructor(
             } catch (e: Exception) {
                 Timber.e(e, "Failed to search cities for $cityName")
                 if (continuation.isActive) {
-                    continuation.resume(NetworkResult.Error(context.getString(R.string.error_find_coordinates), e))
+                    continuation.resume(NetworkResult.Error(context.getString(R.string.error_find_coordinates)))
                 }
             }
         }
