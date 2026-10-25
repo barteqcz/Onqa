@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Mujor</string>
     <string name="catalog_manual_update_title">Përditëso bazën e të dhënave tani</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Skedari i zgjedhur nuk është një skedar JSON i vlefshëm i të preferuarave</string>
+    <string name="favorites_import_empty_file">Skedari i zgjedhur është bosh</string>
+    <string name="favorites_import_dialog_title">Importo stacionet e preferuara</string>
+    <string name="favorites_import_dialog_total">Stacione gjithsej në skedar: %d</string>
+    <string name="favorites_import_dialog_valid">Të njohura në katalog: %d</string>
+    <string name="favorites_import_dialog_unknown">Të panjohura / nuk janë në katalog: %d</string>
+    <string name="favorites_import_dialog_warning">Disa stacione në skedar nuk u gjetën në bazën e të dhënave të stacioneve.</string>
+    <string name="favorites_import_mode_merge">Bashko me të preferuarat aktuale</string>
+    <string name="favorites_import_mode_replace">Zëvendëso të preferuarat aktuale</string>
+    <string name="favorites_import_include_unknown">Përfshi stacionet e panjohura</string>
+    <string name="favorites_import_confirm">Importo</string>
+    <string name="cancel">Anulo</string>
 </resources>

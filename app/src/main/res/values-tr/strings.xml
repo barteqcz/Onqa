@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Monthly</string>
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Seçilen dosya geçerli bir JSON favoriler dosyası değil</string>
+    <string name="favorites_import_empty_file">Seçilen dosya boş</string>
+    <string name="favorites_import_dialog_title">Favori İstasyonları İçe Aktar</string>
+    <string name="favorites_import_dialog_total">Dosyadaki toplam istasyon: %d</string>
+    <string name="favorites_import_dialog_valid">Katalogda tanınan: %d</string>
+    <string name="favorites_import_dialog_unknown">Bilinmeyen / katalogda yok: %d</string>
+    <string name="favorites_import_dialog_warning">Dosyadaki bazı istasyonlar istasyon veritabanında bulunamadı.</string>
+    <string name="favorites_import_mode_merge">Mevcut favorilerle birleştir</string>
+    <string name="favorites_import_mode_replace">Mevcut favorileri değiştir</string>
+    <string name="favorites_import_include_unknown">Bilinmeyen istasyonları dahil et</string>
+    <string name="favorites_import_confirm">İçe Aktar</string>
+    <string name="cancel">İptal</string>
 </resources>

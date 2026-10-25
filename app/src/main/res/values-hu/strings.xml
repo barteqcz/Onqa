@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Havi</string>
     <string name="catalog_manual_update_title">Adatbázis frissítése most</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">A kiválasztott fájl nem érvényes JSON kedvencek fájl</string>
+    <string name="favorites_import_empty_file">A kiválasztott fájl üres</string>
+    <string name="favorites_import_dialog_title">Kedvenc állomások importálása</string>
+    <string name="favorites_import_dialog_total">Összes állomás a fájlban: %d</string>
+    <string name="favorites_import_dialog_valid">Katalógusban felismert: %d</string>
+    <string name="favorites_import_dialog_unknown">Ismeretlen / nincs a katalógusban: %d</string>
+    <string name="favorites_import_dialog_warning">A fájlban lévő egyes állomások nem találhatók az állomásadatbázisban.</string>
+    <string name="favorites_import_mode_merge">Egyesítés a jelenlegi kedvencekkel</string>
+    <string name="favorites_import_mode_replace">Jelenlegi kedvencek cseréje</string>
+    <string name="favorites_import_include_unknown">Ismeretlen állomások belefoglalása</string>
+    <string name="favorites_import_confirm">Importálás</string>
+    <string name="cancel">Mégse</string>
 </resources>

@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Monthly</string>
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Níl an comhad roghnaithe ina chomhad JSON fabhar bailí</string>
+    <string name="favorites_import_empty_file">Tá an comhad roghnaithe folamh</string>
+    <string name="favorites_import_dialog_title">Iompórtáil Stáisiúin Fhabhar</string>
+    <string name="favorites_import_dialog_total">Stáisiúin iomlána sa chomhad: %d</string>
+    <string name="favorites_import_dialog_valid">Aitheanta sa chatalóg: %d</string>
+    <string name="favorites_import_dialog_unknown">Anaithnid / nach bhfuil sa chatalóg: %d</string>
+    <string name="favorites_import_dialog_warning">Níor aimsíodh roinnt stáisiún sa chomhad i bhbunachar sonraí na stáisiún.</string>
+    <string name="favorites_import_mode_merge">Cumaisc leis na fabhair reatha</string>
+    <string name="favorites_import_mode_replace">Cuir in ionad na fabhair reatha</string>
+    <string name="favorites_import_include_unknown">Cuir stáisiúin anaithnide san áireamh</string>
+    <string name="favorites_import_confirm">Iompórtáil</string>
+    <string name="cancel">Cealaigh</string>
 </resources>

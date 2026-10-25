@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Monthly</string>
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Valin skrá er ekki gild JSON uppáhaldsskrá</string>
+    <string name="favorites_import_empty_file">Valin skrá er tóm</string>
+    <string name="favorites_import_dialog_title">Flytja inn uppáhaldsstöðvar</string>
+    <string name="favorites_import_dialog_total">Fjöldi stöðva í skrá: %d</string>
+    <string name="favorites_import_dialog_valid">Þekktar í safni: %d</string>
+    <string name="favorites_import_dialog_unknown">Óþekktar / ekki í safni: %d</string>
+    <string name="favorites_import_dialog_warning">Sumar stöðvar í skránni fundust ekki í stöðvagagnagrunninum.</string>
+    <string name="favorites_import_mode_merge">Sameina við núverandi uppáhald</string>
+    <string name="favorites_import_mode_replace">Skipta út núverandi uppáhalds</string>
+    <string name="favorites_import_include_unknown">Taka með óþekktar stöðvar</string>
+    <string name="favorites_import_confirm">Flytja inn</string>
+    <string name="cancel">Hætta við</string>
 </resources>

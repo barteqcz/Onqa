@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Monthly</string>
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Fișierul selectat nu este un fișier JSON de favorite valid</string>
+    <string name="favorites_import_empty_file">Fișierul selectat este gol</string>
+    <string name="favorites_import_dialog_title">Importă posturi favorite</string>
+    <string name="favorites_import_dialog_total">Total posturi în fișier: %d</string>
+    <string name="favorites_import_dialog_valid">Recunoscute în catalog: %d</string>
+    <string name="favorites_import_dialog_unknown">Necunoscute / nu sunt în catalog: %d</string>
+    <string name="favorites_import_dialog_warning">Unele posturi din fișier nu au fost găsite în baza de date a posturilor.</string>
+    <string name="favorites_import_mode_merge">Îmbină cu favoritele actuale</string>
+    <string name="favorites_import_mode_replace">Înlocuiește favoritele actuale</string>
+    <string name="favorites_import_include_unknown">Include posturile necunoscute</string>
+    <string name="favorites_import_confirm">Importă</string>
+    <string name="cancel">Anulează</string>
 </resources>

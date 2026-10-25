@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Monthly</string>
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Valittu tiedosto ei ole kelvollinen JSON-suosikkitiedosto</string>
+    <string name="favorites_import_empty_file">Valittu tiedosto on tyhjä</string>
+    <string name="favorites_import_dialog_title">Tuo suosikkiasemat</string>
+    <string name="favorites_import_dialog_total">Asemia tiedostossa yhteensä: %d</string>
+    <string name="favorites_import_dialog_valid">Tunnistettu luettelosta: %d</string>
+    <string name="favorites_import_dialog_unknown">Tuntematon / ei luettelossa: %d</string>
+    <string name="favorites_import_dialog_warning">Joitakin tiedoston asemia ei löytynyt asematietokannasta.</string>
+    <string name="favorites_import_mode_merge">Yhdistä nykyisiin suosikkeihin</string>
+    <string name="favorites_import_mode_replace">Korvaa nykyiset suosikit</string>
+    <string name="favorites_import_include_unknown">Sisällytä tuntemattomat asemat</string>
+    <string name="favorites_import_confirm">Tuo</string>
+    <string name="cancel">Peruuta</string>
 </resources>

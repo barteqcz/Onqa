@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Mensuel</string>
     <string name="catalog_manual_update_title">Mettre à jour la base de données</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Le fichier sélectionné n\'est pas un fichier JSON de favoris valide</string>
+    <string name="favorites_import_empty_file">Le fichier sélectionné est vide</string>
+    <string name="favorites_import_dialog_title">Importer des stations favorites</string>
+    <string name="favorites_import_dialog_total">Total des stations dans le fichier : %d</string>
+    <string name="favorites_import_dialog_valid">Reconnues dans le catalogue : %d</string>
+    <string name="favorites_import_dialog_unknown">Inconnues / absentes du catalogue : %d</string>
+    <string name="favorites_import_dialog_warning">Certaines stations du fichier n\'ont pas été trouvées dans la base de données des stations.</string>
+    <string name="favorites_import_mode_merge">Fusionner avec les favoris actuels</string>
+    <string name="favorites_import_mode_replace">Remplacer les favoris actuels</string>
+    <string name="favorites_import_include_unknown">Inclure les stations inconnues</string>
+    <string name="favorites_import_confirm">Importer</string>
+    <string name="cancel">Annuler</string>
 </resources>

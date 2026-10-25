@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Monthly</string>
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Избраната датотека не е валидна JSON датотека со омилени</string>
+    <string name="favorites_import_empty_file">Избраната датотека е празна</string>
+    <string name="favorites_import_dialog_title">Импортирај омилени станици</string>
+    <string name="favorites_import_dialog_total">Вкупно станици во датотеката: %d</string>
+    <string name="favorites_import_dialog_valid">Препознаени во каталогот: %d</string>
+    <string name="favorites_import_dialog_unknown">Непознати / не се во каталогот: %d</string>
+    <string name="favorites_import_dialog_warning">Некои станици во датотеката не беа пронајдени во базата на податоци за станици.</string>
+    <string name="favorites_import_mode_merge">Спој со тековните омилени</string>
+    <string name="favorites_import_mode_replace">Замени ги тековните омилени</string>
+    <string name="favorites_import_include_unknown">Вклучи непознати станици</string>
+    <string name="favorites_import_confirm">Импортирај</string>
+    <string name="cancel">Откажи</string>
 </resources>

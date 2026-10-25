@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Monthly</string>
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Izbrana datoteka ni veljavna datoteka JSON s priljubljenimi</string>
+    <string name="favorites_import_empty_file">Izbrana datoteka je prazna</string>
+    <string name="favorites_import_dialog_title">Uvozi priljubljene postaje</string>
+    <string name="favorites_import_dialog_total">Skupno postaj v datoteki: %d</string>
+    <string name="favorites_import_dialog_valid">Prepoznanih v katalogu: %d</string>
+    <string name="favorites_import_dialog_unknown">Neznano / ni v katalogu: %d</string>
+    <string name="favorites_import_dialog_warning">Nekaterih postaj v datoteki ni mogoče najti v podatkovni bazi postaj.</string>
+    <string name="favorites_import_mode_merge">Združi s trenutnimi priljubljenimi</string>
+    <string name="favorites_import_mode_replace">Zamenjaj trenutne priljubljene</string>
+    <string name="favorites_import_include_unknown">Vključi neznane postaje</string>
+    <string name="favorites_import_confirm">Uvozi</string>
+    <string name="cancel">Prekliči</string>
 </resources>

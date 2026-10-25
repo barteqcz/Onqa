@@ -14,11 +14,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Upload
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import com.barteqcz.onqa.data.model.FavoritesImportResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +55,16 @@ fun SettingsScreen(
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
     val settings = viewState.settings
     val selectedUrl = viewState.selectedUrl
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var pendingImportResult by remember { mutableStateOf<FavoritesImportResult.Success?>(null) }
+
+    val exportedToastTpl = stringResource(R.string.favorites_exported_toast)
+    val importedToastTpl = stringResource(R.string.favorites_imported_toast)
+    val errorToastText = stringResource(R.string.favorites_import_error)
+    val invalidFormatToastText = stringResource(R.string.favorites_import_invalid_format)
+    val emptyFileToastText = stringResource(R.string.favorites_import_empty_file)
 
     val focusManager = LocalFocusManager.current
 
@@ -142,7 +158,7 @@ fun SettingsScreen(
                             onClick = onNavigateToMapPicker,
                             shape = RoundedCornerShape(16.dp),
                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
@@ -268,11 +284,6 @@ fun SettingsScreen(
 
                 SettingCategory(title = stringResource(R.string.category_data))
 
-                val context = LocalContext.current
-                val exportedToastTpl = stringResource(R.string.favorites_exported_toast)
-                val importedToastTpl = stringResource(R.string.favorites_imported_toast)
-                val errorToastText = stringResource(R.string.favorites_import_error)
-                
                 val exportLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.CreateDocument("application/json")
                 ) { uri ->
@@ -295,24 +306,33 @@ fun SettingsScreen(
                     contract = ActivityResultContracts.OpenDocument()
                 ) { uri ->
                     uri?.let {
-                        try {
-                            val text = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
-                            if (text != null) {
-                                val stations = try {
-                                    val backup = Json.decodeFromString<FavoritesBackup>(text)
-                                    backup.favoriteStations.toSet()
-                                } catch (_: Exception) {
-                                    try {
-                                        Json.decodeFromString<List<String>>(text).toSet()
-                                    } catch (_: Exception) {
-                                        text.lines().map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+                        scope.launch {
+                            try {
+                                val text = withContext(Dispatchers.IO) {
+                                    context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+                                }
+                                if (text.isNullOrBlank()) {
+                                    Toast.makeText(context, emptyFileToastText, Toast.LENGTH_SHORT).show()
+                                    return@launch
+                                }
+
+                                when (val result = viewModel.validateFavoritesImport(text)) {
+                                    is FavoritesImportResult.Success -> {
+                                        pendingImportResult = result
+                                    }
+                                    is FavoritesImportResult.Error.EmptyFile -> {
+                                        Toast.makeText(context, emptyFileToastText, Toast.LENGTH_SHORT).show()
+                                    }
+                                    is FavoritesImportResult.Error.InvalidFormat -> {
+                                        Toast.makeText(context, invalidFormatToastText, Toast.LENGTH_SHORT).show()
+                                    }
+                                    is FavoritesImportResult.Error.FileReadError -> {
+                                        Toast.makeText(context, errorToastText, Toast.LENGTH_SHORT).show()
                                     }
                                 }
-                                viewModel.importFavorites(stations)
-                                Toast.makeText(context, importedToastTpl.format(stations.size), Toast.LENGTH_SHORT).show()
+                            } catch (_: Exception) {
+                                Toast.makeText(context, errorToastText, Toast.LENGTH_SHORT).show()
                             }
-                        } catch (_: Exception) {
-                            Toast.makeText(context, errorToastText, Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -321,7 +341,7 @@ fun SettingsScreen(
                     onClick = { exportLauncher.launch("onqa_favorites.json") },
                     shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -359,7 +379,7 @@ fun SettingsScreen(
                     onClick = { importLauncher.launch(arrayOf("application/json", "text/plain", "*/*")) },
                     shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -597,6 +617,7 @@ fun SettingsScreen(
     if (showLocationValidationError) {
         AlertDialog(
             onDismissRequest = { showLocationValidationError = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false),
             confirmButton = {
                 Button(
                     onClick = { showLocationValidationError = false },
@@ -621,12 +642,202 @@ fun SettingsScreen(
             shape = RoundedCornerShape(28.dp),
             containerColor = MaterialTheme.colorScheme.surface,
             modifier = Modifier
-                .fillMaxWidth(0.92f)
+                .fillMaxWidth(0.94f)
                 .border(
                     width = 1.dp,
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
                     shape = RoundedCornerShape(28.dp)
                 )
         )
     }
+
+    pendingImportResult?.let { result ->
+        FavoritesImportDialog(
+            importResult = result,
+            onDismiss = { pendingImportResult = null },
+            onConfirm = { stations, replace ->
+                viewModel.importFavorites(stations, replace = replace)
+                Toast.makeText(context, importedToastTpl.format(stations.size), Toast.LENGTH_SHORT).show()
+                pendingImportResult = null
+            }
+        )
+    }
+}
+
+@Composable
+private fun FavoritesImportDialog(
+    importResult: FavoritesImportResult.Success,
+    onDismiss: () -> Unit,
+    onConfirm: (stations: Set<String>, replace: Boolean) -> Unit,
+) {
+    var replaceMode by remember { mutableStateOf(false) }
+    var includeUnknown by remember { mutableStateOf(true) }
+
+    val hasUnknown = importResult.unknownStations.isNotEmpty()
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(
+                onClick = {
+                    val stationsToImport = if (hasUnknown && !includeUnknown) {
+                        importResult.validStations
+                    } else {
+                        importResult.rawStations
+                    }
+                    onConfirm(stationsToImport, replaceMode)
+                },
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(stringResource(R.string.favorites_import_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        title = {
+            Text(
+                text = stringResource(R.string.favorites_import_dialog_title),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.favorites_import_dialog_total, importResult.totalCount),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Check,
+                                contentDescription = null,
+                                tint = OnqaGreen,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.favorites_import_dialog_valid, importResult.validStations.size),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        if (hasUnknown) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Warning,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Text(
+                                    text = stringResource(R.string.favorites_import_dialog_unknown, importResult.unknownStations.size),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (hasUnknown) {
+                    Text(
+                        text = stringResource(R.string.favorites_import_dialog_warning),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { includeUnknown = !includeUnknown },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Checkbox(
+                            checked = includeUnknown,
+                            onCheckedChange = { includeUnknown = it }
+                        )
+                        Text(
+                            text = stringResource(R.string.favorites_import_include_unknown),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+                )
+
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { replaceMode = false },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        RadioButton(
+                            selected = !replaceMode,
+                            onClick = { replaceMode = false }
+                        )
+                        Text(
+                            text = stringResource(R.string.favorites_import_mode_merge),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { replaceMode = true },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        RadioButton(
+                            selected = replaceMode,
+                            onClick = { replaceMode = true }
+                        )
+                        Text(
+                            text = stringResource(R.string.favorites_import_mode_replace),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            }
+        },
+        shape = RoundedCornerShape(28.dp),
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        containerColor = MaterialTheme.colorScheme.surface,
+        modifier = Modifier
+            .fillMaxWidth(0.94f)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
+                shape = RoundedCornerShape(28.dp)
+            )
+    )
 }

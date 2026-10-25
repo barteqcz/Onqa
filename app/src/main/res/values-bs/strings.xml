@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Mjesečno</string>
     <string name="catalog_manual_update_title">Ažuriraj bazu podataka</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Izabrana datoteka nije važeća JSON datoteka omiljenih stanica</string>
+    <string name="favorites_import_empty_file">Izabrana datoteka je prazna</string>
+    <string name="favorites_import_dialog_title">Uvezi omiljene stanice</string>
+    <string name="favorites_import_dialog_total">Ukupno stanica u datoteci: %d</string>
+    <string name="favorites_import_dialog_valid">Prepoznato u katalogu: %d</string>
+    <string name="favorites_import_dialog_unknown">Nepoznato / nije u katalogu: %d</string>
+    <string name="favorites_import_dialog_warning">Neke stanice u datoteci nisu pronađene u bazi podataka stanica.</string>
+    <string name="favorites_import_mode_merge">Spoji sa trenutnim omiljenim</string>
+    <string name="favorites_import_mode_replace">Zamijeni trenutne omiljene</string>
+    <string name="favorites_import_include_unknown">Uključi nepoznate stanice</string>
+    <string name="favorites_import_confirm">Uvezi</string>
+    <string name="cancel">Otkaži</string>
 </resources>

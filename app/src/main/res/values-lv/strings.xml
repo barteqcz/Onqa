@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Monthly</string>
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Atlasītais fails nav derīgs JSON izlašu fails</string>
+    <string name="favorites_import_empty_file">Atlasītais fails ir tukšs</string>
+    <string name="favorites_import_dialog_title">Importēt iecienītās stacijas</string>
+    <string name="favorites_import_dialog_total">Kopā staciju failā: %d</string>
+    <string name="favorites_import_dialog_valid">Katalogā atpazītas: %d</string>
+    <string name="favorites_import_dialog_unknown">Nezināmas / nav katalogā: %d</string>
+    <string name="favorites_import_dialog_warning">Dažas stacijas failā netika atrastas staciju datubāzē.</string>
+    <string name="favorites_import_mode_merge">Apvienot ar pašreizējām izlasēm</string>
+    <string name="favorites_import_mode_replace">Aizstāt pašreizējās izlases</string>
+    <string name="favorites_import_include_unknown">Iekļaut nezināmas stacijas</string>
+    <string name="favorites_import_confirm">Importēt</string>
+    <string name="cancel">Atcelt</string>
 </resources>

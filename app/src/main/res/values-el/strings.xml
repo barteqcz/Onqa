@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Μηνιαία</string>
     <string name="catalog_manual_update_title">Ενημέρωση βάσης δεδομένων</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Το επιλεγμένο αρχείο δεν είναι έγκυρο αρχείο JSON αγαπημένων</string>
+    <string name="favorites_import_empty_file">Το επιλεγμένο αρχείο είναι κενό</string>
+    <string name="favorites_import_dialog_title">Εισαγωγή αγαπημένων σταθμών</string>
+    <string name="favorites_import_dialog_total">Συνολικοί σταθμοί στο αρχείο: %d</string>
+    <string name="favorites_import_dialog_valid">Αναγνωρίστηκαν στον κατάλογο: %d</string>
+    <string name="favorites_import_dialog_unknown">Άγνωστοι / εκτός καταλόγου: %d</string>
+    <string name="favorites_import_dialog_warning">Ορισμένοι σταθμοί στο αρχείο δεν βρέθηκαν στη βάση δεδομένων σταθμών.</string>
+    <string name="favorites_import_mode_merge">Συγχώνευση με τα τρέχοντα αγαπημένα</string>
+    <string name="favorites_import_mode_replace">Αντικατάσταση τρεχόντων αγαπημένων</string>
+    <string name="favorites_import_include_unknown">Συμπερίληψη άγνωστων σταθμών</string>
+    <string name="favorites_import_confirm">Εισαγωγή</string>
+    <string name="cancel">Ακύρωση</string>
 </resources>

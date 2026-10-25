@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Monthly</string>
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Il file selezionà n\'è betg in file da favuritas JSON valid</string>
+    <string name="favorites_import_empty_file">Il file selezionà è eidel</string>
+    <string name="favorites_import_dialog_title">Importar staziuns favuritas</string>
+    <string name="favorites_import_dialog_total">Staziuns totalas en il file: %d</string>
+    <string name="favorites_import_dialog_valid">Reconuschidas en il catalog: %d</string>
+    <string name="favorites_import_dialog_unknown">Nunconuschidas / betg en il catalog: %d</string>
+    <string name="favorites_import_dialog_warning">In tschertas staziuns en il file n\'han ins betg chattà en la banca da datas da staziuns.</string>
+    <string name="favorites_import_mode_merge">Unir cun las favuritas actualas</string>
+    <string name="favorites_import_mode_replace">Midar las favuritas actualas</string>
+    <string name="favorites_import_include_unknown">Integrar staziuns nunconuschidas</string>
+    <string name="favorites_import_confirm">Importar</string>
+    <string name="cancel">Annullar</string>
 </resources>

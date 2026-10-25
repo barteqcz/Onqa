@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Iga kuu</string>
     <string name="catalog_manual_update_title">Värskenda andmebaasi</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Valitud fail ei ole kehtiv JSON lemmikute fail</string>
+    <string name="favorites_import_empty_file">Valitud fail on tühi</string>
+    <string name="favorites_import_dialog_title">Impordi lemmikjaamad</string>
+    <string name="favorites_import_dialog_total">Jaamu failis kokku: %d</string>
+    <string name="favorites_import_dialog_valid">Kataloogis tuvastatud: %d</string>
+    <string name="favorites_import_dialog_unknown">Tundmatu / kataloogis puudub: %d</string>
+    <string name="favorites_import_dialog_warning">Mõnda failis olevat jaama ei leitud jaamade andmebaasist.</string>
+    <string name="favorites_import_mode_merge">Ühenda praeguste lemmikutega</string>
+    <string name="favorites_import_mode_replace">Asenda praegused lemmikud</string>
+    <string name="favorites_import_include_unknown">Kaasa tundmatud jaamad</string>
+    <string name="favorites_import_confirm">Impordi</string>
+    <string name="cancel">Tühista</string>
 </resources>

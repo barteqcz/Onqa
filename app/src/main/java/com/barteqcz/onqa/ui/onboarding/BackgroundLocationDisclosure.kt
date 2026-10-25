@@ -27,7 +27,7 @@ fun BackgroundLocationDisclosure(
             .fillMaxWidth(0.95f)
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
                 shape = RoundedCornerShape(28.dp)
             ),
         properties = DialogProperties(usePlatformDefaultWidth = false),

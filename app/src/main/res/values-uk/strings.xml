@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Щомісяця</string>
     <string name="catalog_manual_update_title">Оновити базу даних</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Вибраний файл не є дійсним JSON-файлом улюблених станцій</string>
+    <string name="favorites_import_empty_file">Вибраний файл порожній</string>
+    <string name="favorites_import_dialog_title">Імпортувати улюблені станції</string>
+    <string name="favorites_import_dialog_total">Всього станцій у файлі: %d</string>
+    <string name="favorites_import_dialog_valid">Розпізнано в каталозі: %d</string>
+    <string name="favorites_import_dialog_unknown">Невідомо / немає в каталозі: %d</string>
+    <string name="favorites_import_dialog_warning">Деякі станції з файла не були знайдені в базі даних станцій.</string>
+    <string name="favorites_import_mode_merge">Об\'єднати з поточними улюбленими</string>
+    <string name="favorites_import_mode_replace">Замінити поточні улюблені</string>
+    <string name="favorites_import_include_unknown">Включити невідомі станції</string>
+    <string name="favorites_import_confirm">Імпортувати</string>
+    <string name="cancel">Скасувати</string>
 </resources>

@@ -5,10 +5,13 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.barteqcz.onqa.data.db.CatalogDatabaseManager
 import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.AppSettings
 import com.barteqcz.onqa.data.model.CatalogUpdateFrequency
 import com.barteqcz.onqa.data.model.DistanceUnit
+import com.barteqcz.onqa.data.model.FavoritesBackup
+import com.barteqcz.onqa.data.model.FavoritesImportResult
 import com.barteqcz.onqa.data.model.LocationInfo
 import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.RadioStation
@@ -45,6 +48,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration
@@ -99,6 +104,7 @@ class RadioViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val getSortedStations: GetSortedStationsUseCase,
     connectivityObserver: ConnectivityObserver,
+    private val catalogDatabaseManager: CatalogDatabaseManager,
 ) : ViewModel() {
 
     private var lastNetworkId: String? = null
@@ -539,9 +545,62 @@ class RadioViewModel @Inject constructor(
         return settings.value.favoriteStations
     }
 
-    fun importFavorites(stations: Set<String>) {
+    suspend fun validateFavoritesImport(jsonText: String): FavoritesImportResult = withContext(Dispatchers.Default) {
+        val trimmed = jsonText.trim()
+        if (trimmed.isEmpty()) {
+            return@withContext FavoritesImportResult.Error.EmptyFile
+        }
+
+        val json = Json { ignoreUnknownKeys = true }
+
+        val stationList: List<String> = try {
+            val backup = json.decodeFromString<FavoritesBackup>(trimmed)
+            backup.favoriteStations
+        } catch (_: Exception) {
+            try {
+                json.decodeFromString<List<String>>(trimmed)
+            } catch (_: Exception) {
+                return@withContext FavoritesImportResult.Error.InvalidFormat
+            }
+        }
+
+        val rawSet = stationList.map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+        if (rawSet.isEmpty()) {
+            return@withContext FavoritesImportResult.Error.EmptyFile
+        }
+
+        val catalogNames = catalogDatabaseManager.getAllStationNames()
+        val activeStations = (processedStations.value as? RadioUiState.Success)?.stations?.map { it.name }?.toSet().orEmpty()
+        val knownNames = catalogNames + activeStations
+
+        if (knownNames.isEmpty()) {
+            return@withContext FavoritesImportResult.Success(
+                totalCount = rawSet.size,
+                validStations = rawSet,
+                unknownStations = emptySet(),
+                rawStations = rawSet
+            )
+        }
+
+        val valid = rawSet.filter { it in knownNames }.toSet()
+        val unknown = rawSet - valid
+
+        FavoritesImportResult.Success(
+            totalCount = rawSet.size,
+            validStations = valid,
+            unknownStations = unknown,
+            rawStations = rawSet
+        )
+    }
+
+    fun importFavorites(stations: Set<String>, replace: Boolean = false) {
         viewModelScope.launch {
-            settingsRepository.setFavorites(stations)
+            val finalFavorites = if (replace) {
+                stations
+            } else {
+                settings.value.favoriteStations + stations
+            }
+            settingsRepository.setFavorites(finalFavorites)
         }
     }
 

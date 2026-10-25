@@ -183,4 +183,29 @@ class CatalogDatabaseManager @Inject constructor(
 
         stationsList
     }
+
+    suspend fun getAllStationNames(): Set<String> = withContext(Dispatchers.IO) {
+        val dbFile = context.getDatabasePath("catalog.sqlite")
+        if (!dbFile.exists() || dbFile.length() == 0L) {
+            return@withContext emptySet()
+        }
+
+        val database = getDatabase(dbFile) ?: return@withContext emptySet()
+        val stationNames = mutableSetOf<String>()
+
+        try {
+            database.rawQuery("SELECT DISTINCT name FROM stations", null).use { cursor ->
+                val colName = cursor.getColumnIndexOrThrow("name")
+                while (cursor.moveToNext()) {
+                    if (!cursor.isNull(colName)) {
+                        stationNames.add(cursor.getString(colName))
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error fetching station names from catalog database")
+        }
+
+        stationNames
+    }
 }

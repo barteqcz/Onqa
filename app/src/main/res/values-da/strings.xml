@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Månedligt</string>
     <string name="catalog_manual_update_title">Opdater database nu</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Den valgte fil er ikke en gyldig JSON-favoritfil</string>
+    <string name="favorites_import_empty_file">Den valgte fil er tom</string>
+    <string name="favorites_import_dialog_title">Importer favoritter</string>
+    <string name="favorites_import_dialog_total">Antal stationer i filen: %d</string>
+    <string name="favorites_import_dialog_valid">Genkendt i katalog: %d</string>
+    <string name="favorites_import_dialog_unknown">Ukendt / ikke i katalog: %d</string>
+    <string name="favorites_import_dialog_warning">Nogle stationer i filen blev ikke fundet i stationsdatabasen.</string>
+    <string name="favorites_import_mode_merge">Flet med aktuelle favoritter</string>
+    <string name="favorites_import_mode_replace">Erstat aktuelle favoritter</string>
+    <string name="favorites_import_include_unknown">Inkluder ukendte stationer</string>
+    <string name="favorites_import_confirm">Importer</string>
+    <string name="cancel">Annuller</string>
 </resources>

@@ -319,7 +319,7 @@ fun RadioScreen(
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     tonalElevation = 2.dp,
                                     shadowElevation = 2.dp,
-                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
                                 ) {
                                     IconButton(
                                         onClick = { viewModel.setSearchActive(false) },
@@ -389,7 +389,7 @@ fun RadioScreen(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 tonalElevation = 2.dp,
                                 shadowElevation = 2.dp,
-                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
                             ) {
                                 IconButton(
                                     onClick = { viewModel.setSearchActive(true) },
@@ -412,7 +412,7 @@ fun RadioScreen(
                             color = MaterialTheme.colorScheme.surfaceVariant,
                             tonalElevation = 2.dp,
                             shadowElevation = 2.dp,
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
                         ) {
                             IconButton(
                                 onClick = { onSettingsClick() },

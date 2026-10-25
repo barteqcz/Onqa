@@ -85,5 +85,16 @@
     <string name="update_freq_monthly">Monthly</string>
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
-    <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="favorites_import_invalid_format">Geselecteerd bestand is geen geldig JSON-favorietenbestand</string>
+    <string name="favorites_import_empty_file">Geselecteerd bestand is leeg</string>
+    <string name="favorites_import_dialog_title">Favoriete stations importeren</string>
+    <string name="favorites_import_dialog_total">Totaal aantal stations in bestand: %d</string>
+    <string name="favorites_import_dialog_valid">Herendend in catalogus: %d</string>
+    <string name="favorites_import_dialog_unknown">Onbekend / niet in catalogus: %d</string>
+    <string name="favorites_import_dialog_warning">Sommige stations in het bestand zijn niet gevonden in de stationsdatabase.</string>
+    <string name="favorites_import_mode_merge">Samenvoegen met huidige favorieten</string>
+    <string name="favorites_import_mode_replace">Huidige favorieten vervangen</string>
+    <string name="favorites_import_include_unknown">Onbekende stations opnemen</string>
+    <string name="favorites_import_confirm">Importeren</string>
+    <string name="cancel">Annuleren</string>
 </resources>

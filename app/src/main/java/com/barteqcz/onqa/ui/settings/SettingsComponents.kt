@@ -184,11 +184,11 @@ internal fun LanguageDropdown(
         ) {
             Surface(
                 modifier = Modifier
-                    .fillMaxWidth(0.9f)
+                    .fillMaxWidth(0.94f)
                     .fillMaxHeight(0.7f),
                 shape = RoundedCornerShape(28.dp),
                 color = MaterialTheme.colorScheme.background,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)),
                 tonalElevation = 0.dp
             ) {
                 Column(
@@ -612,7 +612,7 @@ internal fun CatalogManualUpdateCard(
 
     val warningYellow = Color(0xFFFFC107)
     val cardColor = if (isError) warningYellow.copy(alpha = 0.15f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-    val cardBorder = if (isError) BorderStroke(1.5.dp, warningYellow.copy(alpha = 0.5f)) else BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+    val cardBorder = if (isError) BorderStroke(1.5.dp, warningYellow.copy(alpha = 0.5f)) else BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f))
 
     Surface(
         onClick = {

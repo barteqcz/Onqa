@@ -421,7 +421,7 @@ fun MapPickerScreen(
                             shape = RoundedCornerShape(12.dp),
                             border = BorderStroke(
                                 width = 1.dp,
-                                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
+                                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
                             ),
                             modifier = Modifier.height(40.dp)
                         ) {
