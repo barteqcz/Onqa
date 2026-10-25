@@ -15,8 +15,8 @@ import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.net.toUri
 import androidx.media3.common.AudioAttributes
+import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -50,6 +50,7 @@ import com.barteqcz.onqa.data.util.NetworkResult
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -93,6 +94,9 @@ class PlaybackService : MediaSessionService() {
     private var lastRdsTitle: String? = null
     private var isUpdatingMetadata = false
 
+    // Set when the user pauses playback; the next user-initiated Play reconnects to the stream.
+    private var reconnectAfterPause = false
+
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var playbackJob: Job? = null
     private var artworkJob: Job? = null
@@ -119,7 +123,7 @@ class PlaybackService : MediaSessionService() {
     private val noisyReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
-                exoPlayer?.pause()
+                requestPauseWithFade()
             }
         }
     }
@@ -221,7 +225,10 @@ class PlaybackService : MediaSessionService() {
                     if ((player.playbackState == Player.STATE_IDLE) || (player.playerError != null)) return@withTimeout
                 }
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (_: Exception) {
+            // Continue with the fade even if the ready wait times out.
         }
 
         val currentVol = exoPlayer?.volume ?: 0f
@@ -293,6 +300,7 @@ class PlaybackService : MediaSessionService() {
                         stopStallWatchdog()
                         retryPlayback()
                     }
+
                     override fun onPlaybackStateChanged(playbackState: Int) {
                         when (playbackState) {
                             Player.STATE_BUFFERING -> {
@@ -308,6 +316,7 @@ class PlaybackService : MediaSessionService() {
                             else -> {}
                         }
                     }
+
                     override fun onMetadata(metadata: Metadata) {
                         if (isUpdatingMetadata) return
 
@@ -351,10 +360,10 @@ class PlaybackService : MediaSessionService() {
                             updateRdsAndNotification(null)
                         }
                     }
+
                     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-                        if (playWhenReady && (exoPlayer?.playbackState == Player.STATE_IDLE)) {
-                            exoPlayer?.prepare()
-                        }
+                        // Play/pause transitions from MediaSession are intercepted by sessionPlayer
+                        // so fades happen before the underlying ExoPlayer changes state.
                         updateRdsAndNotification(null)
                     }
                 },
@@ -368,7 +377,27 @@ class PlaybackService : MediaSessionService() {
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             )
 
-            mediaSession = MediaSession.Builder(this, exoPlayer!!)
+            // Intercept controller/notification play and pause commands before ExoPlayer changes
+            // state. This lets pause fade out first and makes resume reconnect silently.
+            val sessionPlayer = object : ForwardingPlayer(exoPlayer!!) {
+                override fun play() {
+                    requestPlayFromSession()
+                }
+
+                override fun pause() {
+                    requestPauseWithFade()
+                }
+
+                override fun setPlayWhenReady(playWhenReady: Boolean) {
+                    if (playWhenReady) {
+                        requestPlayFromSession()
+                    } else {
+                        requestPauseWithFade()
+                    }
+                }
+            }
+
+            mediaSession = MediaSession.Builder(this, sessionPlayer)
                 .setSessionActivity(pendingIntent)
                 .setCallback(
                     object : MediaSession.Callback {
@@ -392,32 +421,19 @@ class PlaybackService : MediaSessionService() {
                             controller: MediaSession.ControllerInfo,
                             mediaItems: MutableList<MediaItem>,
                         ): ListenableFuture<MutableList<MediaItem>> {
-                            val updatedItems = mediaItems.asSequence().map { item ->
-                                val url = item.mediaId
-                                item.buildUpon()
-                                    .setUri(url.toUri())
-                                    .apply {
-                                        if (url.contains("m3u8") || url.contains(".m3u")) {
-                                            setMimeType(MimeTypes.APPLICATION_M3U8)
-                                        } else if (url.contains(".mpd")) {
-                                            setMimeType(MimeTypes.APPLICATION_MPD)
-                                        }
-                                    }
-                                    .build()
-                            }.toMutableList()
+                            val url = mediaItems.firstOrNull()?.mediaId ?: currentStationUrl
+                            val name = currentStationName ?: ""
+                            val logo = currentStationLogo
+                            val network = currentStationNetwork
+
+                            if (url != null) {
+                                serviceScope.launch {
+                                    playInternal(name, url, logo, network, forceReload = true)
+                                }
+                            }
 
                             val future = SettableFuture.create<MutableList<MediaItem>>()
-                            val firstItem = updatedItems.firstOrNull()
-
-                            if ((firstItem != null) && (exoPlayer?.isPlaying == true) &&
-                                (exoPlayer?.currentMediaItem?.mediaId != firstItem.mediaId)) {
-                                serviceScope.launch {
-                                    fadeOut()
-                                    future.set(updatedItems)
-                                }
-                            } else {
-                                future.set(updatedItems)
-                            }
+                            future.set(mutableListOf())
                             return future
                         }
 
@@ -454,6 +470,78 @@ class PlaybackService : MediaSessionService() {
 
             mediaSession?.let { addSession(it) }
         }
+    }
+
+    /**
+     * Handles pause requests coming from MediaSession, including the system notification.
+     * Keep playback running until the fade-out is complete, then pause the actual ExoPlayer.
+     */
+    private fun requestPauseWithFade() {
+        val player = exoPlayer ?: return
+        val stationUrlAtPause = currentStationUrl
+
+        if (stationUrlAtPause == null) {
+            player.pause()
+            return
+        }
+
+        if (!player.playWhenReady && !player.isPlaying) {
+            player.pause()
+            return
+        }
+
+        reconnectAfterPause = true
+        playbackJob?.cancel()
+        playbackJob = serviceScope.launch {
+            fadeOut()
+
+            // Do not pause a newly selected station if a play/switch command arrived during fade-out.
+            if (currentStationUrl == stationUrlAtPause && reconnectAfterPause) {
+                player.pause()
+                updateRdsAndNotification(null)
+            }
+        }
+    }
+
+    /**
+     * Handles play requests before MediaSession can start the old stream audibly.
+     * If playback was paused by the user, volume is set to zero synchronously and the stream is
+     * rebuilt; normal play requests are passed through to ExoPlayer.
+     */
+    private fun requestPlayFromSession() {
+        val player = exoPlayer ?: return
+
+        if (reconnectAfterPause) {
+            val name = currentStationName
+            val url = currentStationUrl
+
+            if (name != null && url != null) {
+                // Cancel a pause fade and synchronously stop the old stream before scheduling
+                // the reconnect. Muting alone would hide the old audio but leave its playback
+                // pipeline active until playInternal() gets a chance to run.
+                playbackJob?.cancel()
+                reconnectAfterPause = false
+                player.volume = 0f
+                player.pause()
+                player.stop()
+
+                playInternal(
+                    name = name,
+                    url = url,
+                    logo = currentStationLogo,
+                    network = currentStationNetwork,
+                    forceReload = true,
+                )
+                return
+            }
+
+            reconnectAfterPause = false
+        }
+
+        if (player.playbackState == Player.STATE_IDLE) {
+            player.prepare()
+        }
+        player.play()
     }
 
     private fun retryPlayback() {
@@ -560,6 +648,7 @@ class PlaybackService : MediaSessionService() {
     }
 
     private fun playInternal(name: String, url: String, logo: String?, network: String?, forceReload: Boolean = false) {
+        reconnectAfterPause = false
         val isItemLoaded = exoPlayer?.currentMediaItem?.mediaId == url
 
         currentStationName = name
@@ -655,6 +744,7 @@ class PlaybackService : MediaSessionService() {
     private fun stopInternal() {
         playbackJob?.cancel()
         stopStallWatchdog()
+        reconnectAfterPause = false
         currentStationUrl = null
         currentStationName = null
         currentStationLogo = null
@@ -714,15 +804,13 @@ class PlaybackService : MediaSessionService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_PLAY -> {
-                val url = intent.getStringExtra(EXTRA_URL) ?: return super.onStartCommand(intent, flags, startId)
-                val name = intent.getStringExtra(EXTRA_NAME) ?: ""
-                val logo = intent.getStringExtra(EXTRA_LOGO)
-                val network = intent.getStringExtra(EXTRA_NETWORK)
-                playInternal(name, url, logo, network)
+                val url = intent.getStringExtra(EXTRA_URL) ?: currentStationUrl ?: return super.onStartCommand(intent, flags, startId)
+                val name = intent.getStringExtra(EXTRA_NAME) ?: currentStationName ?: ""
+                val logo = intent.getStringExtra(EXTRA_LOGO) ?: currentStationLogo
+                val network = intent.getStringExtra(EXTRA_NETWORK) ?: currentStationNetwork
+                playInternal(name, url, logo, network, forceReload = true)
             }
-            ACTION_PAUSE -> {
-                mediaSession?.player?.pause()
-            }
+            ACTION_PAUSE -> requestPauseWithFade()
             ACTION_STOP -> stopInternal()
         }
         return super.onStartCommand(intent, flags, startId)
