@@ -189,7 +189,6 @@ fun MapPickerScreen(
                 }
         )
 
-        // Search Bar Area
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -357,7 +356,6 @@ fun MapPickerScreen(
             }
         }
 
-        // Top Bar
         Column(
             modifier = Modifier
                 .fillMaxWidth()

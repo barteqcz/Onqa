@@ -59,9 +59,8 @@ private val LightColorScheme = lightColorScheme(
 fun Color.applyLightVariant(): Color {
     val hsl = FloatArray(3)
     ColorUtils.colorToHSL(this.toArgb(), hsl)
-    // If color is too light (lightness > 0.35), darken it for white text readability on light background
     if (hsl[2] > 0.35f) {
-        hsl[2] = 0.35f // Set a deeper readable lightness for light theme
+        hsl[2] = 0.35f
     }
     return Color(ColorUtils.HSLToColor(hsl))
 }

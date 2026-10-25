@@ -42,7 +42,6 @@ object MediaMetadataMapper {
         val sTitle = streamTitle?.trim() ?: ""
         val sArtist = streamArtist?.trim() ?: ""
 
-        // Check if RDS info accidentally matches another station's name (common in network switches)
         val otherStation = allStations?.find { 
             it.name.equals(sTitle, ignoreCase = true) && it.name != sName 
         }

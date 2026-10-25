@@ -163,7 +163,6 @@ class PlaybackService : MediaSessionService() {
                 stopInternal()
             }
             StationCoverageManager.CoverageResult.KeepCurrent -> {
-                // Do nothing
             }
         }
     }

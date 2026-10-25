@@ -42,7 +42,6 @@ class StationCoverageManager @Inject constructor(
             return notZero && distanceOk
         }
 
-        // 1. Check if the current station has ANY transmitter/entry in coverage at the new location
         val matchingStations = stations.filter { it.name == currentName || it.matchesUrl(normalizedCurrent) }
         val inCoverageMatch = matchingStations.find { it.isInCoverage() }
 
@@ -60,21 +59,17 @@ class StationCoverageManager @Inject constructor(
             return CoverageResult.KeepCurrent
         }
 
-        // 2. The station is genuinely OUT OF COVERAGE at the new location (e.g. regional station left behind)
         val effectiveNetwork = currentNetwork ?: matchingStations.firstOrNull()?.network
         val sortedStations = StationProcessor.groupAndSortStations(stations, currentUrl, favorites)
 
-        // Prefer station in the SAME network that is in coverage
         val nextNetworkStation = if (effectiveNetwork != null) {
             sortedStations.firstOrNull { it.network == effectiveNetwork && it.isInCoverage() }
         } else null
 
-        // Prefer favorite station that is in coverage
         val nextFavoriteStation = if (nextNetworkStation == null && favorites.isNotEmpty()) {
             sortedStations.firstOrNull { it.isFavorite && it.isInCoverage() }
         } else null
 
-        // Fallback to the first station on the sorted list in coverage
         val fallbackStation = nextNetworkStation
             ?: nextFavoriteStation
             ?: sortedStations.firstOrNull { it.isInCoverage() }

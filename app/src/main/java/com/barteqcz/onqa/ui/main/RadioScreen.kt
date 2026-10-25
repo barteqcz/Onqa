@@ -102,7 +102,6 @@ fun RadioScreen(
                     focusManager.clearFocus()
                 }
         ) mainColumn@ {
-            // Content Offset for Top Bar
             Spacer(modifier = Modifier.statusBarsPadding())
             Spacer(modifier = Modifier.height(72.dp))
             
@@ -272,7 +271,6 @@ fun RadioScreen(
             }
         }
 
-        // Top Bar
         Column(
             modifier = Modifier
                 .fillMaxWidth()

@@ -98,7 +98,6 @@ fun SettingsScreen(
                     focusManager.clearFocus()
                 }
         ) {
-            // Stable Offset for Top Bar
             Spacer(modifier = Modifier.statusBarsPadding())
             Spacer(modifier = Modifier.height(80.dp))
 
@@ -508,7 +507,6 @@ fun SettingsScreen(
                 }
             }
             
-            // Bottom Padding for MiniPlayer
             Spacer(modifier = Modifier.height(if (selectedUrl != null) 140.dp else 24.dp))
         }
 
@@ -537,7 +535,6 @@ fun SettingsScreen(
             )
         }
 
-        // Top Bar
         Column(
             modifier = Modifier
                 .fillMaxWidth()

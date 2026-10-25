@@ -58,7 +58,6 @@ class LocationManager @Inject constructor(
                         Timber.d("Using manual location: ${settings.manualCity} (${settings.manualLatitude}, ${settings.manualLongitude})")
                     }
                 } else {
-                    // GPS Mode
                     if ((_currentLocation.value == null) || (oldSource == LocationSource.MANUAL)) {
                         if ((settings.lastLatitude != null) && (settings.lastLongitude != null)) {
                             val savedLoc = Location("saved").apply {
@@ -99,7 +98,6 @@ class LocationManager @Inject constructor(
         }
 
         scope.launch {
-            // Wait for settings to be loaded to know which source to use
             val settings = _settings.filterNotNull().first()
             
             if (settings.locationSource == LocationSource.MANUAL) {

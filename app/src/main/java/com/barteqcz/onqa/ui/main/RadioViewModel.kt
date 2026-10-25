@@ -417,11 +417,9 @@ class RadioViewModel @Inject constructor(
                 val currentName = _selectedStationName.value ?: return@onEach
 
                 if (isActuallyActive) {
-                    // When playback is active, PlaybackService handles network-aware coverage switching
                     return@onEach
                 }
 
-                // When playback is NOT active, update selected station in UI if current station is out of coverage
                 val allStations = state.allStations
                 val playingStation = allStations.find { it.name == currentName || it.matchesUrl(currentUrl) }
 

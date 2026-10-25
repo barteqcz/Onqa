@@ -10,7 +10,6 @@ object AnimationSystem {
         const val RELAXED = 600
     }
 
-    // Natural FastOutSlowInEasing for consistent UI transitions
     fun <T> vividTween(
         duration: Int = Duration.MEDIUM,
         delay: Int = 0,

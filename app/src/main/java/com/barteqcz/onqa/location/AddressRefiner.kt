@@ -11,13 +11,9 @@ object AddressRefiner {
         val countryNames = addresses.mapNotNull { it.countryName?.lowercase() }.toSet()
         val roadNames = addresses.mapNotNull { it.thoroughfare?.lowercase() }.toSet()
 
-        // 1. Look for a "Major City" match across all results.
-        // A major city match occurs when a locality or subLocality in the results list 
-        // matches any administrative area (district, province, or region) found in the results.
         val allAdmins = addresses.flatMap { listOfNotNull(it.subAdminArea, it.adminArea) }.toSet()
         
         if (allAdmins.isNotEmpty()) {
-            // Priority 1: Strong Matches (e.g., "Ostrava" in "Okres Ostrava-město")
             val strongCity = addresses.firstNotNullOfOrNull { addr ->
                 val candidates = listOfNotNull(addr.locality, addr.subLocality)
                 candidates.firstOrNull { candidate ->
@@ -27,7 +23,6 @@ object AddressRefiner {
                 }
             }
             
-            // Priority 2: Weak Matches (significant word overlap)
             val weakCity = if (strongCity == null) {
                 addresses.firstNotNullOfOrNull { addr ->
                     val candidates = listOfNotNull(addr.locality, addr.subLocality)
@@ -51,20 +46,16 @@ object AddressRefiner {
             }
         }
 
-        // 2. Fallback to most specific city name detection
         val baseInfo = run {
             var city = addresses.firstNotNullOfOrNull { addr ->
                 val loc = addr.locality ?: return@firstNotNullOfOrNull null
                 
-                // Avoid using country names or road names as the city name
                 if (loc.lowercase() in countryNames || loc.lowercase() in roadNames) return@firstNotNullOfOrNull null
                 
                 loc
             }
 
             if (city == null) {
-                // Hierarchical fallback: Prefer locality, then subLocality (neighborhood/town), 
-                // then subAdminArea (district), then adminArea (region).
                 city = firstAddress.locality ?: firstAddress.subLocality ?: firstAddress.subAdminArea ?: firstAddress.adminArea
             }
 
@@ -98,7 +89,6 @@ object AddressRefiner {
         val a = adminArea.lowercase()
         if (n == a) return true
 
-        // Split by space, hyphen, or non-breaking space
         val nameWords = n.split(Regex("[\\s\\-\\u00A0]+")).filter { it.length > 3 }
         val adminWords = a.split(Regex("[\\s\\-\\u00A0]+")).filter { it.length > 3 }
 

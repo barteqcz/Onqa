@@ -124,7 +124,6 @@ class MapViewModel @Inject constructor(
             searchResults = emptyList(),
             mapCenterTrigger = System.currentTimeMillis()
         )
-        // Trigger reverse geocoding to get city name
         onLocationSelected(point)
     }
 
