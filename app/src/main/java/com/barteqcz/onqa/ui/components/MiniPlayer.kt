@@ -1,0 +1,388 @@
+package com.barteqcz.onqa.ui.components
+
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.MarqueeAnimationMode
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Radio
+import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.nativePaint
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
+import android.content.res.Configuration
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.barteqcz.onqa.R
+import com.barteqcz.onqa.data.model.RadioStation
+import com.barteqcz.onqa.ui.theme.AnimationSystem
+import kotlin.math.roundToInt
+
+@Composable
+fun MiniPlayer(
+    station: RadioStation,
+    stations: List<RadioStation>,
+    isPlaying: Boolean,
+    isBuffering: Boolean,
+    playbackError: Boolean = false,
+    metadata: String?,
+    showHqIcon: Boolean,
+    isScrollable: Boolean = false,
+    onToggle: () -> Unit,
+    onNext: () -> Unit,
+    onPrevious: () -> Unit,
+) {
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    val animatedOffsetX by animateFloatAsState(
+        targetValue = offsetX,
+        animationSpec = AnimationSystem.RelaxedSpring,
+        label = "swipeOffset"
+    )
+    
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var isResuming by remember { mutableStateOf(false) }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                isResuming = true
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    if (isResuming) {
+        SideEffect { isResuming = false }
+    }
+    
+    val interactionSource = remember { MutableInteractionSource() }
+
+    val warningYellow = Color(0xFFFFC107)
+    val baseBorderColor = when {
+        playbackError -> warningYellow
+        station.isFavorite -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.primary
+    }
+
+    val borderAlpha by animateFloatAsState(
+        targetValue = if (playbackError || isPlaying || isBuffering || kotlin.math.abs(animatedOffsetX) > 0.5f) {
+            if (playbackError) 0.9f else 0.5f
+        } else 0f,
+        animationSpec = AnimationSystem.relaxedTween(),
+        label = "miniPlayerBorderAlpha"
+    )
+    val borderColor = baseBorderColor.copy(alpha = borderAlpha)
+
+    val elevation by animateDpAsState(
+        targetValue = if (isScrollable) 16.dp else 12.dp,
+        animationSpec = AnimationSystem.relaxedTween(),
+        label = "miniPlayerElevation"
+    )
+
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    
+    val playerHeight = if (isLandscape) 72.dp else 88.dp
+    val playerCorner = if (isLandscape) 22.dp else 28.dp
+    val logoSize = if (isLandscape) 44.dp else 52.dp
+    val logoStartPadding = if (isLandscape) 14.dp else 18.dp
+    val logoIconSize = if (isLandscape) 24.dp else 32.dp
+    val logoCorner = if (isLandscape) 8.dp else 10.dp
+    val actionButtonSize = if (isLandscape) 44.dp else 52.dp
+    val actionIconSize = if (isLandscape) 28.dp else 36.dp
+
+    Surface(
+        modifier = Modifier
+            .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 12.dp)
+            .navigationBarsPadding()
+            .fillMaxWidth()
+            .height(playerHeight)
+            .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
+            .drawBehind {
+                val shadowColor = Color.Black.copy(alpha = 0.2f)
+                val blurRadius = (elevation.toPx() * 1.5f).coerceAtLeast(1f)
+                drawIntoCanvas { canvas ->
+                    val paint = Paint()
+                    val frameworkPaint = paint.nativePaint
+                    frameworkPaint.color = android.graphics.Color.TRANSPARENT
+                    frameworkPaint.setShadowLayer(
+                        blurRadius,
+                        0f,
+                        0f,
+                        shadowColor.toArgb()
+                    )
+                    canvas.drawRoundRect(
+                        0f,
+                        0f,
+                        size.width,
+                        size.height,
+                        playerCorner.toPx(),
+                        playerCorner.toPx(),
+                        paint
+                    )
+                }
+            }
+            .shadow(
+                elevation = elevation,
+                shape = RoundedCornerShape(playerCorner),
+                ambientColor = Color.Black.copy(alpha = 0.25f),
+                spotColor = Color.Black.copy(alpha = 0.2f)
+            )
+            .clip(RoundedCornerShape(playerCorner))
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) { }
+            .pointerInput(stations.size) {
+                if (stations.size > 1) {
+                    detectHorizontalDragGestures(
+                        onDragEnd = {
+                            if (offsetX > 120) {
+                                onPrevious()
+                            } else if (offsetX < -120) {
+                                onNext()
+                            }
+                            offsetX = 0f
+                        },
+                    ) { change, dragAmount ->
+                        change.consume()
+                        offsetX += dragAmount
+                    }
+                }
+            },
+        shape = RoundedCornerShape(28.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            borderColor
+        ),
+        tonalElevation = if (isScrollable) 8.dp else 4.dp,
+        shadowElevation = 0.dp
+    ) {
+        AnimatedContent(
+            targetState = station to showHqIcon,
+            transitionSpec = {
+                if (isResuming) {
+                    return@AnimatedContent EnterTransition.None togetherWith ExitTransition.None
+                }
+
+                val (initialStation, initialHq) = initialState
+                val (targetStation, targetHq) = targetState
+
+                if (initialStation.name == targetStation.name && initialStation.network == targetStation.network) {
+                    if (initialHq != targetHq) {
+                        (fadeIn(tween(300)) togetherWith fadeOut(tween(300)))
+                    } else {
+                        EnterTransition.None togetherWith ExitTransition.None
+                    }
+                } else {
+                    val initialIndex = stations.indexOfFirst { it.name == initialStation.name && it.network == initialStation.network }
+                    val targetIndex = stations.indexOfFirst { it.name == targetStation.name && it.network == targetStation.network }
+
+                    val isNext = if ((initialIndex != -1) && (targetIndex != -1)) {
+                        if (stations.size > 2) {
+                            when (initialIndex) {
+                                stations.lastIndex -> targetIndex == 0
+                                0 -> targetIndex != stations.lastIndex
+                                else -> targetIndex > initialIndex
+                            }
+                        } else {
+                            targetIndex > initialIndex
+                        }
+                    } else {
+                        offsetX < 0
+                    }
+
+                    if (isNext) {
+                        (slideInHorizontally(AnimationSystem.RelaxedSpringIntOffset) { it } + fadeIn(AnimationSystem.relaxedTween()))
+                            .togetherWith(slideOutHorizontally(AnimationSystem.RelaxedSpringIntOffset) { -it } + fadeOut(AnimationSystem.relaxedTween()))
+                    } else {
+                        (slideInHorizontally(AnimationSystem.RelaxedSpringIntOffset) { -it } + fadeIn(AnimationSystem.relaxedTween()))
+                            .togetherWith(slideOutHorizontally(AnimationSystem.RelaxedSpringIntOffset) { it } + fadeOut(AnimationSystem.relaxedTween()))
+                    }
+                }
+            },
+            label = "stationChange"
+        ) { (targetStation, targetShowHqIcon) ->
+            Row(
+                modifier = Modifier.padding(start = logoStartPadding, end = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val scale by animateFloatAsState(
+                    targetValue = if (isPlaying) 1.05f else 1f,
+                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow),
+                    label = "logoScale"
+                )
+                var isImageLoaded by remember(targetStation.logo) { mutableStateOf(false) }
+
+                Box(
+                    modifier = Modifier
+                        .size(logoSize)
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                        .clip(RoundedCornerShape(logoCorner))
+                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (!isImageLoaded) {
+                        Icon(
+                            imageVector = Icons.Rounded.Radio,
+                            contentDescription = null,
+                            modifier = Modifier.size(logoIconSize),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                        )
+                    }
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(targetStation.logo)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit,
+                        onSuccess = { isImageLoaded = true },
+                        onError = { isImageLoaded = false }
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    val infoColor by animateColorAsState(
+                        targetValue = if (targetStation.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                        label = "miniPlayerIconColor"
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = targetStation.name,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            modifier = Modifier
+                                .weight(1f, fill = false)
+                                .basicMarquee(
+                                    iterations = Int.MAX_VALUE,
+                                    animationMode = MarqueeAnimationMode.Immediately,
+                                    initialDelayMillis = 1000
+                                )
+                        )
+                        
+                        if (targetShowHqIcon) {
+                            HqIcon(tint = infoColor)
+                        }
+                    }
+                    
+                    val metadataState = if (isBuffering && metadata.isNullOrBlank()) "buffering" else metadata
+                    AnimatedContent(
+                        targetState = metadataState,
+                        transitionSpec = {
+                            (fadeIn(AnimationSystem.relaxedTween()) + slideInVertically(AnimationSystem.RelaxedSpringIntOffset) { it / 2 })
+                                .togetherWith(fadeOut(AnimationSystem.relaxedTween()) + slideOutVertically(AnimationSystem.RelaxedSpringIntOffset) { -it / 2 })
+                        },
+                        label = "metadataTransition"
+                    ) { state ->
+                        if (!state.isNullOrBlank() && state != "buffering") {
+                            Text(
+                                text = state,
+                                color = infoColor,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Medium,
+                                maxLines = 1,
+                                modifier = Modifier.basicMarquee(
+                                    iterations = Int.MAX_VALUE,
+                                    animationMode = MarqueeAnimationMode.Immediately,
+                                    initialDelayMillis = 1000
+                                )
+                            )
+                        } else if (state == "buffering") {
+                            Text(
+                                text = stringResource(R.string.buffering),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodySmall,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                }
+
+                IconButton(
+                    onClick = onToggle,
+                    modifier = Modifier.size(actionButtonSize)
+                ) {
+                    AnimatedContent(
+                        targetState = Triple(playbackError, isBuffering, isPlaying),
+                        transitionSpec = {
+                            fadeIn(tween(200)).togetherWith(
+                                fadeOut(tween(200))
+                            )
+                        },
+                        label = "playPauseIcon"
+                    ) { (hasError, buffering, playing) ->
+                        if (hasError) {
+                            Icon(
+                                Icons.Rounded.Warning,
+                                contentDescription = null,
+                                tint = warningYellow,
+                                modifier = Modifier.size(actionIconSize),
+                            )
+                        } else if (buffering) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(if (isLandscape) 24.dp else 32.dp),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                strokeWidth = 3.dp,
+                            )
+                        } else {
+                            Icon(
+                                if (playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(actionIconSize),
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

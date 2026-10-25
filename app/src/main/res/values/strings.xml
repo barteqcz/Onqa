@@ -1,0 +1,125 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation,UnusedResources,PluralsCandidate">
+    <string name="alright">Alright!</string>
+    <string name="app_name">Onqa</string>
+    <string name="notification_channel_name">Radio playback</string>
+    <string name="notification_channel_description">Controls for radio playback</string>
+    <string name="settings_title">Settings</string>
+    <string name="no_stations_message">No stations found &#x1F440;</string>
+    <string name="current_location_header">CURRENT LOCATION</string>
+    <string name="buffering">Buffering…</string>
+    <string name="distance_with_dot">"• %d km"</string>
+    <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_mi_with_dot">"• %d mi"</string>
+    <string name="less_than_one_mi_with_dot">"• &lt; 1 mi"</string>
+    <string name="back">Back</string>
+    <string name="material_you_title">Material You</string>
+    <string name="material_you_desc">Use system dynamic accent colors</string>
+    <string name="hq_stream_title">HQ streams</string>
+    <string name="hq_stream_desc">Prefer HQ streams when available\n(&#8805;192kbps)</string>
+    <string name="retry">Retry</string>
+    <string name="welcome_title">Welcome!</string>
+    <string name="welcome_desc">To provide the best radio experience, Onqa needs a few permissions. These are essential for functionality.</string>
+    <string name="permission_location_title">Location &amp; Background</string>
+    <string name="permission_location_desc">Used to find local stations and automatically switch to the strongest signal while you move.</string>
+    <string name="permission_notifications_title">Notifications</string>
+    <string name="permission_notifications_desc">Required to show playback controls and current track information in the notification bar.</string>
+    <string name="grant_permissions">Grant permissions</string>
+    <string name="background_location_disclosure_title">Station switching</string>
+    <string name="background_location_disclosure_message">Onqa uses location access to automatically switch radio stations and update the list, even in the background.\n\nWhen prompted, select “Allow all the time” so Onqa can stay connected while you move.</string>
+    <string name="continue_button">Continue</string>
+    <string name="not_now">Not now</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_resolve_address">Failed to resolve address</string>
+    <string name="error_find_coordinates">Failed to find city coordinates</string>
+    <string name="playback_service_label">Onqa radio playback</string>
+    <string name="category_audio">Audio</string>
+    <string name="category_appearance">Appearance</string>
+    <string name="theme_mode_title">Theme</string>
+    <string name="theme_mode_desc">Switch between light, dark, or system theme</string>
+    <string name="theme_mode_system">System</string>
+    <string name="theme_mode_light">Light</string>
+    <string name="theme_mode_dark">Dark</string>
+    <string name="amoled_mode_title">AMOLED mode</string>
+    <string name="amoled_mode_desc">Use pure black background in dark theme</string>
+    <string name="show_location_header_title">Show current location</string>
+    <string name="show_location_header_desc">Display location info in the top bar</string>
+    <string name="unknown_location">&#129517; We got no clue where you are</string>
+    <string name="disclaimer_title">Coverage data</string>
+    <string name="disclaimer_message">Station coverage data is provided by fmscan.org and should be considered approximate.\n\nThe app reflects either FM or DAB+ coverage, depending on how the station broadcasts. If a station uses both, their coverage is combined.\n\nCheck the coverage network at onqa.barteq.cz/db</string>
+    <string name="search_stations_hint">Search stations…</string>
+    <string name="search_location_placeholder">Search location…</string>
+    <string name="category_general">General</string>
+    <string name="category_regional">Regional</string>
+    <string name="distance_unit_title">Distance unit</string>
+    <string name="distance_unit_desc">Choose unit for displaying station distances</string>
+    <string name="distance_unit_kilometers">Kilometers</string>
+    <string name="distance_unit_miles">Miles</string>
+    <string name="category_location">Location</string>
+    <string name="location_source_title">Location source</string>
+    <string name="location_source_desc">Choose how the app gets your position</string>
+    <string name="location_source_gps" translatable="false">GPS</string>
+    <string name="location_source_manual">Manual</string>
+    <string name="pick_location_button">Pick location on map</string>
+    <string name="pick_location_button_picked">Picked location</string>
+    <string name="map_picker_title">Pick location</string>
+    <string name="confirm">Confirm</string>
+    <string name="category_ui_elements">UI elements</string>
+    <string name="language_title">Language</string>
+    <string name="language_desc">Choose your preferred language</string>
+    <string name="language_system">System language</string>
+    <string name="language_system_desc">Use language from device settings</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_polish" translatable="false">Polski</string>
+    <string name="language_czech" translatable="false">Čeština</string>
+    <string name="language_ukrainian" translatable="false">Українська</string>
+    <string name="language_french" translatable="false">Français</string>
+    <string name="language_german" translatable="false">Deutsch</string>
+    <string name="language_spanish" translatable="false">Español</string>
+    <string name="language_italian" translatable="false">Italiano</string>
+    <string name="language_slovak" translatable="false">Slovenčina</string>
+    <string name="language_slovenian" translatable="false">Slovenščina</string>
+    <string name="language_croatian" translatable="false">Hrvatski</string>
+    <string name="language_hungarian" translatable="false">Magyar</string>
+    <string name="language_dutch" translatable="false">Nederlands</string>
+    <string name="language_portuguese" translatable="false">Português</string>
+    <string name="language_romanian" translatable="false">Română</string>
+    <string name="language_bulgarian" translatable="false">Български</string>
+    <string name="language_greek" translatable="false">Ελληνικά</string>
+    <string name="language_danish" translatable="false">Dansk</string>
+    <string name="language_swedish" translatable="false">Svenska</string>
+    <string name="language_finnish" translatable="false">Suomi</string>
+    <string name="language_norwegian" translatable="false">Norsk</string>
+    <string name="language_estonian" translatable="false">Eesti</string>
+    <string name="language_latvian" translatable="false">Latviešu</string>
+    <string name="language_lithuanian" translatable="false">Lietuvių</string>
+    <string name="language_maltese" translatable="false">Malti</string>
+    <string name="language_irish" translatable="false">Gaeilge</string>
+    <string name="language_icelandic" translatable="false">Íslenska</string>
+    <string name="language_albanian" translatable="false">Shqip</string>
+    <string name="language_serbian" translatable="false">Srpski</string>
+    <string name="language_bosnian" translatable="false">Bosanski</string>
+    <string name="language_macedonian" translatable="false">Македонски</string>
+    <string name="language_belarusian" translatable="false">Беларуская</string>
+    <string name="language_turkish" translatable="false">Türkçe</string>
+    <string name="language_luxembourgish" translatable="false">Lëtzebuergesch</string>
+    <string name="language_romansh" translatable="false">Rumantsch</string>
+    <string name="location_validation_title">Location required</string>
+    <string name="location_validation_message">You have selected manual location mode but haven\'t picked a location yet. Please pick a location on the map to continue.</string>
+    <string name="category_data">Data &amp; Backup</string>
+    <string name="export_favorites_title">Export favorite stations</string>
+    <string name="export_favorites_desc">Save your favorite stations to a JSON file</string>
+    <string name="import_favorites_title">Import favorite stations</string>
+    <string name="import_favorites_desc">Restore favorite stations from a backup file</string>
+    <string name="favorites_exported_toast">Exported %d favorite stations</string>
+    <string name="favorites_imported_toast">Imported %d favorite stations</string>
+    <string name="favorites_import_error">Failed to process favorites file</string>
+    <string name="catalog_update_freq_title">Catalog update frequency</string>
+    <string name="catalog_update_freq_desc">Choose how often the station database is updated</string>
+    <string name="update_freq_manual">Manual</string>
+    <string name="update_freq_daily">Daily</string>
+    <string name="update_freq_weekly">Weekly</string>
+    <string name="update_freq_monthly">Monthly</string>
+    <string name="catalog_manual_update_title">Update database now</string>
+    <string name="catalog_manual_update_desc">Download the latest station database</string>
+    <string name="catalog_last_updated">Last updated: %s</string>
+</resources>
