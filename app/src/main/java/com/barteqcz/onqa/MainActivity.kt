@@ -305,11 +305,11 @@ class MainActivity : AppCompatActivity() {
                                         },
                                         onNext = { 
                                             focusManager.clearFocus()
-                                            viewModel.nextStation() 
+                                            viewModel.emitNext() 
                                         },
                                         onPrevious = { 
                                             focusManager.clearFocus()
-                                            viewModel.previousStation() 
+                                            viewModel.emitPrevious() 
                                         }
                                     )
                                 }

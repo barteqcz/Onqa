@@ -373,7 +373,11 @@ class RadioViewModel @Inject constructor(
             .distinctUntilChanged()
             .onEach { completed ->
                 if (completed) {
-                    repository.startLocationTracking()
+                    try {
+                        repository.startLocationTracking()
+                    } catch (_: SecurityException) {
+                        Timber.w("Location permission not granted or revoked.")
+                    }
                 } else {
                     repository.stopLocationTracking()
                 }
@@ -574,6 +578,14 @@ class RadioViewModel @Inject constructor(
 
     fun nextStation() = navigateStation(1)
     fun previousStation() = navigateStation(-1)
+
+    fun emitNext() {
+        radioPlayer.emitNext()
+    }
+
+    fun emitPrevious() {
+        radioPlayer.emitPrevious()
+    }
 
     private fun navigateStation(delta: Int) {
         val stations = (processedStations.value as? RadioUiState.Success)?.stations ?: return

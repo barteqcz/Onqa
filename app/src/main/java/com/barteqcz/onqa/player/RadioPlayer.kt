@@ -34,7 +34,7 @@ data class PlayerState(
 @Singleton
 class RadioPlayer @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    playbackEvents: PlaybackEvents,
+    private val playbackEvents: PlaybackEvents,
 ) {
     private var controller: MediaController? = null
     private var lastPauseActionTime: Long = 0
@@ -44,6 +44,14 @@ class RadioPlayer @Inject constructor(
 
     val requestNext = playbackEvents.requestNext
     val requestPrevious = playbackEvents.requestPrevious
+
+    fun emitNext() {
+        playbackEvents.emitNext()
+    }
+
+    fun emitPrevious() {
+        playbackEvents.emitPrevious()
+    }
 
     init {
         val sessionToken = SessionToken(context, ComponentName(context, PlaybackService::class.java))
