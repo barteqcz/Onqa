@@ -37,13 +37,11 @@ class StationCoverageManager @Inject constructor(
         val useHq = settings.useHqStream
 
         fun RadioStation.isInCoverage(): Boolean {
-            val notZero = coverageKm == null || coverageKm > 0.0
-            val distanceOk = distance == null || coverageKm == null || distance <= coverageKm
-            return notZero && distanceOk
+            return distance != null && coverageKm != null && distance <= coverageKm
         }
 
         val matchingStations = stations.filter { it.name == currentName || it.matchesUrl(normalizedCurrent) }
-        val inCoverageMatch = matchingStations.find { it.isInCoverage() }
+        val inCoverageMatch = matchingStations.filter { it.isInCoverage() }.minByOrNull { it.distance ?: Double.MAX_VALUE }
 
         if (inCoverageMatch != null) {
             val targetUrl = inCoverageMatch.getStreamUrl(useHq)
@@ -63,16 +61,16 @@ class StationCoverageManager @Inject constructor(
         val sortedStations = StationProcessor.groupAndSortStations(stations, currentUrl, favorites)
 
         val nextNetworkStation = if (effectiveNetwork != null) {
-            sortedStations.firstOrNull { it.network == effectiveNetwork && it.isInCoverage() }
+            sortedStations.filter { it.network == effectiveNetwork && it.isInCoverage() }.minByOrNull { it.distance ?: Double.MAX_VALUE }
         } else null
 
         val nextFavoriteStation = if (nextNetworkStation == null && favorites.isNotEmpty()) {
-            sortedStations.firstOrNull { it.isFavorite && it.isInCoverage() }
+            sortedStations.filter { it.isFavorite && it.isInCoverage() }.minByOrNull { it.distance ?: Double.MAX_VALUE }
         } else null
 
         val fallbackStation = nextNetworkStation
             ?: nextFavoriteStation
-            ?: sortedStations.firstOrNull { it.isInCoverage() }
+            ?: sortedStations.filter { it.isInCoverage() }.minByOrNull { it.distance ?: Double.MAX_VALUE }
 
         if (fallbackStation != null) {
             val targetUrl = fallbackStation.getStreamUrl(useHq)

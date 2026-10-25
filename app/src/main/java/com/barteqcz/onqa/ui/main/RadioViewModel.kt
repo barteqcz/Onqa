@@ -424,9 +424,7 @@ class RadioViewModel @Inject constructor(
                 val playingStation = allStations.find { it.name == currentName || it.matchesUrl(currentUrl) }
 
                 fun RadioStation.isInCoverage(): Boolean {
-                    val notZero = coverageKm == null || coverageKm > 0.0
-                    val distanceOk = distance == null || coverageKm == null || distance <= coverageKm
-                    return notZero && distanceOk
+                    return distance != null && coverageKm != null && distance <= coverageKm
                 }
 
                 val isInCoverage = playingStation != null && playingStation.isInCoverage()
@@ -440,11 +438,16 @@ class RadioViewModel @Inject constructor(
                             .minByOrNull { it.distance ?: Double.MAX_VALUE }
                     } else null
 
-                    if (nextNetworkStation != null) {
-                        val url = nextNetworkStation.getStreamUrl(settings.value.useHqStream)
+                    val fallbackStation = nextNetworkStation 
+                        ?: allStations.asSequence()
+                            .filter { it.isInCoverage() }
+                            .minByOrNull { it.distance ?: Double.MAX_VALUE }
+
+                    if (fallbackStation != null) {
+                        val url = fallbackStation.getStreamUrl(settings.value.useHqStream)
                         if (url != null) {
                             _selectedStationUrl.value = url
-                            _selectedStationName.value = nextNetworkStation.name
+                            _selectedStationName.value = fallbackStation.name
                         } else {
                             _selectedStationUrl.value = null
                             _selectedStationName.value = null

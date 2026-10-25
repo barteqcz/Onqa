@@ -167,11 +167,18 @@ class PlaybackService : MediaSessionService() {
     }
 
     private suspend fun checkCoverageAndSwitch(stations: List<RadioStation>) {
+        val player = exoPlayer ?: return
+        val currentItem = player.currentMediaItem
+        val url = currentItem?.mediaId ?: currentStationUrl
+        val metadata = currentItem?.mediaMetadata
+        val name = metadata?.title?.toString() ?: metadata?.artist?.toString() ?: currentStationName
+        val network = metadata?.extras?.getString("network") ?: currentStationNetwork
+
         val result = coverageManager.checkCoverage(
             stations = stations,
-            currentUrl = currentStationUrl,
-            currentName = currentStationName,
-            currentNetwork = currentStationNetwork,
+            currentUrl = url,
+            currentName = name,
+            currentNetwork = network,
         )
 
         when (result) {

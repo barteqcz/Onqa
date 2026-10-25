@@ -268,6 +268,8 @@ fun SettingsScreen(
 
                 SettingCategory(title = stringResource(R.string.category_data))
 
+                Spacer(modifier = Modifier.height(16.dp))
+
                 val context = LocalContext.current
                 val exportedToastTpl = stringResource(R.string.favorites_exported_toast)
                 val importedToastTpl = stringResource(R.string.favorites_imported_toast)
