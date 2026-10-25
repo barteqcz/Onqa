@@ -32,12 +32,9 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.extractor.metadata.icy.IcyHeaders
 import androidx.media3.extractor.metadata.icy.IcyInfo
 import androidx.media3.extractor.metadata.id3.TextInformationFrame
-import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
-import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionCommands
-import androidx.media3.session.SessionResult
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
@@ -139,9 +136,6 @@ class PlaybackService : MediaSessionService() {
         const val EXTRA_NAME = "name"
         const val EXTRA_LOGO = "logo"
         const val EXTRA_NETWORK = "network"
-
-        private const val SESSION_ACTION_PREVIOUS = "ACTION_PREV"
-        private const val SESSION_ACTION_NEXT = "ACTION_NEXT"
 
         private const val RETRY_DELAY_MS = 5000L
 
@@ -380,6 +374,24 @@ class PlaybackService : MediaSessionService() {
             // Intercept controller/notification play and pause commands before ExoPlayer changes
             // state. This lets pause fade out first and makes resume reconnect silently.
             val sessionPlayer = object : ForwardingPlayer(exoPlayer!!) {
+                // Expose standard Media3 previous/next commands. The notification provider
+                // will then render its normal system-style controls instead of custom buttons.
+                override fun getAvailableCommands(): Player.Commands {
+                    return Player.Commands.Builder()
+                        .addAll(super.getAvailableCommands())
+                        .add(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+                        .add(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
+                        .build()
+                }
+
+                override fun seekToPreviousMediaItem() {
+                    skipStation(-1)
+                }
+
+                override fun seekToNextMediaItem() {
+                    skipStation(1)
+                }
+
                 override fun play() {
                     requestPlayFromSession()
                 }
@@ -405,10 +417,9 @@ class PlaybackService : MediaSessionService() {
                             session: MediaSession,
                             controller: MediaSession.ControllerInfo,
                         ): MediaSession.ConnectionResult {
-                            val availableSessionCommands = SessionCommands.Builder()
-                                .add(SessionCommand(SESSION_ACTION_PREVIOUS, Bundle.EMPTY))
-                                .add(SessionCommand(SESSION_ACTION_NEXT, Bundle.EMPTY))
-                                .build()
+                            // Station navigation is exposed as standard Player commands,
+                            // so no custom session commands are needed for the notification.
+                            val availableSessionCommands = SessionCommands.Builder().build()
 
                             return MediaSession.ConnectionResult.accept(
                                 availableSessionCommands,
@@ -436,37 +447,9 @@ class PlaybackService : MediaSessionService() {
                             future.set(mutableListOf())
                             return future
                         }
-
-                        override fun onCustomCommand(
-                            mediaSession: MediaSession,
-                            controller: MediaSession.ControllerInfo,
-                            customCommand: SessionCommand,
-                            args: Bundle,
-                        ): ListenableFuture<SessionResult> {
-                            if (customCommand.customAction == SESSION_ACTION_PREVIOUS) {
-                                skipStation(-1)
-                            } else if (customCommand.customAction == SESSION_ACTION_NEXT) {
-                                skipStation(1)
-                            }
-                            return SettableFuture.create<SessionResult>().apply {
-                                set(SessionResult(SessionResult.RESULT_SUCCESS))
-                            }
-                        }
                     },
                 )
                 .build()
-
-            val prevButton = CommandButton.Builder(CommandButton.ICON_PREVIOUS)
-                .setDisplayName("Previous")
-                .setSessionCommand(SessionCommand(SESSION_ACTION_PREVIOUS, Bundle.EMPTY))
-                .build()
-
-            val nextButton = CommandButton.Builder(CommandButton.ICON_NEXT)
-                .setDisplayName("Next")
-                .setSessionCommand(SessionCommand(SESSION_ACTION_NEXT, Bundle.EMPTY))
-                .build()
-
-            mediaSession?.setCustomLayout(listOf(prevButton, nextButton))
 
             mediaSession?.let { addSession(it) }
         }
