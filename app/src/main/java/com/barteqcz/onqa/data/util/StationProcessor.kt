@@ -15,6 +15,7 @@ object StationProcessor {
         .thenBy { it.transmitterId ?: Int.MAX_VALUE }
         .thenBy { it.displayOrder ?: Int.MAX_VALUE }
 
+    @Suppress("UNUSED_PARAMETER")
     fun groupAndSortStations(
         allStations: List<RadioStation>,
         activeUrl: String?,
@@ -22,12 +23,10 @@ object StationProcessor {
     ): ImmutableList<RadioStation> {
         if (allStations.isEmpty()) return kotlinx.collections.immutable.persistentListOf()
         
-        val normalizedActive = activeUrl?.trimEnd('/')
         return allStations.groupBy { it.name to it.network }
             .asSequence()
             .mapNotNull { (_, networkStations) ->
                 var bestRepresentative: RadioStation? = null
-                var bestActiveRepresentative: RadioStation? = null
 
                 for (station in networkStations) {
                     val isZeroCoverage = station.coverageKm != null && station.coverageKm <= 0.0
@@ -39,20 +38,9 @@ object StationProcessor {
                             bestRepresentative = station
                         }
                     }
-
-                    val matchesActive = normalizedActive != null && 
-                        (station.normalizedStreamUrl == normalizedActive || 
-                         station.normalizedStreamUrlHq == normalizedActive)
-
-                    if (matchesActive && !isZeroCoverage && !isExplicitlyOutOfCoverage) {
-                        if (bestActiveRepresentative == null || comparator.compare(station, bestActiveRepresentative) < 0) {
-                            bestActiveRepresentative = station
-                        }
-                    }
                 }
 
-                val representative = bestActiveRepresentative ?: bestRepresentative
-                representative?.copy(isFavorite = representative.name in favorites)
+                bestRepresentative?.copy(isFavorite = bestRepresentative.name in favorites)
             }
             .sortedWith(resultComparator)
             .toImmutableList()

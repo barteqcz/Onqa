@@ -81,6 +81,25 @@ class PlaybackService : MediaSessionService() {
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var playbackJob: Job? = null
     private var artworkJob: Job? = null
+    private var retryAttempt = 0
+    private var stallJob: Job? = null
+
+    private fun startStallWatchdog() {
+        stallJob?.cancel()
+        stallJob = serviceScope.launch {
+            delay(10000.milliseconds) // 10 seconds timeout for buffering stall
+            val player = exoPlayer ?: return@launch
+            if (player.playbackState == Player.STATE_BUFFERING && !player.isPlaying) {
+                Timber.w("Playback stalled in buffering state for 10s. Triggering automatic reconnect...")
+                retryPlayback()
+            }
+        }
+    }
+
+    private fun stopStallWatchdog() {
+        stallJob?.cancel()
+        stallJob = null
+    }
 
     private val noisyReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -238,7 +257,23 @@ class PlaybackService : MediaSessionService() {
             exoPlayer?.addListener(
                 object : Player.Listener {
                     override fun onPlayerError(error: PlaybackException) {
+                        stopStallWatchdog()
                         retryPlayback()
+                    }
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        when (playbackState) {
+                            Player.STATE_BUFFERING -> {
+                                startStallWatchdog()
+                            }
+                            Player.STATE_READY -> {
+                                stopStallWatchdog()
+                                retryAttempt = 0
+                            }
+                            Player.STATE_ENDED, Player.STATE_IDLE -> {
+                                stopStallWatchdog()
+                            }
+                            else -> {}
+                        }
                     }
                     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
                         if (isUpdatingMetadata) return
@@ -321,10 +356,16 @@ class PlaybackService : MediaSessionService() {
         val logo = currentStationLogo
         val network = currentStationNetwork
 
+        retryAttempt++
+        val delayMs = (RETRY_DELAY_MS * minOf(retryAttempt, 5)).coerceAtMost(15000L)
+        Timber.w("Playback error occurred. Automatically retrying connection (attempt $retryAttempt) in ${delayMs}ms...")
+
         playbackJob?.cancel()
         playbackJob = serviceScope.launch {
-            delay(RETRY_DELAY_MS.milliseconds)
-            playInternal(name, url, logo, network)
+            delay(delayMs.milliseconds)
+            if (currentStationUrl == url) {
+                playInternal(name, url, logo, network, forceReload = true)
+            }
         }
     }
 
@@ -472,6 +513,7 @@ class PlaybackService : MediaSessionService() {
 
     private fun stopInternal() {
         playbackJob?.cancel()
+        stopStallWatchdog()
         currentStationUrl = null
         currentStationName = null
         currentStationLogo = null

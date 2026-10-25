@@ -78,9 +78,16 @@ class RadioPlayer @Inject constructor(
                 override fun onPlaybackStateChanged(state: Int) {
                     val buffering = state == Player.STATE_BUFFERING
                     if ((state != Player.STATE_IDLE) && (state != Player.STATE_ENDED)) {
-                        _state.update { it.copy(isBuffering = buffering) }
+                        _state.update { 
+                            it.copy(
+                                isBuffering = buffering,
+                                playbackError = if (buffering) false else it.playbackError
+                            ) 
+                        }
                     }
-                    if (state == Player.STATE_READY) _state.update { it.copy(playbackError = false) }
+                    if (state == Player.STATE_READY) {
+                        _state.update { it.copy(playbackError = false, isBuffering = false) }
+                    }
                 }
                 override fun onPlayerError(error: PlaybackException) {
                     _state.update { it.copy(playbackError = true, isPlaying = false, isBuffering = false) }
