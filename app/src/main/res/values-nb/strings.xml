@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Inkluder ukjente stasjoner</string>
     <string name="favorites_import_confirm">Importer</string>
     <string name="cancel">Avbryt</string>
+    <string name="catalog_downloading_first_run_title">Laster ned stasjonsdatabase…</string>
+    <string name="catalog_downloading_update_title">Oppdaterer stasjonsdatabase…</string>
+    <string name="catalog_download_in_background_action">Last ned i bakgrunnen</string>
+    <string name="catalog_download_in_background_desc">Den nye databasen tas i bruk ved neste appstart.</string>
 </resources>

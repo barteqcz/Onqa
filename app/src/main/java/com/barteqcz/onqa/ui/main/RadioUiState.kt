@@ -12,6 +12,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 sealed interface RadioUiState {
     data object Loading : RadioUiState
+    data class CatalogDownloading(val isFirstRun: Boolean) : RadioUiState
     data class Success(
         val stations: ImmutableList<RadioStation>,
         val allStations: ImmutableList<RadioStation> = persistentListOf(),

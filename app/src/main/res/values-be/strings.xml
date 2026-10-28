@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Уключыць невядомыя станцыі</string>
     <string name="favorites_import_confirm">Імпартаваць</string>
     <string name="cancel">Скасаваць</string>
+    <string name="catalog_downloading_first_run_title">Спампоўванне базы даных станцый…</string>
+    <string name="catalog_downloading_update_title">Абнаўленне базы даных станцый…</string>
+    <string name="catalog_download_in_background_action">Спампоўваць у фоне</string>
+    <string name="catalog_download_in_background_desc">Пасля спампоўвання база будзе ўжыта пры наступным запуску праграмы.</string>
 </resources>

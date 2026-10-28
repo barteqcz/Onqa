@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Kaasa tundmatud jaamad</string>
     <string name="favorites_import_confirm">Impordi</string>
     <string name="cancel">Tühista</string>
+    <string name="catalog_downloading_first_run_title">Jaamade andmebaasi allalaadimine…</string>
+    <string name="catalog_downloading_update_title">Jaamade andmebaasi värskendamine…</string>
+    <string name="catalog_download_in_background_action">Laadi alla taustal</string>
+    <string name="catalog_download_in_background_desc">Uus andmebaas rakendatakse rakenduse järgmisel käivitamisel.</string>
 </resources>

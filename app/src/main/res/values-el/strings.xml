@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Συμπερίληψη άγνωστων σταθμών</string>
     <string name="favorites_import_confirm">Εισαγωγή</string>
     <string name="cancel">Ακύρωση</string>
+    <string name="catalog_downloading_first_run_title">Λήψη βάσης δεδομένων σταθμών…</string>
+    <string name="catalog_downloading_update_title">Ενημέρωση βάσης δεδομένων σταθμών…</string>
+    <string name="catalog_download_in_background_action">Λήψη στο υπόβαθρο</string>
+    <string name="catalog_download_in_background_desc">Η νέα βάση δεδομένων θα εφαρμοστεί στην επόμενη εκκίνηση της εφαρμογής.</string>
 </resources>

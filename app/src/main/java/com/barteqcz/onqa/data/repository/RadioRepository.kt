@@ -44,6 +44,21 @@ class RadioRepository @Inject constructor(
     val currentLocation: StateFlow<Location?> = locationManager.currentLocation
     val locationInfo: StateFlow<LocationInfo> = locationManager.locationInfo
 
+    private val _hasPendingCatalogUpdate = MutableStateFlow(catalogDatabaseManager.hasPendingUpdate())
+    val hasPendingCatalogUpdate: StateFlow<Boolean> = _hasPendingCatalogUpdate.asStateFlow()
+
+    val isCatalogDownloading: StateFlow<Boolean> = catalogDatabaseManager.isDownloading
+
+    private val _isFirstRunDownload = MutableStateFlow(!catalogDatabaseManager.isDatabasePresent())
+    val isFirstRunDownload: StateFlow<Boolean> = _isFirstRunDownload.asStateFlow()
+
+    private val _isDownloadingInBackground = MutableStateFlow(false)
+    val isDownloadingInBackground: StateFlow<Boolean> = _isDownloadingInBackground.asStateFlow()
+
+    fun dismissDownloadToBackground() {
+        _isDownloadingInBackground.value = true
+    }
+
     private var observationJob: Job? = null
 
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -74,25 +89,34 @@ class RadioRepository @Inject constructor(
     }
 
     suspend fun updateNearbyStations(location: Location) {
+        val hasDb = catalogDatabaseManager.isDatabasePresent()
+        _isFirstRunDownload.value = !hasDb
+
         if (_stations.value !is NetworkResult.Success) {
             _stations.value = NetworkResult.Loading
         }
         try {
-            val settings = settingsRepository.settingsFlow.first()
-            catalogDatabaseManager.checkAutoUpdate(settings.catalogUpdateFrequency, settings.lastCatalogUpdate)
-
             val result = catalogDatabaseManager.getNearbyStations(location.latitude, location.longitude)
-            if (result.isNotEmpty() || catalogDatabaseManager.isDatabasePresent()) {
-                _stations.value = NetworkResult.Success(result)
-            } else {
-                val message = context.getString(R.string.no_stations_message)
-                _stations.value = NetworkResult.Error(message)
+            _hasPendingCatalogUpdate.value = catalogDatabaseManager.hasPendingUpdate()
+
+            _stations.value = NetworkResult.Success(result)
+
+            scope.launch {
+                try {
+                    val settings = settingsRepository.settingsFlow.first()
+                    val updated = catalogDatabaseManager.checkAutoUpdate(settings.catalogUpdateFrequency, settings.lastCatalogUpdate)
+                    if (updated) {
+                        _hasPendingCatalogUpdate.value = catalogDatabaseManager.hasPendingUpdate()
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "Error during background catalog auto-update check")
+                }
             }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Timber.e(e, "Error updating nearby stations from catalog database")
-            if (_stations.value !is NetworkResult.Success) {
+            if (_stations.value !is NetworkResult.Success && !catalogDatabaseManager.isDatabasePresent()) {
                 val message = e.message ?: context.getString(R.string.error_unknown)
                 _stations.value = NetworkResult.Error(message)
             }
@@ -102,8 +126,11 @@ class RadioRepository @Inject constructor(
     suspend fun updateCatalogManually(): Boolean {
         val success = catalogDatabaseManager.downloadCatalog()
         if (success) {
-            currentLocation.value?.let { loc ->
-                updateNearbyStations(loc)
+            _hasPendingCatalogUpdate.value = catalogDatabaseManager.hasPendingUpdate()
+            if (!catalogDatabaseManager.hasPendingUpdate()) {
+                currentLocation.value?.let { loc ->
+                    updateNearbyStations(loc)
+                }
             }
         }
         return success

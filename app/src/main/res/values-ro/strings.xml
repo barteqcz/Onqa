@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Include posturile necunoscute</string>
     <string name="favorites_import_confirm">Importă</string>
     <string name="cancel">Anulează</string>
+    <string name="catalog_downloading_first_run_title">Se descarcă baza de date a posturilor…</string>
+    <string name="catalog_downloading_update_title">Se actualizează baza de date a posturilor…</string>
+    <string name="catalog_download_in_background_action">Descărcare în fundal</string>
+    <string name="catalog_download_in_background_desc">Noua bază de date va fi aplicată la următoarea lansare a aplicației.</string>
 </resources>

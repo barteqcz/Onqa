@@ -137,6 +137,13 @@ fun RadioScreen(
                                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                             }
                         }
+                        is RadioUiState.CatalogDownloading -> {
+                            CatalogDownloadContainer(
+                                isFirstRun = state.isFirstRun,
+                                modifier = Modifier.fillMaxSize(),
+                                onDownloadInBackground = { viewModel.dismissDownloadToBackground() }
+                            )
+                        }
                         is RadioUiState.Success -> {
                             if (state.stations.isEmpty()) {
                                 StatusContainer(

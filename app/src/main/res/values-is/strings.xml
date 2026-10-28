@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Taka með óþekktar stöðvar</string>
     <string name="favorites_import_confirm">Flytja inn</string>
     <string name="cancel">Hætta við</string>
+    <string name="catalog_downloading_first_run_title">Sækir stöðvagagnagrunn…</string>
+    <string name="catalog_downloading_update_title">Uppfærir stöðvagagnagrunn…</string>
+    <string name="catalog_download_in_background_action">Sækja í bakgrunni</string>
+    <string name="catalog_download_in_background_desc">Nýi gagnagrunnurinn verður tekinn í notkun næst þegar forritið er ræst.</string>
 </resources>

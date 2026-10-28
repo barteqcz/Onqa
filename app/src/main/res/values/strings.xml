@@ -134,4 +134,10 @@
     <string name="catalog_manual_update_title">Update database now</string>
     <string name="catalog_manual_update_desc">Download the latest station database</string>
     <string name="catalog_last_updated">Last updated: %s</string>
+    <string name="catalog_update_available_title">A new station database is available.</string>
+    <string name="catalog_update_action">Refresh</string>
+    <string name="catalog_downloading_first_run_title">Downloading station database…</string>
+    <string name="catalog_downloading_update_title">Updating station database…</string>
+    <string name="catalog_download_in_background_action">Download in background</string>
+    <string name="catalog_download_in_background_desc">The new database will be applied on next app launch.</string>
 </resources>

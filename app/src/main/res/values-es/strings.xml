@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Incluir emisoras desconocidas</string>
     <string name="favorites_import_confirm">Importar</string>
     <string name="cancel">Cancelar</string>
+    <string name="catalog_downloading_first_run_title">Descargando base de datos de emisoras…</string>
+    <string name="catalog_downloading_update_title">Actualizando base de datos de emisoras…</string>
+    <string name="catalog_download_in_background_action">Descargar en segundo plano</string>
+    <string name="catalog_download_in_background_desc">La nueva base de datos se aplicará en el próximo inicio de la aplicación.</string>
 </resources>

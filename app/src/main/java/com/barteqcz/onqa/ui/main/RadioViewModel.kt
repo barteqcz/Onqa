@@ -93,6 +93,7 @@ data class RadioViewState(
     val isSearchActive: Boolean = false,
     val displayStation: RadioStation? = null,
     val isMiniPlayerActive: Boolean = false,
+    val hasPendingCatalogUpdate: Boolean = false,
 )
 
 @Immutable
@@ -158,7 +159,16 @@ class RadioViewModel @Inject constructor(
         favoriteStations,
         searchFlow,
         repository.locationInfo,
-    ) { (res, loc), favorites, (query, searchActive), locInfo ->
+        combine(
+            repository.isCatalogDownloading,
+            repository.isFirstRunDownload,
+            repository.isDownloadingInBackground
+        ) { downloading, firstRun, bg -> Triple(downloading, firstRun, bg) }
+    ) { (res, loc), favorites, (query, searchActive), locInfo, (downloading, firstRun, inBg) ->
+        if (downloading && !inBg) {
+            return@combine RadioUiState.CatalogDownloading(isFirstRun = firstRun)
+        }
+
         if (loc == null) return@combine RadioUiState.Loading
 
         when (res) {
@@ -254,7 +264,8 @@ class RadioViewModel @Inject constructor(
     val viewState: StateFlow<RadioViewState> = combine(
         audioStateFlow,
         environmentStateFlow,
-    ) { audio, env ->
+        repository.hasPendingCatalogUpdate,
+    ) { audio, env, hasPendingUpdate ->
         val stations = (audio.uiState as? RadioUiState.Success)?.stations ?: emptyList()
         val allStations = (audio.uiState as? RadioUiState.Success)?.allStations ?: emptyList()
         val isNoStationsSuccess = (audio.uiState is RadioUiState.Success) && allStations.isEmpty()
@@ -280,6 +291,7 @@ class RadioViewModel @Inject constructor(
             isSearchActive = env.isSearchActive,
             displayStation = displayStation,
             isMiniPlayerActive = (audio.selectedUrl != null) && !isNoStationsSuccess,
+            hasPendingCatalogUpdate = hasPendingUpdate,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
@@ -475,6 +487,10 @@ class RadioViewModel @Inject constructor(
             val success = repository.updateCatalogManually()
             onResult(success)
         }
+    }
+
+    fun dismissDownloadToBackground() {
+        repository.dismissDownloadToBackground()
     }
     
     fun updateLocationSource(source: LocationSource) = viewModelScope.launch { 

@@ -12,6 +12,9 @@ import com.barteqcz.onqa.data.remote.RadioApiService
 import com.barteqcz.onqa.data.repository.SettingsRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
@@ -51,52 +54,131 @@ class CatalogDatabaseManager @Inject constructor(
         }
     }
 
-    fun isDatabasePresent(): Boolean {
-        val dbFile = context.getDatabasePath("catalog.sqlite")
-        return dbFile.exists() && dbFile.length() > 0
+    private fun isValidSqliteDatabase(file: File): Boolean {
+        return !(!file.exists() || file.length() < 100) && try {
+            val db = SQLiteDatabase.openDatabase(file.path, null, SQLiteDatabase.OPEN_READONLY)
+            val isOk = db.isOpen
+            db.close()
+            isOk
+        } catch (e: Exception) {
+            Timber.w(e, "Database file ${file.name} failed validity test")
+            false
+        }
     }
 
+    fun isDatabasePresent(): Boolean {
+        val dbFile = context.getDatabasePath("catalog.sqlite")
+        val pendingFile = context.getDatabasePath("catalog_pending.sqlite")
+        return (dbFile.exists() && dbFile.length() > 0 && isValidSqliteDatabase(dbFile)) ||
+               (pendingFile.exists() && pendingFile.length() > 0 && isValidSqliteDatabase(pendingFile))
+    }
+
+    fun hasPendingUpdate(): Boolean {
+        val pendingFile = context.getDatabasePath("catalog_pending.sqlite")
+        if (!pendingFile.exists() || pendingFile.length() == 0L) return false
+        val isValid = isValidSqliteDatabase(pendingFile)
+        if (!isValid) {
+            try { pendingFile.delete() } catch (_: Exception) {}
+        }
+        return isValid
+    }
+
+    suspend fun applyPendingUpdate(): Boolean = withContext(Dispatchers.IO) {
+        val dbFile = context.getDatabasePath("catalog.sqlite")
+        val pendingFile = context.getDatabasePath("catalog_pending.sqlite")
+        if (!pendingFile.exists() || pendingFile.length() == 0L) {
+            return@withContext false
+        }
+
+        if (!isValidSqliteDatabase(pendingFile)) {
+            Timber.w("Pending catalog file is corrupt or incomplete. Removing it.")
+            try { pendingFile.delete() } catch (_: Exception) {}
+            return@withContext false
+        }
+
+        synchronized(this@CatalogDatabaseManager) {
+            closeDatabase()
+            if (dbFile.exists()) {
+                dbFile.delete()
+            }
+            val renamed = pendingFile.renameTo(dbFile)
+            if (renamed || dbFile.exists()) {
+                Timber.i("Successfully applied pending catalog.sqlite update")
+                return@withContext true
+            } else {
+                Timber.e("Failed to rename pending file to catalog.sqlite")
+                try { pendingFile.delete() } catch (_: Exception) {}
+                return@withContext false
+            }
+        }
+    }
+
+    private val _isDownloading = MutableStateFlow(false)
+    val isDownloading: StateFlow<Boolean> = _isDownloading.asStateFlow()
+
     suspend fun downloadCatalog(): Boolean = withContext(Dispatchers.IO) {
+        _isDownloading.value = true
+        val dbFile = context.getDatabasePath("catalog.sqlite")
+        val pendingFile = context.getDatabasePath("catalog_pending.sqlite")
+        dbFile.parentFile?.mkdirs()
+        val tempFile = File(dbFile.parentFile, "catalog_pending.sqlite.tmp")
+
         try {
             val body = radioApiService.downloadDatabase()
-            val dbFile = context.getDatabasePath("catalog.sqlite")
-            dbFile.parentFile?.mkdirs()
-            val tempFile = File(dbFile.parentFile, "catalog.sqlite.tmp")
 
             tempFile.outputStream().use { output ->
                 body.byteStream().copyTo(output)
             }
 
-            if (tempFile.exists() && tempFile.length() > 0) {
-                closeDatabase()
-                if (dbFile.exists()) {
-                    dbFile.delete()
+            if (tempFile.exists() && tempFile.length() > 0 && isValidSqliteDatabase(tempFile)) {
+                if (pendingFile.exists()) {
+                    pendingFile.delete()
                 }
-                val renamed = tempFile.renameTo(dbFile)
-                if (renamed || dbFile.exists()) {
-                    settingsRepository.updateLastCatalogUpdate(System.currentTimeMillis())
-                    Timber.i("Successfully downloaded and updated catalog.sqlite")
+                val renamed = tempFile.renameTo(pendingFile)
+                if (renamed || pendingFile.exists()) {
+                    Timber.i("Successfully downloaded catalog update to catalog_pending.sqlite")
+                    // If active database does not exist yet (first run), apply immediately
+                    if (!dbFile.exists() || dbFile.length() == 0L) {
+                        applyPendingUpdate()
+                        settingsRepository.updateLastCatalogUpdate(System.currentTimeMillis())
+                    }
                     return@withContext true
+                }
+            } else {
+                Timber.w("Downloaded database temp file is invalid or zero bytes")
+                if (tempFile.exists()) {
+                    try { tempFile.delete() } catch (_: Exception) {}
                 }
             }
             false
         } catch (e: Exception) {
-            Timber.e(e, "Failed to download catalog.sqlite")
+            Timber.e(e, "Failed to download catalog database")
+            if (tempFile.exists()) {
+                try { tempFile.delete() } catch (_: Exception) {}
+            }
             false
+        } finally {
+            _isDownloading.value = false
         }
     }
 
-    suspend fun checkAutoUpdate(frequency: CatalogUpdateFrequency, lastUpdate: Long) {
-        if (frequency == CatalogUpdateFrequency.MANUAL) return
+    suspend fun checkAutoUpdate(frequency: CatalogUpdateFrequency, lastUpdate: Long): Boolean {
+        if (frequency == CatalogUpdateFrequency.MANUAL) return false
         val now = System.currentTimeMillis()
         val intervalMs = frequency.days * 24 * 60 * 60 * 1000L
         if (now - lastUpdate >= intervalMs) {
-            Timber.i("Triggering auto-update for catalog.sqlite (Frequency: ${frequency.name})")
-            downloadCatalog()
+            Timber.i("Triggering auto-update for catalog database (Frequency: ${frequency.name})")
+            return downloadCatalog()
         }
+        return false
     }
 
     suspend fun getNearbyStations(lat: Double, lon: Double): List<RadioStation> = withContext(Dispatchers.IO) {
+        if (hasPendingUpdate() && dbInstance == null) {
+            applyPendingUpdate()
+            settingsRepository.updateLastCatalogUpdate(System.currentTimeMillis())
+        }
+
         val dbFile = context.getDatabasePath("catalog.sqlite")
         if (!dbFile.exists() || dbFile.length() == 0L) {
             val success = downloadCatalog()

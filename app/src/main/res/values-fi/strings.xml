@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Sisällytä tuntemattomat asemat</string>
     <string name="favorites_import_confirm">Tuo</string>
     <string name="cancel">Peruuta</string>
+    <string name="catalog_downloading_first_run_title">Ladataan asematietokantaa…</string>
+    <string name="catalog_downloading_update_title">Päivitetään asematietokantaa…</string>
+    <string name="catalog_download_in_background_action">Lataa taustalla</string>
+    <string name="catalog_download_in_background_desc">Uusi tietokanta otetaan käyttöön, kun sovellus käynnistetään seuraavan kerran.</string>
 </resources>

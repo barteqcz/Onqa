@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Bilinmeyen istasyonları dahil et</string>
     <string name="favorites_import_confirm">İçe Aktar</string>
     <string name="cancel">İptal</string>
+    <string name="catalog_downloading_first_run_title">İstasyon veri tabanı indiriliyor…</string>
+    <string name="catalog_downloading_update_title">İstasyon veri tabanı güncelleniyor…</string>
+    <string name="catalog_download_in_background_action">Arka planda indir</string>
+    <string name="catalog_download_in_background_desc">Yeni veri tabanı, uygulamanın bir sonraki başlatılışında uygulanacaktır.</string>
 </resources>

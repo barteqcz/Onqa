@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Inkludi stazzjonijiet mhux magħrufa</string>
     <string name="favorites_import_confirm">Importa</string>
     <string name="cancel">Ikkanċella</string>
+    <string name="catalog_downloading_first_run_title">Qed tniżżel id-database tal-istazzjonijiet…</string>
+    <string name="catalog_downloading_update_title">Qed taġġorna id-database tal-istazzjonijiet…</string>
+    <string name="catalog_download_in_background_action">Niżżel fl-isfond</string>
+    <string name="catalog_download_in_background_desc">Id-database il-ġdida se tiġi applikata meta terġa\' tiftaħ l-app.</string>
 </resources>

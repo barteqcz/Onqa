@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Onbekannt Sender mat abauen</string>
     <string name="favorites_import_confirm">Importéieren</string>
     <string name="cancel">Ofbriechen</string>
+    <string name="catalog_downloading_first_run_title">Senderdatebank gëtt erofgelueden…</string>
+    <string name="catalog_downloading_update_title">Senderdatebank gëtt aktualiséiert…</string>
+    <string name="catalog_download_in_background_action">Am Hannergrond eroflueden</string>
+    <string name="catalog_download_in_background_desc">Déi nei Datebank gëtt beim nächste Start vun der App ugewannt.</string>
 </resources>

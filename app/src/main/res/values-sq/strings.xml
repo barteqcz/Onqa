@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Përfshi stacionet e panjohura</string>
     <string name="favorites_import_confirm">Importo</string>
     <string name="cancel">Anulo</string>
+    <string name="catalog_downloading_first_run_title">Po shkarkohet baza e të dhënave të stacioneve…</string>
+    <string name="catalog_downloading_update_title">Po përditësohet baza e të dhënave të stacioneve…</string>
+    <string name="catalog_download_in_background_action">Shkarko në sfond</string>
+    <string name="catalog_download_in_background_desc">Baza e re e të dhënave do të zbatohet në nisjen tjetër të aplikacionit.</string>
 </resources>

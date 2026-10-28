@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Įtraukti nežinomas stotis</string>
     <string name="favorites_import_confirm">Importuoti</string>
     <string name="cancel">Atšaukti</string>
+    <string name="catalog_downloading_first_run_title">Atsiunčiama stočių duomenų bazė…</string>
+    <string name="catalog_downloading_update_title">Atnaujinama stočių duomenų bazė…</string>
+    <string name="catalog_download_in_background_action">Atsiųsti fone</string>
+    <string name="catalog_download_in_background_desc">Nauja duomenų bazė bus pritaikyta kitą kartą paleidus programėlę.</string>
 </resources>

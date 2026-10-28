@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Onbekende stations opnemen</string>
     <string name="favorites_import_confirm">Importeren</string>
     <string name="cancel">Annuleren</string>
+    <string name="catalog_downloading_first_run_title">Zenderdatabase downloaden…</string>
+    <string name="catalog_downloading_update_title">Zenderdatabase bijwerken…</string>
+    <string name="catalog_download_in_background_action">Downloaden op achtergrond</string>
+    <string name="catalog_download_in_background_desc">De nieuwe database wordt toegepast bij de volgende start van de app.</string>
 </resources>

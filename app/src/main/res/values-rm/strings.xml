@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Integrar staziuns nunconuschidas</string>
     <string name="favorites_import_confirm">Importar</string>
     <string name="cancel">Annullar</string>
+    <string name="catalog_downloading_first_run_title">Telechargiar la banca da datas d\'emischuns…</string>
+    <string name="catalog_downloading_update_title">Actualisar la banca da datas d\'emischuns…</string>
+    <string name="catalog_download_in_background_action">Telechargiar en il fundament</string>
+    <string name="catalog_download_in_background_desc">La nova banca da datas vegn applitgada tar la proxima partenza da l\'app.</string>
 </resources>

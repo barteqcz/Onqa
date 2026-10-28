@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Inclure les stations inconnues</string>
     <string name="favorites_import_confirm">Importer</string>
     <string name="cancel">Annuler</string>
+    <string name="catalog_downloading_first_run_title">Téléchargement de la base de données des stations…</string>
+    <string name="catalog_downloading_update_title">Mise à jour de la base de données des stations…</string>
+    <string name="catalog_download_in_background_action">Télécharger en arrière-plan</string>
+    <string name="catalog_download_in_background_desc">La nouvelle base de données sera appliquée au prochain lancement de l\'application.</string>
 </resources>

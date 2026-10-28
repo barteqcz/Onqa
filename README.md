@@ -13,7 +13,7 @@ The name is inspired by the Spanish words *onda* (“wave”) and *cerca* (“ne
 
 ## Recent release changes
 
-Due to the recent policies changes from Google, .apk sideloading is about to be limited and not recommended. I decided to start the process of putting the app on Google Play Store. The app is currently in its closed testing phase. If you want access, please contact me. After the app goes to the production phase, the link will be shared in this repository, but you'll also be able to find the app via search bar in the google play store.
+Due to the recent policies changes from Google, .apk sideloading is about to be limited and not recommended. I decided to start the process of putting the app on Google Play Store. The app is currently in its closed testing phase. If you want access, please contact me. After the app goes to the production phase, the link will be shared in this repository, but you'll also be able to find the app via search bar in the Google Play Store.
 
 ## Features
 

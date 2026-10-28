@@ -98,4 +98,10 @@
     <string name="catalog_manual_update_title">Zaktualizuj bazę danych</string>
     <string name="catalog_manual_update_desc">Pobierz najnowszą wersję bazy danych stacji radiowych</string>
     <string name="catalog_last_updated">Ostatnia aktualizacja: %s</string>
+    <string name="catalog_update_available_title">Dostępna jest nowa wersja bazy stacji.</string>
+    <string name="catalog_update_action">Odśwież</string>
+    <string name="catalog_downloading_first_run_title">Pobieranie bazy stacji radiowych…</string>
+    <string name="catalog_downloading_update_title">Aktualizacja bazy stacji radiowych…</string>
+    <string name="catalog_download_in_background_action">Pobieraj w tle</string>
+    <string name="catalog_download_in_background_desc">Po pobraniu baza zostanie zaaplikowana przy kolejnym uruchomieniu aplikacji.</string>
 </resources>

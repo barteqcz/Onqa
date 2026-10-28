@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Zahrnout neznámé stanice</string>
     <string name="favorites_import_confirm">Importovat</string>
     <string name="cancel">Zrušit</string>
+    <string name="catalog_downloading_first_run_title">Stahování databáze stanic…</string>
+    <string name="catalog_downloading_update_title">Aktualizace databáze stanic…</string>
+    <string name="catalog_download_in_background_action">Stáhnout na pozadí</string>
+    <string name="catalog_download_in_background_desc">Nová databáze bude použita při příštím spuštění aplikace.</string>
 </resources>

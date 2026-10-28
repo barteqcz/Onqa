@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Iekļaut nezināmas stacijas</string>
     <string name="favorites_import_confirm">Importēt</string>
     <string name="cancel">Atcelt</string>
+    <string name="catalog_downloading_first_run_title">Tiek lejupielādēta staciju datubāze…</string>
+    <string name="catalog_downloading_update_title">Tiek atjaunināta staciju datubāze…</string>
+    <string name="catalog_download_in_background_action">Lejupielādēt fonā</string>
+    <string name="catalog_download_in_background_desc">Jaunā datubāze tiks lietota nākamajā lietotnes palaišanas reizē.</string>
 </resources>

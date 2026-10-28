@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Включване на непознати станции</string>
     <string name="favorites_import_confirm">Импортиране</string>
     <string name="cancel">Отказ</string>
+    <string name="catalog_downloading_first_run_title">Изтегляне на базата данни със станции…</string>
+    <string name="catalog_downloading_update_title">Актуализиране на базата данни със станции…</string>
+    <string name="catalog_download_in_background_action">Изтегляне във фонов режим</string>
+    <string name="catalog_download_in_background_desc">Новата база данни ще бъде приложена при следващото стартиране на приложението.</string>
 </resources>

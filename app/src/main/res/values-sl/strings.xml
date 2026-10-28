@@ -97,4 +97,8 @@
     <string name="favorites_import_include_unknown">Vključi neznane postaje</string>
     <string name="favorites_import_confirm">Uvozi</string>
     <string name="cancel">Prekliči</string>
+    <string name="catalog_downloading_first_run_title">Prenašanje zbirke podatkov postaj…</string>
+    <string name="catalog_downloading_update_title">Posodabljanje zbirke podatkov postaj…</string>
+    <string name="catalog_download_in_background_action">Prenesi v ozadju</string>
+    <string name="catalog_download_in_background_desc">Nova zbirka podatkov bo uporabljena ob naslednjem zagonu aplikacije.</string>
 </resources>
