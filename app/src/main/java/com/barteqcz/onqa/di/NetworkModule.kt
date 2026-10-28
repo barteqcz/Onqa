@@ -1,3 +1,6 @@
+/**
+ * Hilt module configuring OkHttpClient, Retrofit, JSON serializer, and network API service.
+ */
 package com.barteqcz.onqa.di
 
 import com.barteqcz.onqa.data.remote.RadioApiService

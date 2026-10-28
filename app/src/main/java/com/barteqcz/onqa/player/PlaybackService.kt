@@ -1,3 +1,6 @@
+/**
+ * MediaSessionService managing background radio playback, MediaSession integration, and system notifications.
+ */
 package com.barteqcz.onqa.player
 
 import android.app.NotificationChannel
@@ -91,7 +94,6 @@ class PlaybackService : MediaSessionService() {
     private var lastRdsTitle: String? = null
     private var isUpdatingMetadata = false
 
-    // Set when the user pauses playback; the next user-initiated Play reconnects to the stream.
     private var reconnectAfterPause = false
 
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -103,7 +105,7 @@ class PlaybackService : MediaSessionService() {
     private fun startStallWatchdog() {
         stallJob?.cancel()
         stallJob = serviceScope.launch {
-            delay(10000.milliseconds) // 10 seconds timeout for buffering stall
+            delay(10000.milliseconds)
             val player = exoPlayer ?: return@launch
             if ((player.playbackState == Player.STATE_BUFFERING) && !player.isPlaying) {
                 Timber.w("Playback stalled in buffering state for 10s. Triggering automatic reconnect...")
@@ -222,7 +224,6 @@ class PlaybackService : MediaSessionService() {
         } catch (e: CancellationException) {
             throw e
         } catch (_: Exception) {
-            // Continue with the fade even if the ready wait times out.
         }
 
         val currentVol = exoPlayer?.volume ?: 0f
@@ -356,8 +357,6 @@ class PlaybackService : MediaSessionService() {
                     }
 
                     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-                        // Play/pause transitions from MediaSession are intercepted by sessionPlayer
-                        // so fades happen before the underlying ExoPlayer changes state.
                         updateRdsAndNotification(null)
                     }
                 },
@@ -371,21 +370,27 @@ class PlaybackService : MediaSessionService() {
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             )
 
-            // Intercept controller/notification play and pause commands before ExoPlayer changes
-            // state. This lets pause fade out first and makes resume reconnect silently.
             val sessionPlayer = object : ForwardingPlayer(exoPlayer!!) {
-                // Expose standard Media3 previous/next commands. The notification provider
-                // will then render its normal system-style controls instead of custom buttons.
                 override fun getAvailableCommands(): Player.Commands {
                     return Player.Commands.Builder()
                         .addAll(super.getAvailableCommands())
+                        .add(COMMAND_SEEK_TO_PREVIOUS)
                         .add(COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+                        .add(COMMAND_SEEK_TO_NEXT)
                         .add(COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
                         .build()
                 }
 
+                override fun seekToPrevious() {
+                    skipStation(-1)
+                }
+
                 override fun seekToPreviousMediaItem() {
                     skipStation(-1)
+                }
+
+                override fun seekToNext() {
+                    skipStation(1)
                 }
 
                 override fun seekToNextMediaItem() {
@@ -417,8 +422,6 @@ class PlaybackService : MediaSessionService() {
                             session: MediaSession,
                             controller: MediaSession.ControllerInfo,
                         ): MediaSession.ConnectionResult {
-                            // Station navigation is exposed as standard Player commands,
-                            // so no custom session commands are needed for the notification.
                             val availableSessionCommands = SessionCommands.Builder().build()
 
                             return MediaSession.ConnectionResult.accept(
@@ -478,7 +481,6 @@ class PlaybackService : MediaSessionService() {
         playbackJob = serviceScope.launch {
             fadeOut()
 
-            // Do not pause a newly selected station if a play/switch command arrived during fade-out.
             if (currentStationUrl == stationUrlAtPause && reconnectAfterPause) {
                 player.pause()
                 updateRdsAndNotification(null)
@@ -499,9 +501,6 @@ class PlaybackService : MediaSessionService() {
             val url = currentStationUrl
 
             if (name != null && url != null) {
-                // Cancel a pause fade and synchronously stop the old stream before scheduling
-                // the reconnect. Muting alone would hide the old audio but leave its playback
-                // pipeline active until playInternal() gets a chance to run.
                 playbackJob?.cancel()
                 reconnectAfterPause = false
                 player.volume = 0f
@@ -700,27 +699,30 @@ class PlaybackService : MediaSessionService() {
 
     private fun skipStation(delta: Int) {
         serviceScope.launch {
-            val allStations = (repository.stations.value as? NetworkResult.Success)?.data ?: return@launch
-            if (allStations.isEmpty()) return@launch
+            val hasSubscribers = if (delta > 0) playbackEvents.hasNextSubscribers else playbackEvents.hasPreviousSubscribers
+            if (hasSubscribers) {
+                if (delta > 0) playbackEvents.emitNext() else playbackEvents.emitPrevious()
+            } else {
+                val allStations = (repository.stations.value as? NetworkResult.Success)?.data ?: return@launch
+                if (allStations.isEmpty()) return@launch
 
-            val player = exoPlayer
-            val currentUrl = player?.currentMediaItem?.mediaId ?: currentStationUrl
-            val currentIndex = allStations.indexOfFirst {
-                it.matchesUrl(currentUrl) || it.name.equals(currentStationName, ignoreCase = true)
+                val player = exoPlayer
+                val currentUrl = player?.currentMediaItem?.mediaId ?: currentStationUrl
+                val currentIndex = allStations.indexOfFirst {
+                    it.matchesUrl(currentUrl) || it.name.equals(currentStationName, ignoreCase = true)
+                }
+
+                val nextIndex = when {
+                    currentIndex == -1 -> 0
+                    delta > 0 -> (currentIndex + 1) % allStations.size
+                    else -> if (currentIndex == 0) allStations.lastIndex else currentIndex - 1
+                }
+
+                val s = allStations[nextIndex]
+                val useHq = settingsRepository.settingsFlow.first().useHqStream
+                val url = s.getStreamUrl(useHq) ?: s.streamUrl ?: return@launch
+                playInternal(s.name, url, s.logo, s.network, forceReload = true)
             }
-
-            val nextIndex = when {
-                currentIndex == -1 -> 0
-                delta > 0 -> (currentIndex + 1) % allStations.size
-                else -> if (currentIndex == 0) allStations.lastIndex else currentIndex - 1
-            }
-
-            val s = allStations[nextIndex]
-            val useHq = settingsRepository.settingsFlow.first().useHqStream
-            val url = s.getStreamUrl(useHq) ?: s.streamUrl ?: return@launch
-            playInternal(s.name, url, s.logo, s.network, forceReload = true)
-
-            if (delta > 0) playbackEvents.emitNext() else playbackEvents.emitPrevious()
         }
     }
 

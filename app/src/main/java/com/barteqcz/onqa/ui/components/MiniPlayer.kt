@@ -1,3 +1,6 @@
+/**
+ * Mini-player component with playback controls, station details, RDS metadata display, and station switching gestures.
+ */
 package com.barteqcz.onqa.ui.components
 
 import androidx.compose.animation.*

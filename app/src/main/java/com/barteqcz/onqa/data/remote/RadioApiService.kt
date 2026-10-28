@@ -1,3 +1,6 @@
+/**
+ * Retrofit interface defining API endpoints for downloading the radio station catalog database file.
+ */
 package com.barteqcz.onqa.data.remote
 
 import okhttp3.ResponseBody

@@ -55,14 +55,23 @@
 
         <service
             android:name="com.barteqcz.onqa.player.PlaybackService"
-            android:exported="false"
+            android:exported="true"
             android:foregroundServiceType="mediaPlayback|location"
-            android:label="@string/playback_service_label">
+            android:label="@string/playback_service_label"
+            android:permission="TODO">
             <intent-filter>
                 <action android:name="androidx.media3.session.MediaSessionService" />
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name="androidx.media3.session.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"

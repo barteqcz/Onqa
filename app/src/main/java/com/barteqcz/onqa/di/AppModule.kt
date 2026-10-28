@@ -1,3 +1,6 @@
+/**
+ * Hilt module providing system dependencies, including Google Play Services fused location client.
+ */
 package com.barteqcz.onqa.di
 
 import android.content.Context

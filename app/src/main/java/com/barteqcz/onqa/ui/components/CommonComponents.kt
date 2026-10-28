@@ -1,3 +1,6 @@
+/**
+ * General-purpose UI components including the HQ stream badge and equalizer animation.
+ */
 package com.barteqcz.onqa.ui.components
 
 import androidx.compose.animation.core.*

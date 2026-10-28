@@ -1,3 +1,6 @@
+/**
+ * Reusable UI components for settings screen including toggles, dialogs, and option sections.
+ */
 package com.barteqcz.onqa.ui.settings
 
 import androidx.compose.animation.*

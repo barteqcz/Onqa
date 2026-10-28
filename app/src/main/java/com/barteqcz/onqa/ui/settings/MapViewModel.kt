@@ -1,3 +1,6 @@
+/**
+ * ViewModel for the map picker screen handling city search and coordinate selection.
+ */
 package com.barteqcz.onqa.ui.settings
 
 import androidx.lifecycle.ViewModel

@@ -1,3 +1,6 @@
+/**
+ * String extension utilities for text normalization and diacritic removal.
+ */
 package com.barteqcz.onqa.util
 
 import java.text.Normalizer

@@ -1,3 +1,6 @@
+/**
+ * Network connectivity observer interface and implementation for real-time network status tracking.
+ */
 package com.barteqcz.onqa.util
 
 import android.content.Context

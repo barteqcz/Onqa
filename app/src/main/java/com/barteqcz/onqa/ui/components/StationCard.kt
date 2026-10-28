@@ -1,3 +1,6 @@
+/**
+ * Radio station card component displaying station name, distance, logo, coverage status, and favorite toggle.
+ */
 package com.barteqcz.onqa.ui.components
 
 import androidx.compose.animation.AnimatedVisibility

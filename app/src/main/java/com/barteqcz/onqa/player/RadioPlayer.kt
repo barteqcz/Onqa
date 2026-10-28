@@ -1,3 +1,6 @@
+/**
+ * MediaController client wrapper for communicating with PlaybackService and exposing playback state to the UI.
+ */
 package com.barteqcz.onqa.player
 
 import android.content.ComponentName

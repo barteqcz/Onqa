@@ -1,3 +1,6 @@
+/**
+ * Header UI components displaying current location info with city name and country flag emoji.
+ */
 package com.barteqcz.onqa.ui.components
 
 import androidx.compose.animation.*

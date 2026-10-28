@@ -1,3 +1,6 @@
+/**
+ * Main UI screen containing the search bar, category tab selector, location header, and station list.
+ */
 package com.barteqcz.onqa.ui.main
 
 import androidx.activity.compose.BackHandler

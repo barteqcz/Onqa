@@ -1,3 +1,6 @@
+/**
+ * Main settings screen covering appearance, location source, language, backup, and update options.
+ */
 package com.barteqcz.onqa.ui.settings
 
 import androidx.activity.compose.BackHandler

@@ -1,3 +1,6 @@
+/**
+ * Onboarding screen introducing app features and requesting initial location permissions.
+ */
 package com.barteqcz.onqa.ui.onboarding
 
 import androidx.compose.foundation.layout.*

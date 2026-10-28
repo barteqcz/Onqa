@@ -1,3 +1,6 @@
+/**
+ * Repository handling reverse geocoding and city search queries using the Android system Geocoder.
+ */
 package com.barteqcz.onqa.location
 
 import android.content.Context

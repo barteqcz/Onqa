@@ -1,3 +1,6 @@
+/**
+ * Data disclaimer component detailing station database sources and attribution.
+ */
 package com.barteqcz.onqa.ui.onboarding
 
 import androidx.compose.foundation.layout.*

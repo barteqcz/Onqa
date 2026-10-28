@@ -1,3 +1,6 @@
+/**
+ * Immutable data model holding user-readable location details (city, country, and country code).
+ */
 package com.barteqcz.onqa.data.model
 
 import androidx.compose.runtime.Immutable

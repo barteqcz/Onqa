@@ -1,3 +1,6 @@
+/**
+ * UI state representations for the main radio screen (Success, Error, Loading).
+ */
 package com.barteqcz.onqa.ui.main
 
 import androidx.compose.runtime.Immutable

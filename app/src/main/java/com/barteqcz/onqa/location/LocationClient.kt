@@ -1,3 +1,6 @@
+/**
+ * Interface and default FusedLocationProviderClient implementation for retrieving location update flows.
+ */
 package com.barteqcz.onqa.location
 
 import android.Manifest

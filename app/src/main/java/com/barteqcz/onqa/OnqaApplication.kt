@@ -1,3 +1,6 @@
+/**
+ * Main application class initializing Hilt, Timber, Osmdroid, Coil libraries, and handling process lifecycle events.
+ */
 package com.barteqcz.onqa
 
 import android.app.Application

@@ -1,3 +1,6 @@
+/**
+ * Hilt module providing coroutine dispatchers and application-wide CoroutineScope.
+ */
 package com.barteqcz.onqa.di
 
 import dagger.Module

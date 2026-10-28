@@ -1,3 +1,6 @@
+/**
+ * Application settings repository managing persistent storage and retrieval using Jetpack DataStore.
+ */
 package com.barteqcz.onqa.data.repository
 
 import android.content.Context

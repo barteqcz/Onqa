@@ -1,3 +1,6 @@
+/**
+ * Radio station repository managing station fetching from the catalog database based on location updates.
+ */
 package com.barteqcz.onqa.data.repository
 
 import android.Manifest

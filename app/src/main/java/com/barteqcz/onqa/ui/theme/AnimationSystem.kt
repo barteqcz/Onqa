@@ -1,3 +1,6 @@
+/**
+ * Animation system specifications defining spring and tween transition constants.
+ */
 package com.barteqcz.onqa.ui.theme
 
 import androidx.compose.animation.core.*

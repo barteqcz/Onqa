@@ -1,3 +1,6 @@
+/**
+ * SQLite database manager for the radio station catalog, responsible for downloading, updating, and executing location queries.
+ */
 package com.barteqcz.onqa.data.db
 
 import android.content.Context

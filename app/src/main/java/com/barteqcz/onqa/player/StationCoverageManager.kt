@@ -1,3 +1,6 @@
+/**
+ * Manager responsible for automatic station switching based on transmitter coverage and geographic distance.
+ */
 package com.barteqcz.onqa.player
 
 import com.barteqcz.onqa.data.model.RadioStation

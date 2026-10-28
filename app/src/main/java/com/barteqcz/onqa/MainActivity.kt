@@ -1,3 +1,6 @@
+/**
+ * Main application activity managing Jetpack Compose navigation, permissions, theme configuration, and splash screen.
+ */
 package com.barteqcz.onqa
 
 import android.Manifest

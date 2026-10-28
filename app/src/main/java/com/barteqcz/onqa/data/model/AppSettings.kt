@@ -1,3 +1,6 @@
+/**
+ * Data models representing application settings, catalog update frequency, theme preferences, and supported languages.
+ */
 package com.barteqcz.onqa.data.model
 
 import androidx.annotation.StringRes

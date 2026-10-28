@@ -1,3 +1,6 @@
+/**
+ * Main Material 3 application theme supporting Light, Dark, AMOLED, Material You, and custom accent colors.
+ */
 package com.barteqcz.onqa.ui.theme
 
 import android.app.Activity

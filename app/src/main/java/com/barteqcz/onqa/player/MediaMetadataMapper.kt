@@ -1,3 +1,6 @@
+/**
+ * Mapper object converting radio station info and extracted stream metadata (RDS/ID3) into MediaMetadata objects.
+ */
 package com.barteqcz.onqa.player
 
 import android.os.Bundle

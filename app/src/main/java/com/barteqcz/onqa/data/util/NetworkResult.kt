@@ -1,3 +1,6 @@
+/**
+ * Sealed class representing network and data operation states (Success, Error, Loading).
+ */
 package com.barteqcz.onqa.data.util
 
 sealed class NetworkResult<out T> {

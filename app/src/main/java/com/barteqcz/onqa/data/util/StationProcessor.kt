@@ -1,3 +1,6 @@
+/**
+ * Helper object responsible for grouping, coverage filtering, and sorting radio stations by distance and favorites.
+ */
 package com.barteqcz.onqa.data.util
 
 import com.barteqcz.onqa.data.model.RadioStation

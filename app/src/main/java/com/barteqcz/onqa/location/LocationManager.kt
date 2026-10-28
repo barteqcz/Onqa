@@ -1,3 +1,6 @@
+/**
+ * Location manager coordinating GPS tracking, manual position overrides, foreground/background lifecycle, and geocoding.
+ */
 package com.barteqcz.onqa.location
 
 import android.Manifest

@@ -1,3 +1,6 @@
+/**
+ * Disclosure component for background location usage required for user privacy consent.
+ */
 package com.barteqcz.onqa.ui.onboarding
 
 import androidx.compose.foundation.border

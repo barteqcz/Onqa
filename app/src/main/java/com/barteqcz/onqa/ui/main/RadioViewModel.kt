@@ -1,3 +1,6 @@
+/**
+ * ViewModel for the main radio screen managing station list state, playback, filtering, search, and language sync.
+ */
 package com.barteqcz.onqa.ui.main
 
 import androidx.appcompat.app.AppCompatDelegate

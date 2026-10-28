@@ -1,3 +1,6 @@
+/**
+ * Data model for a radio station containing stream details, transmitter information, coverage area, and URL matching logic.
+ */
 package com.barteqcz.onqa.data.model
 
 import androidx.compose.runtime.Immutable

@@ -1,3 +1,6 @@
+/**
+ * Map picker screen allowing manual location selection using osmdroid map view.
+ */
 package com.barteqcz.onqa.ui.settings
 
 import android.view.MotionEvent

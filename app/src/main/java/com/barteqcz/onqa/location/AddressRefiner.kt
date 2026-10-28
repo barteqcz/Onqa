@@ -1,3 +1,6 @@
+/**
+ * Utility for refining raw Geocoder address results into clean city and country names with special region overrides.
+ */
 package com.barteqcz.onqa.location
 
 import android.location.Address

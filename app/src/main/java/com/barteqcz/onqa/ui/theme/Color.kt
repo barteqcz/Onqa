@@ -1,3 +1,6 @@
+/**
+ * Color palette definitions used across application light, dark, and AMOLED themes.
+ */
 package com.barteqcz.onqa.ui.theme
 
 import androidx.compose.ui.graphics.Color

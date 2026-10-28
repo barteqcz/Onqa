@@ -1,3 +1,6 @@
+/**
+ * Status and error container components for displaying empty state messages and retry buttons.
+ */
 package com.barteqcz.onqa.ui.components
 
 import androidx.compose.foundation.background

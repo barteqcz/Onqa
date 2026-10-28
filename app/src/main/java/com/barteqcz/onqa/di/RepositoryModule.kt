@@ -1,3 +1,6 @@
+/**
+ * Hilt module providing repository instances and network connectivity observer.
+ */
 package com.barteqcz.onqa.di
 
 import android.content.Context

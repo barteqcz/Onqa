@@ -1,3 +1,6 @@
+/**
+ * Use case responsible for processing and sorting the radio station list.
+ */
 package com.barteqcz.onqa.domain
 
 import com.barteqcz.onqa.data.model.RadioStation
