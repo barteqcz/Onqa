@@ -99,6 +99,7 @@
     <string name="cancel">Cealaigh</string>
     <string name="catalog_downloading_first_run_title">Bunachar sonraí stáisiún á íoslódáil…</string>
     <string name="catalog_downloading_update_title">Bunachar sonraí stáisiún á nuashonrú…</string>
-    <string name="catalog_download_in_background_action">Íoslódáil sa chúlra</string>
-    <string name="catalog_download_in_background_desc">Cuirfear an bunachar sonraí nua i bhfeidhm ag an gcéad seoladh eile den aip.</string>
+    <string name="catalog_download_cancel_action">Cealaigh an t-íoslódáil</string>
+    <string name="catalog_download_cancel_desc">Athoslófar an t-íoslódáil ag an gcéad seoladh eile den aip.</string>
+    <string name="catalog_missing_message">Níor íoslódáladh bunachar sonraí na stáisiún.</string>
 </resources>

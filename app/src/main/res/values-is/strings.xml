@@ -99,6 +99,7 @@
     <string name="cancel">Hætta við</string>
     <string name="catalog_downloading_first_run_title">Sækir stöðvagagnagrunn…</string>
     <string name="catalog_downloading_update_title">Uppfærir stöðvagagnagrunn…</string>
-    <string name="catalog_download_in_background_action">Sækja í bakgrunni</string>
-    <string name="catalog_download_in_background_desc">Nýi gagnagrunnurinn verður tekinn í notkun næst þegar forritið er ræst.</string>
+    <string name="catalog_download_cancel_action">Hætta við niðurhal</string>
+    <string name="catalog_download_cancel_desc">Halds verður áfram við næstu ræsingu forritsins.</string>
+    <string name="catalog_missing_message">Gagnagrunnur stöðva hefur ekki verið sóttur.</string>
 </resources>

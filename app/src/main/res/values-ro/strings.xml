@@ -99,6 +99,7 @@
     <string name="cancel">Anulează</string>
     <string name="catalog_downloading_first_run_title">Se descarcă baza de date a posturilor…</string>
     <string name="catalog_downloading_update_title">Se actualizează baza de date a posturilor…</string>
-    <string name="catalog_download_in_background_action">Descărcare în fundal</string>
-    <string name="catalog_download_in_background_desc">Noua bază de date va fi aplicată la următoarea lansare a aplicației.</string>
+    <string name="catalog_download_cancel_action">Anulează descărcarea</string>
+    <string name="catalog_download_cancel_desc">Descărcarea se va relua la următoarea lansare a aplicației.</string>
+    <string name="catalog_missing_message">Baza de date a posturilor nu a fost descărcată.</string>
 </resources>

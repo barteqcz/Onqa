@@ -99,6 +99,7 @@
     <string name="cancel">Annulla</string>
     <string name="catalog_downloading_first_run_title">Download del database delle stazioni…</string>
     <string name="catalog_downloading_update_title">Aggiornamento del database delle stazioni…</string>
-    <string name="catalog_download_in_background_action">Scarica in background</string>
-    <string name="catalog_download_in_background_desc">Il nuovo database verrà applicato al prossimo avvio dell\'app.</string>
+    <string name="catalog_download_cancel_action">Annulla download</string>
+    <string name="catalog_download_cancel_desc">Il download riprenderà al prossimo avvio dell\'app.</string>
+    <string name="catalog_missing_message">Il database delle stazioni non è stato scaricato.</string>
 </resources>

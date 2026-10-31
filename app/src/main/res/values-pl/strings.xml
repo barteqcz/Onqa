@@ -102,6 +102,7 @@
     <string name="catalog_update_action">Odśwież</string>
     <string name="catalog_downloading_first_run_title">Pobieranie bazy stacji radiowych…</string>
     <string name="catalog_downloading_update_title">Aktualizacja bazy stacji radiowych…</string>
-    <string name="catalog_download_in_background_action">Pobieraj w tle</string>
-    <string name="catalog_download_in_background_desc">Po pobraniu baza zostanie zaaplikowana przy kolejnym uruchomieniu aplikacji.</string>
+    <string name="catalog_download_cancel_action">Przerwij pobieranie</string>
+    <string name="catalog_download_cancel_desc">Pobieranie zostanie wznowione przy kolejnym uruchomieniu aplikacji.</string>
+    <string name="catalog_missing_message">Baza stacji radiowych nie została pobrana.</string>
 </resources>

@@ -85,7 +85,9 @@ open class SettingsRepository @Inject constructor(
                 } ?: CatalogUpdateFrequency.WEEKLY
 
                 AppSettings(
-                    themeMode = ThemeMode.valueOf(preferences[PreferencesKeys.THEME_MODE] ?: ThemeMode.DARK.name),
+                    themeMode = preferences[PreferencesKeys.THEME_MODE]
+                        ?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() }
+                        ?: ThemeMode.DARK,
                     isMaterialYouEnabled = preferences[PreferencesKeys.MATERIAL_YOU] ?: false,
                     accentColor = Color(preferences[PreferencesKeys.ACCENT_COLOR] ?: OnqaGreen.toArgb()),
                     lastCity = preferences[PreferencesKeys.LAST_CITY],
@@ -99,7 +101,9 @@ open class SettingsRepository @Inject constructor(
                     language = language,
                     distanceUnit = distanceUnit,
                     isAmoledModeEnabled = preferences[PreferencesKeys.AMOLED_MODE] ?: false,
-                    locationSource = LocationSource.valueOf(preferences[PreferencesKeys.LOCATION_SOURCE] ?: LocationSource.GPS.name),
+                    locationSource = preferences[PreferencesKeys.LOCATION_SOURCE]
+                        ?.let { runCatching { LocationSource.valueOf(it) }.getOrNull() }
+                        ?: LocationSource.GPS,
                     manualLatitude = preferences[PreferencesKeys.MANUAL_LATITUDE],
                     manualLongitude = preferences[PreferencesKeys.MANUAL_LONGITUDE],
                     manualCity = preferences[PreferencesKeys.MANUAL_CITY],

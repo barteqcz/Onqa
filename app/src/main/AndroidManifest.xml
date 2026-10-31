@@ -56,9 +56,9 @@
         <service
             android:name="com.barteqcz.onqa.player.PlaybackService"
             android:exported="true"
+            tools:ignore="ExportedService"
             android:foregroundServiceType="mediaPlayback|location"
-            android:label="@string/playback_service_label"
-            android:permission="TODO">
+            android:label="@string/playback_service_label">
             <intent-filter>
                 <action android:name="androidx.media3.session.MediaSessionService" />
                 <action android:name="android.intent.action.MEDIA_BUTTON" />

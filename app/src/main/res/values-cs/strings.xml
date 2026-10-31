@@ -99,6 +99,7 @@
     <string name="cancel">Zrušit</string>
     <string name="catalog_downloading_first_run_title">Stahování databáze stanic…</string>
     <string name="catalog_downloading_update_title">Aktualizace databáze stanic…</string>
-    <string name="catalog_download_in_background_action">Stáhnout na pozadí</string>
-    <string name="catalog_download_in_background_desc">Nová databáze bude použita při příštím spuštění aplikace.</string>
+    <string name="catalog_download_cancel_action">Zrušit stahování</string>
+    <string name="catalog_download_cancel_desc">Stahování bude obnoveno při příštím spuštění aplikace.</string>
+    <string name="catalog_missing_message">Databáze stanic nebyla stažena.</string>
 </resources>

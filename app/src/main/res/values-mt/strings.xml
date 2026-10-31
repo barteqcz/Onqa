@@ -99,6 +99,7 @@
     <string name="cancel">Ikkanċella</string>
     <string name="catalog_downloading_first_run_title">Qed tniżżel id-database tal-istazzjonijiet…</string>
     <string name="catalog_downloading_update_title">Qed taġġorna id-database tal-istazzjonijiet…</string>
-    <string name="catalog_download_in_background_action">Niżżel fl-isfond</string>
-    <string name="catalog_download_in_background_desc">Id-database il-ġdida se tiġi applikata meta terġa\' tiftaħ l-app.</string>
+    <string name="catalog_download_cancel_action">Ikkanċella t-tniżżil</string>
+    <string name="catalog_download_cancel_desc">It-tniżżil se jkompli meta terġa\' tiftaħ l-app.</string>
+    <string name="catalog_missing_message">Id-database tal-istazzjonijiet ma ġietx imniżżla.</string>
 </resources>

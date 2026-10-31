@@ -32,8 +32,6 @@ import com.barteqcz.onqa.util.unaccent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -48,59 +46,21 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-
-private fun <T> Flow<T>.debounceStable(timeout: Duration): Flow<T> = channelFlow {
-    var job: Job? = null
-    collect { value ->
-        job?.cancel()
-        job = launch {
-            delay(timeout)
-            send(value)
-        }
-    }
-}
-
-@Immutable
-data class RadioViewState(
-    val uiState: RadioUiState = RadioUiState.Loading,
-    val selectedUrl: String? = null,
-    val currentStation: RadioStation? = null,
-    val isPlaying: Boolean = false,
-    val isBuffering: Boolean = false,
-    val playbackError: Boolean = false,
-    val locationInfo: LocationInfo = LocationInfo(),
-    val settings: AppSettings = AppSettings(
-        themeMode = ThemeMode.DARK,
-        isMaterialYouEnabled = false,
-        accentColor = OnqaGreen,
-        useHqStream = true,
-        favoriteStations = kotlinx.collections.immutable.persistentSetOf(),
-        language = AppLanguage.SYSTEM,
-    ),
-    val isNetworkAvailable: Boolean = true,
-    val isScrollable: Boolean = false,
-    val metadata: String? = null,
-    val searchQuery: String = "",
-    val isSearchActive: Boolean = false,
-    val displayStation: RadioStation? = null,
-    val isMiniPlayerActive: Boolean = false,
-    val hasPendingCatalogUpdate: Boolean = false,
-)
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.FlowPreview
 
 @Immutable
 sealed interface RadioUiEvent {
     data object ScrollToTop : RadioUiEvent
 }
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class RadioViewModel @Inject constructor(
     private val repository: RadioRepository,
@@ -150,7 +110,7 @@ class RadioViewModel @Inject constructor(
         }
         .flowOn(Dispatchers.Default)
 
-    private val searchFlow = combine(_searchQuery.debounceStable(100.milliseconds), _isSearchActive) { query, active ->
+    private val searchFlow = combine(_searchQuery.debounce(100.milliseconds), _isSearchActive) { query, active ->
         query to active
     }
 
@@ -161,11 +121,10 @@ class RadioViewModel @Inject constructor(
         repository.locationInfo,
         combine(
             repository.isCatalogDownloading,
-            repository.isFirstRunDownload,
-            repository.isDownloadingInBackground
-        ) { downloading, firstRun, bg -> Triple(downloading, firstRun, bg) }
-    ) { (res, loc), favorites, (query, searchActive), locInfo, (downloading, firstRun, inBg) ->
-        if (downloading && !inBg) {
+            repository.isFirstRunDownload
+        ) { downloading, firstRun -> downloading to firstRun }
+    ) { (res, loc), favorites, (query, searchActive), locInfo, (downloading, firstRun) ->
+        if (downloading) {
             return@combine RadioUiState.CatalogDownloading(isFirstRun = firstRun)
         }
 
@@ -489,9 +448,17 @@ class RadioViewModel @Inject constructor(
         }
     }
 
-    fun dismissDownloadToBackground() {
-        repository.dismissDownloadToBackground()
+    fun cancelCatalogDownload() {
+        repository.cancelCatalogDownload()
     }
+
+    fun retryCatalogDownload() {
+        viewModelScope.launch {
+            repository.updateCatalogManually()
+        }
+    }
+
+    fun isDatabasePresent(): Boolean = repository.isDatabasePresent()
     
     fun updateLocationSource(source: LocationSource) = viewModelScope.launch { 
         settingsRepository.updateLocationSource(source) 

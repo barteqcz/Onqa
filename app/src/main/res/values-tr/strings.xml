@@ -99,6 +99,7 @@
     <string name="cancel">İptal</string>
     <string name="catalog_downloading_first_run_title">İstasyon veri tabanı indiriliyor…</string>
     <string name="catalog_downloading_update_title">İstasyon veri tabanı güncelleniyor…</string>
-    <string name="catalog_download_in_background_action">Arka planda indir</string>
-    <string name="catalog_download_in_background_desc">Yeni veri tabanı, uygulamanın bir sonraki başlatılışında uygulanacaktır.</string>
+    <string name="catalog_download_cancel_action">İndirmeyi iptal et</string>
+    <string name="catalog_download_cancel_desc">İndirme, uygulamanın bir sonraki başlatılışında devam edecektir.</string>
+    <string name="catalog_missing_message">İstasyon veri tabanı indirilmedi.</string>
 </resources>

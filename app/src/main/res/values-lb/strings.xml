@@ -99,6 +99,7 @@
     <string name="cancel">Ofbriechen</string>
     <string name="catalog_downloading_first_run_title">Senderdatebank gëtt erofgelueden…</string>
     <string name="catalog_downloading_update_title">Senderdatebank gëtt aktualiséiert…</string>
-    <string name="catalog_download_in_background_action">Am Hannergrond eroflueden</string>
-    <string name="catalog_download_in_background_desc">Déi nei Datebank gëtt beim nächste Start vun der App ugewannt.</string>
+    <string name="catalog_download_cancel_action">Eroflueden ofbriechen</string>
+    <string name="catalog_download_cancel_desc">D\'Eroflueden gëtt beim nächste Start vun der App fortgesat.</string>
+    <string name="catalog_missing_message">D\'Senderdatebank gouf net erofgelueden.</string>
 </resources>

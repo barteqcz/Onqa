@@ -99,6 +99,7 @@
     <string name="cancel">Cancelar</string>
     <string name="catalog_downloading_first_run_title">A descarregar base de dados de estações…</string>
     <string name="catalog_downloading_update_title">A atualizar base de dados de estações…</string>
-    <string name="catalog_download_in_background_action">Descarregar em segundo plano</string>
-    <string name="catalog_download_in_background_desc">A nova base de dados será aplicada na próxima inicialização da aplicação.</string>
+    <string name="catalog_download_cancel_action">Cancelar transferência</string>
+    <string name="catalog_download_cancel_desc">A transferência será retomada na próxima inicialização da aplicação.</string>
+    <string name="catalog_missing_message">A base de dados de estações não foi descarregada.</string>
 </resources>

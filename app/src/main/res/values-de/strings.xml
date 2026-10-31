@@ -99,6 +99,7 @@
     <string name="cancel">Abbrechen</string>
     <string name="catalog_downloading_first_run_title">Senderdatenbank wird heruntergeladen…</string>
     <string name="catalog_downloading_update_title">Senderdatenbank wird aktualisiert…</string>
-    <string name="catalog_download_in_background_action">Im Hintergrund herunterladen</string>
-    <string name="catalog_download_in_background_desc">Die neue Datenbank wird beim nächsten App-Start angewendet.</string>
+    <string name="catalog_download_cancel_action">Download abbrechen</string>
+    <string name="catalog_download_cancel_desc">Der Download wird beim nächsten App-Start fortgesetzt.</string>
+    <string name="catalog_missing_message">Die Senderdatenbank wurde nicht heruntergeladen.</string>
 </resources>

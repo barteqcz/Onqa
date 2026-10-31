@@ -99,6 +99,7 @@
     <string name="cancel">Cancelar</string>
     <string name="catalog_downloading_first_run_title">Descargando base de datos de emisoras…</string>
     <string name="catalog_downloading_update_title">Actualizando base de datos de emisoras…</string>
-    <string name="catalog_download_in_background_action">Descargar en segundo plano</string>
-    <string name="catalog_download_in_background_desc">La nueva base de datos se aplicará en el próximo inicio de la aplicación.</string>
+    <string name="catalog_download_cancel_action">Cancelar descarga</string>
+    <string name="catalog_download_cancel_desc">La descarga se reanudará en el próximo inicio de la aplicación.</string>
+    <string name="catalog_missing_message">No se ha descargado la base de datos de emisoras.</string>
 </resources>

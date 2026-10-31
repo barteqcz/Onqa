@@ -99,6 +99,7 @@
     <string name="cancel">Atšaukti</string>
     <string name="catalog_downloading_first_run_title">Atsiunčiama stočių duomenų bazė…</string>
     <string name="catalog_downloading_update_title">Atnaujinama stočių duomenų bazė…</string>
-    <string name="catalog_download_in_background_action">Atsiųsti fone</string>
-    <string name="catalog_download_in_background_desc">Nauja duomenų bazė bus pritaikyta kitą kartą paleidus programėlę.</string>
+    <string name="catalog_download_cancel_action">Atšaukti atsisiuntimą</string>
+    <string name="catalog_download_cancel_desc">Atsisiuntimas bus pratęstas kitą kartą paleidus programėlę.</string>
+    <string name="catalog_missing_message">Stočių duomenų bazė nebuvo atsisiūsta.</string>
 </resources>

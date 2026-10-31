@@ -99,6 +99,7 @@
     <string name="cancel">Ακύρωση</string>
     <string name="catalog_downloading_first_run_title">Λήψη βάσης δεδομένων σταθμών…</string>
     <string name="catalog_downloading_update_title">Ενημέρωση βάσης δεδομένων σταθμών…</string>
-    <string name="catalog_download_in_background_action">Λήψη στο υπόβαθρο</string>
-    <string name="catalog_download_in_background_desc">Η νέα βάση δεδομένων θα εφαρμοστεί στην επόμενη εκκίνηση της εφαρμογής.</string>
+    <string name="catalog_download_cancel_action">Ακύρωση λήψης</string>
+    <string name="catalog_download_cancel_desc">Η λήψη θα συνεχιστεί στην επόμενη εκκίνηση της εφαρμογής.</string>
+    <string name="catalog_missing_message">Η βάση δεδομένων σταθμών δεν έχει ληφθεί.</string>
 </resources>

@@ -52,14 +52,16 @@ class RadioRepository @Inject constructor(
     private val _isFirstRunDownload = MutableStateFlow(!catalogDatabaseManager.isDatabasePresent())
     val isFirstRunDownload: StateFlow<Boolean> = _isFirstRunDownload.asStateFlow()
 
-    private val _isDownloadingInBackground = MutableStateFlow(false)
-    val isDownloadingInBackground: StateFlow<Boolean> = _isDownloadingInBackground.asStateFlow()
+    fun cancelCatalogDownload() {
+        catalogDatabaseManager.cancelDownload()
+    }
 
-    fun dismissDownloadToBackground() {
-        _isDownloadingInBackground.value = true
+    fun isDatabasePresent(): Boolean {
+        return catalogDatabaseManager.isDatabasePresent()
     }
 
     private var observationJob: Job? = null
+    private var autoUpdateJob: Job? = null
 
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     fun startLocationTracking() {
@@ -101,15 +103,18 @@ class RadioRepository @Inject constructor(
 
             _stations.value = NetworkResult.Success(result)
 
-            scope.launch {
-                try {
-                    val settings = settingsRepository.settingsFlow.first()
-                    val updated = catalogDatabaseManager.checkAutoUpdate(settings.catalogUpdateFrequency, settings.lastCatalogUpdate)
-                    if (updated) {
-                        _hasPendingCatalogUpdate.value = catalogDatabaseManager.hasPendingUpdate()
+            if (autoUpdateJob == null || autoUpdateJob?.isCompleted == true) {
+                autoUpdateJob = scope.launch {
+                    try {
+                        val settings = settingsRepository.settingsFlow.first()
+                        val updated = catalogDatabaseManager.checkAutoUpdate(settings.catalogUpdateFrequency, settings.lastCatalogUpdate)
+                        if (updated) {
+                            _hasPendingCatalogUpdate.value = catalogDatabaseManager.hasPendingUpdate()
+                            updateNearbyStations(location)
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error during background catalog auto-update check")
                     }
-                } catch (e: Exception) {
-                    Timber.e(e, "Error during background catalog auto-update check")
                 }
             }
         } catch (e: CancellationException) {
@@ -125,13 +130,9 @@ class RadioRepository @Inject constructor(
 
     suspend fun updateCatalogManually(): Boolean {
         val success = catalogDatabaseManager.downloadCatalog()
-        if (success) {
-            _hasPendingCatalogUpdate.value = catalogDatabaseManager.hasPendingUpdate()
-            if (!catalogDatabaseManager.hasPendingUpdate()) {
-                currentLocation.value?.let { loc ->
-                    updateNearbyStations(loc)
-                }
-            }
+        _hasPendingCatalogUpdate.value = catalogDatabaseManager.hasPendingUpdate()
+        currentLocation.value?.let { loc ->
+            updateNearbyStations(loc)
         }
         return success
     }

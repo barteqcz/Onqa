@@ -99,6 +99,7 @@
     <string name="cancel">Скасаваць</string>
     <string name="catalog_downloading_first_run_title">Спампоўванне базы даных станцый…</string>
     <string name="catalog_downloading_update_title">Абнаўленне базы даных станцый…</string>
-    <string name="catalog_download_in_background_action">Спампоўваць у фоне</string>
-    <string name="catalog_download_in_background_desc">Пасля спампоўвання база будзе ўжыта пры наступным запуску праграмы.</string>
+    <string name="catalog_download_cancel_action">Спыніць спампоўванне</string>
+    <string name="catalog_download_cancel_desc">Спампоўванне адновіцца пры наступным запуску праграмы.</string>
+    <string name="catalog_missing_message">База даных станцый не спампавана.</string>
 </resources>

@@ -99,6 +99,7 @@
     <string name="cancel">Avbryt</string>
     <string name="catalog_downloading_first_run_title">Laster ned stasjonsdatabase…</string>
     <string name="catalog_downloading_update_title">Oppdaterer stasjonsdatabase…</string>
-    <string name="catalog_download_in_background_action">Last ned i bakgrunnen</string>
-    <string name="catalog_download_in_background_desc">Den nye databasen tas i bruk ved neste appstart.</string>
+    <string name="catalog_download_cancel_action">Avbryt nedlasting</string>
+    <string name="catalog_download_cancel_desc">Nedlastingen gjenopptas ved neste appstart.</string>
+    <string name="catalog_missing_message">Stasjonsdatabasen er ikke lastet ned.</string>
 </resources>

@@ -11,13 +11,19 @@ import com.barteqcz.onqa.data.model.RadioStation
 import com.barteqcz.onqa.data.remote.RadioApiService
 import com.barteqcz.onqa.data.repository.SettingsRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
+import kotlin.concurrent.write
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,15 +34,19 @@ class CatalogDatabaseManager @Inject constructor(
     private val settingsRepository: SettingsRepository,
 ) {
     private var dbInstance: SQLiteDatabase? = null
+    private val databaseLock = ReentrantReadWriteLock()
+    private val downloadMutex = Mutex()
+    private var activeDownloadJob: Job? = null
 
     private fun getDatabase(dbFile: File): SQLiteDatabase? {
         synchronized(this) {
-            if (dbInstance != null && dbInstance!!.isOpen) {
-                return dbInstance
-            }
+            dbInstance?.takeIf(SQLiteDatabase::isOpen)?.let { return it }
+            runCatching { dbInstance?.close() }
+            dbInstance = null
             return try {
-                dbInstance = SQLiteDatabase.openDatabase(dbFile.path, null, SQLiteDatabase.OPEN_READONLY)
-                dbInstance
+                SQLiteDatabase.openDatabase(dbFile.path, null, SQLiteDatabase.OPEN_READONLY).also {
+                    dbInstance = it
+                }
             } catch (e: Exception) {
                 Timber.e(e, "Failed to open catalog database")
                 null
@@ -44,22 +54,21 @@ class CatalogDatabaseManager @Inject constructor(
         }
     }
 
-    fun closeDatabase() {
+    fun closeDatabase() = databaseLock.write {
         synchronized(this) {
-            try {
-                dbInstance?.close()
-            } catch (_: Exception) {
-            }
+            runCatching { dbInstance?.close() }
+                .onFailure { Timber.w(it, "Failed to close catalog database") }
             dbInstance = null
         }
     }
 
     private fun isValidSqliteDatabase(file: File): Boolean {
-        return !(!file.exists() || file.length() < 100) && try {
-            val db = SQLiteDatabase.openDatabase(file.path, null, SQLiteDatabase.OPEN_READONLY)
-            val isOk = db.isOpen
-            db.close()
-            isOk
+        return (file.exists() && file.length() >= 100) && try {
+            SQLiteDatabase.openDatabase(file.path, null, SQLiteDatabase.OPEN_READONLY).use { db ->
+                db.rawQuery("PRAGMA quick_check", null).use { cursor ->
+                    cursor.moveToFirst() && cursor.getString(0).equals("ok", ignoreCase = true)
+                }
+            }
         } catch (e: Exception) {
             Timber.w(e, "Database file ${file.name} failed validity test")
             false
@@ -96,19 +105,37 @@ class CatalogDatabaseManager @Inject constructor(
             return@withContext false
         }
 
-        synchronized(this@CatalogDatabaseManager) {
-            closeDatabase()
-            if (dbFile.exists()) {
-                dbFile.delete()
-            }
-            val renamed = pendingFile.renameTo(dbFile)
-            if (renamed || dbFile.exists()) {
-                Timber.i("Successfully applied pending catalog.sqlite update")
-                return@withContext true
-            } else {
-                Timber.e("Failed to rename pending file to catalog.sqlite")
-                try { pendingFile.delete() } catch (_: Exception) {}
+        databaseLock.write {
+            synchronized(this@CatalogDatabaseManager) {
+                closeDatabase()
+
+                val backupFile = File(dbFile.parentFile, "catalog_previous.sqlite")
+            if (backupFile.exists() && !backupFile.delete()) {
+                Timber.e("Failed to remove previous catalog backup")
                 return@withContext false
+            }
+
+            val hadExistingDatabase = dbFile.exists()
+            if (hadExistingDatabase && !dbFile.renameTo(backupFile)) {
+                Timber.e("Failed to preserve current catalog before applying update")
+                return@withContext false
+            }
+
+            val installed = pendingFile.renameTo(dbFile) && isValidSqliteDatabase(dbFile)
+            if (!installed) {
+                Timber.e("Failed to install pending catalog database; restoring previous version")
+                try { dbFile.delete() } catch (_: Exception) {}
+                if (hadExistingDatabase && backupFile.exists() && !backupFile.renameTo(dbFile)) {
+                    Timber.e("Failed to restore previous catalog database; backup remains at ${backupFile.path}")
+                }
+                return@withContext false
+            }
+
+            if (backupFile.exists() && !backupFile.delete()) {
+                Timber.w("Catalog update succeeded, but backup could not be removed: ${backupFile.path}")
+            }
+            Timber.i("Successfully applied pending catalog.sqlite update")
+                true
             }
         }
     }
@@ -116,7 +143,27 @@ class CatalogDatabaseManager @Inject constructor(
     private val _isDownloading = MutableStateFlow(false)
     val isDownloading: StateFlow<Boolean> = _isDownloading.asStateFlow()
 
+    fun cancelDownload() {
+        synchronized(this) {
+            try {
+                activeDownloadJob?.cancel(CancellationException("User cancelled catalog download"))
+            } catch (_: Exception) {
+            }
+            activeDownloadJob = null
+        }
+        _isDownloading.value = false
+    }
+
     suspend fun downloadCatalog(): Boolean = withContext(Dispatchers.IO) {
+        if (!downloadMutex.tryLock()) {
+            Timber.d("Catalog download already in progress. Skipping duplicate request.")
+            return@withContext false
+        }
+
+        synchronized(this@CatalogDatabaseManager) {
+            activeDownloadJob = coroutineContext[Job]
+        }
+
         _isDownloading.value = true
         val dbFile = context.getDatabasePath("catalog.sqlite")
         val pendingFile = context.getDatabasePath("catalog_pending.sqlite")
@@ -124,6 +171,10 @@ class CatalogDatabaseManager @Inject constructor(
         val tempFile = File(dbFile.parentFile, "catalog_pending.sqlite.tmp")
 
         try {
+            if (tempFile.exists()) {
+                try { tempFile.delete() } catch (_: Exception) {}
+            }
+
             val body = radioApiService.downloadDatabase()
 
             tempFile.outputStream().use { output ->
@@ -137,11 +188,12 @@ class CatalogDatabaseManager @Inject constructor(
                 val renamed = tempFile.renameTo(pendingFile)
                 if (renamed || pendingFile.exists()) {
                     Timber.i("Successfully downloaded catalog update to catalog_pending.sqlite")
-                    // If active database does not exist yet (first run), apply immediately
-                    if (!dbFile.exists() || dbFile.length() == 0L) {
-                        applyPendingUpdate()
-                        settingsRepository.updateLastCatalogUpdate(System.currentTimeMillis())
+                    val applied = applyPendingUpdate()
+                    if (!applied) {
+                        return@withContext false
                     }
+
+                    settingsRepository.updateLastCatalogUpdate(System.currentTimeMillis())
                     return@withContext true
                 }
             } else {
@@ -151,14 +203,20 @@ class CatalogDatabaseManager @Inject constructor(
                 }
             }
             false
+        } catch (e: CancellationException) {
+            Timber.i("Catalog download was cancelled by user")
+            runCatching { tempFile.delete() }
+            throw e
         } catch (e: Exception) {
             Timber.e(e, "Failed to download catalog database")
-            if (tempFile.exists()) {
-                try { tempFile.delete() } catch (_: Exception) {}
-            }
+            runCatching { tempFile.delete() }
             false
         } finally {
+            synchronized(this@CatalogDatabaseManager) {
+                activeDownloadJob = null
+            }
             _isDownloading.value = false
+            downloadMutex.unlock()
         }
     }
 
@@ -174,9 +232,11 @@ class CatalogDatabaseManager @Inject constructor(
     }
 
     suspend fun getNearbyStations(lat: Double, lon: Double): List<RadioStation> = withContext(Dispatchers.IO) {
-        if (hasPendingUpdate() && dbInstance == null) {
-            applyPendingUpdate()
-            settingsRepository.updateLastCatalogUpdate(System.currentTimeMillis())
+        if (hasPendingUpdate()) {
+            val applied = applyPendingUpdate()
+            if (applied) {
+                settingsRepository.updateLastCatalogUpdate(System.currentTimeMillis())
+            }
         }
 
         val dbFile = context.getDatabasePath("catalog.sqlite")
@@ -187,7 +247,8 @@ class CatalogDatabaseManager @Inject constructor(
             }
         }
 
-        val database = getDatabase(dbFile) ?: return@withContext emptyList()
+        databaseLock.read {
+        val database = getDatabase(dbFile) ?: return@read emptyList()
         val stationsList = mutableListOf<RadioStation>()
 
         val query = """
@@ -267,6 +328,7 @@ class CatalogDatabaseManager @Inject constructor(
         }
 
         stationsList
+        }
     }
 
     suspend fun getAllStationNames(): Set<String> = withContext(Dispatchers.IO) {
@@ -275,7 +337,8 @@ class CatalogDatabaseManager @Inject constructor(
             return@withContext emptySet()
         }
 
-        val database = getDatabase(dbFile) ?: return@withContext emptySet()
+        databaseLock.read {
+        val database = getDatabase(dbFile) ?: return@read emptySet()
         val stationNames = mutableSetOf<String>()
 
         try {
@@ -292,5 +355,6 @@ class CatalogDatabaseManager @Inject constructor(
         }
 
         stationNames
+        }
     }
 }

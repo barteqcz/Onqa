@@ -99,6 +99,7 @@
     <string name="cancel">Tühista</string>
     <string name="catalog_downloading_first_run_title">Jaamade andmebaasi allalaadimine…</string>
     <string name="catalog_downloading_update_title">Jaamade andmebaasi värskendamine…</string>
-    <string name="catalog_download_in_background_action">Laadi alla taustal</string>
-    <string name="catalog_download_in_background_desc">Uus andmebaas rakendatakse rakenduse järgmisel käivitamisel.</string>
+    <string name="catalog_download_cancel_action">Tühista allalaadimine</string>
+    <string name="catalog_download_cancel_desc">Allalaadimist jätkatakse rakenduse järgmisel käivitamisel.</string>
+    <string name="catalog_missing_message">Jaamade andmebaasi pole alla laaditud.</string>
 </resources>

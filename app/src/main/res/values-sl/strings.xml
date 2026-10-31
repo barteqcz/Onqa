@@ -99,6 +99,7 @@
     <string name="cancel">Prekliči</string>
     <string name="catalog_downloading_first_run_title">Prenašanje zbirke podatkov postaj…</string>
     <string name="catalog_downloading_update_title">Posodabljanje zbirke podatkov postaj…</string>
-    <string name="catalog_download_in_background_action">Prenesi v ozadju</string>
-    <string name="catalog_download_in_background_desc">Nova zbirka podatkov bo uporabljena ob naslednjem zagonu aplikacije.</string>
+    <string name="catalog_download_cancel_action">Prekliči prenos</string>
+    <string name="catalog_download_cancel_desc">Prenos se bo nadaljeval ob naslednjem zagonu aplikacije.</string>
+    <string name="catalog_missing_message">Zbirka podatkov postaj ni bila prenesena.</string>
 </resources>

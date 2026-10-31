@@ -99,6 +99,7 @@
     <string name="cancel">Annuleren</string>
     <string name="catalog_downloading_first_run_title">Zenderdatabase downloaden…</string>
     <string name="catalog_downloading_update_title">Zenderdatabase bijwerken…</string>
-    <string name="catalog_download_in_background_action">Downloaden op achtergrond</string>
-    <string name="catalog_download_in_background_desc">De nieuwe database wordt toegepast bij de volgende start van de app.</string>
+    <string name="catalog_download_cancel_action">Download annuleren</string>
+    <string name="catalog_download_cancel_desc">Het downloaden wordt hervat bij de volgende start van de app.</string>
+    <string name="catalog_missing_message">Zenderdatabase is niet gedownload.</string>
 </resources>

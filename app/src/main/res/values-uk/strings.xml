@@ -99,6 +99,7 @@
     <string name="cancel">Скасувати</string>
     <string name="catalog_downloading_first_run_title">Завантаження бази даних станцій…</string>
     <string name="catalog_downloading_update_title">Оновлення бази даних станцій…</string>
-    <string name="catalog_download_in_background_action">Завантажити у фоні</string>
-    <string name="catalog_download_in_background_desc">Нова база даних буде застосована під час наступного запуску програми.</string>
+    <string name="catalog_download_cancel_action">Скасувати завантаження</string>
+    <string name="catalog_download_cancel_desc">Завантаження відновиться під час наступного запуску програми.</string>
+    <string name="catalog_missing_message">База даних станцій не завантажена.</string>
 </resources>

@@ -99,6 +99,7 @@
     <string name="cancel">Mégse</string>
     <string name="catalog_downloading_first_run_title">Állomás-adatbázis letöltése…</string>
     <string name="catalog_downloading_update_title">Állomás-adatbázis frissítése…</string>
-    <string name="catalog_download_in_background_action">Letöltés a háttérben</string>
-    <string name="catalog_download_in_background_desc">Az új adatbázis az alkalmazás következő indításakor lép életbe.</string>
+    <string name="catalog_download_cancel_action">Letöltés megszakítása</string>
+    <string name="catalog_download_cancel_desc">A letöltés az alkalmazás következő indításakor folytatódik.</string>
+    <string name="catalog_missing_message">A rádióállomások adatbázisa nem lett letöltve.</string>
 </resources>

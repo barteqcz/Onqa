@@ -99,6 +99,7 @@
     <string name="cancel">Откажи</string>
     <string name="catalog_downloading_first_run_title">Преземање на базата со станици…</string>
     <string name="catalog_downloading_update_title">Ажурирање на базата со станици…</string>
-    <string name="catalog_download_in_background_action">Преземи во позадина</string>
-    <string name="catalog_download_in_background_desc">Новата база на податоци ќе се примени при следното стартување на апликацијата.</string>
+    <string name="catalog_download_cancel_action">Откажи го преземањето</string>
+    <string name="catalog_download_cancel_desc">Преземањето ќе продолжи при следното стартување на апликацијата.</string>
+    <string name="catalog_missing_message">Базата на податоци за станиците не е преземена.</string>
 </resources>

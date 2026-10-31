@@ -141,15 +141,24 @@ fun RadioScreen(
                             CatalogDownloadContainer(
                                 isFirstRun = state.isFirstRun,
                                 modifier = Modifier.fillMaxSize(),
-                                onDownloadInBackground = { viewModel.dismissDownloadToBackground() }
+                                onCancelDownload = { viewModel.cancelCatalogDownload() }
                             )
                         }
                         is RadioUiState.Success -> {
                             if (state.stations.isEmpty()) {
-                                StatusContainer(
-                                    message = stringResource(R.string.no_stations_message),
-                                    modifier = Modifier.fillMaxSize()
-                                )
+                                if (!viewModel.isDatabasePresent()) {
+                                    StatusContainer(
+                                        message = stringResource(R.string.catalog_missing_message),
+                                        modifier = Modifier.fillMaxSize(),
+                                        isError = true,
+                                        onRetry = { viewModel.retryCatalogDownload() }
+                                    )
+                                } else {
+                                    StatusContainer(
+                                        message = stringResource(R.string.no_stations_message),
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                }
                             } else {
                                 val gridState = rememberLazyGridState()
                                 val density = LocalDensity.current

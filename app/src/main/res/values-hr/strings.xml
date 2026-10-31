@@ -99,6 +99,7 @@
     <string name="cancel">Odustani</string>
     <string name="catalog_downloading_first_run_title">Preuzimanje baze podataka postaja…</string>
     <string name="catalog_downloading_update_title">Ažuriranje baze podataka postaja…</string>
-    <string name="catalog_download_in_background_action">Preuzmi u pozadini</string>
-    <string name="catalog_download_in_background_desc">Nova baza podataka primijenit će se pri sljedećem pokretanju aplikacije.</string>
+    <string name="catalog_download_cancel_action">Prekini preuzimanje</string>
+    <string name="catalog_download_cancel_desc">Preuzimanje će se nastaviti pri sljedećem pokretanju aplikacije.</string>
+    <string name="catalog_missing_message">Baza podataka postaja nije preuzeta.</string>
 </resources>

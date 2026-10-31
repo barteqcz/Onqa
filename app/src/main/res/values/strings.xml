@@ -138,6 +138,7 @@
     <string name="catalog_update_action">Refresh</string>
     <string name="catalog_downloading_first_run_title">Downloading station database…</string>
     <string name="catalog_downloading_update_title">Updating station database…</string>
-    <string name="catalog_download_in_background_action">Download in background</string>
-    <string name="catalog_download_in_background_desc">The new database will be applied on next app launch.</string>
+    <string name="catalog_download_cancel_action">Cancel download</string>
+    <string name="catalog_download_cancel_desc">Download will resume on next app launch.</string>
+    <string name="catalog_missing_message">Station database has not been downloaded.</string>
 </resources>
