@@ -609,7 +609,9 @@ class PlaybackService : MediaSessionService() {
 
                 val currentMetadata = currentItem.mediaMetadata
                 val isMetadataDifferent = (currentMetadata.title != metadata.title) ||
+                        (currentMetadata.displayTitle != metadata.displayTitle) ||
                         (currentMetadata.artist != metadata.artist) ||
+                        (currentMetadata.albumArtist != metadata.albumArtist) ||
                         (!currentMetadata.artworkData.contentEquals(metadata.artworkData)) ||
                         (currentMetadata.artworkUri != metadata.artworkUri)
 

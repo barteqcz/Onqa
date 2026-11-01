@@ -24,6 +24,7 @@ data class AppSettings(
     val accentColor: Color = OnqaGreen,
     val lastCity: String? = null,
     val lastCountryCode: String? = null,
+    val lastLocationUpdatedAt: Long? = null,
     val isOnboardingCompleted: Boolean = false,
     val favoriteStations: PersistentSet<String> = persistentSetOf(),
     val useHqStream: Boolean = true,

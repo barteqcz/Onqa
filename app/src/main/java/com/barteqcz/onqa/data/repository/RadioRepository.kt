@@ -90,6 +90,10 @@ class RadioRepository @Inject constructor(
         observationJob = null
     }
 
+    fun refreshLocationInfo() {
+        locationManager.refreshLocationInfo()
+    }
+
     suspend fun updateNearbyStations(location: Location) {
         val hasDb = catalogDatabaseManager.isDatabasePresent()
         _isFirstRunDownload.value = !hasDb

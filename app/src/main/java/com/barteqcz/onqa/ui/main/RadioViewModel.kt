@@ -85,7 +85,7 @@ class RadioViewModel @Inject constructor(
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS),
-            ConnectivityObserver.Status.Available(),
+            ConnectivityObserver.Status.Unavailable
         )
 
     val settings: StateFlow<AppSettings> = settingsRepository.settingsFlow
@@ -316,6 +316,7 @@ class RadioViewModel @Inject constructor(
         connectivityStatus
             .onEach { status ->
                 if (status is ConnectivityObserver.Status.Available) {
+                    repository.refreshLocationInfo()
                     val networkChanged = lastNetworkId != status.networkId
                     lastNetworkId = status.networkId
 

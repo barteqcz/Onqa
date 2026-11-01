@@ -6,6 +6,7 @@ package com.barteqcz.onqa.util
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
+import android.net.NetworkCapabilities
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -36,9 +37,22 @@ class NetworkConnectivityObserver @Inject constructor(
     override fun observe(): Flow<ConnectivityObserver.Status> {
         return callbackFlow {
             val callback = object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    super.onAvailable(network)
-                    launch { send(ConnectivityObserver.Status.Available(network.toString())) }
+                override fun onCapabilitiesChanged(
+                    network: Network,
+                    networkCapabilities: NetworkCapabilities,
+                ) {
+                    super.onCapabilitiesChanged(network, networkCapabilities)
+                    val hasInternet = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    val isValidated = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                    launch {
+                        send(
+                            if (hasInternet && isValidated) {
+                                ConnectivityObserver.Status.Available(network.toString())
+                            } else {
+                                ConnectivityObserver.Status.Unavailable
+                            }
+                        )
+                    }
                 }
 
                 override fun onLosing(network: Network, maxMsToLive: Int) {

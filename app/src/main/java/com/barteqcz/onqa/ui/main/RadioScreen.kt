@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
+import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.ui.components.*
 import com.barteqcz.onqa.ui.theme.AnimationSystem
 
@@ -113,7 +114,13 @@ fun RadioScreen(
                 enter = expandVertically() + fadeIn(),
                 exit = shrinkVertically() + fadeOut()
             ) {
-                LocationHeader(viewState.locationInfo)
+                LocationHeader(
+                    info = viewState.locationInfo,
+                    isNetworkAvailable = viewState.isNetworkAvailable,
+                    lastUpdatedAt = viewState.settings.lastLocationUpdatedAt.takeIf {
+                        viewState.settings.locationSource == LocationSource.GPS
+                    }
+                )
             }
 
             Box(modifier = Modifier.weight(1f)) {
@@ -456,7 +463,13 @@ fun RadioScreen(
                     label = "LandscapeLocationHeader"
                 ) { visible ->
                     if (visible) {
-                        CompactLocationHeader(viewState.locationInfo)
+                        CompactLocationHeader(
+                            info = viewState.locationInfo,
+                            isNetworkAvailable = viewState.isNetworkAvailable,
+                            lastUpdatedAt = viewState.settings.lastLocationUpdatedAt.takeIf {
+                        viewState.settings.locationSource == LocationSource.GPS
+                    }
+                        )
                     }
                 }
             }

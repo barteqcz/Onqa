@@ -42,8 +42,13 @@ class LocationRepository @Inject constructor(
                         }
                     }
                 } else {
+                    val addresses = geocoder.getFromLocation(
+                        location.latitude,
+                        location.longitude,
+                        maxResults,
+                    )
                     if (continuation.isActive) {
-                        continuation.resume(NetworkResult.Success(emptyList()))
+                        continuation.resume(NetworkResult.Success(addresses.orEmpty()))
                     }
                 }
             } catch (e: Exception) {
@@ -69,8 +74,9 @@ class LocationRepository @Inject constructor(
                         }
                     }
                 } else {
+                    val addresses = geocoder.getFromLocationName(cityName, maxResults)
                     if (continuation.isActive) {
-                        continuation.resume(NetworkResult.Success(emptyList()))
+                        continuation.resume(NetworkResult.Success(addresses.orEmpty()))
                     }
                 }
             } catch (e: Exception) {

@@ -96,15 +96,17 @@ fun MiniPlayer(
     val interactionSource = remember { MutableInteractionSource() }
 
     val warningYellow = Color(0xFFFFC107)
+    val hasVisiblePlaybackError = playbackError && !isBuffering
     val baseBorderColor = when {
-        playbackError -> warningYellow
+        isBuffering -> MaterialTheme.colorScheme.primary
+        hasVisiblePlaybackError -> warningYellow
         station.isFavorite -> MaterialTheme.colorScheme.error
         else -> MaterialTheme.colorScheme.primary
     }
 
     val borderAlpha by animateFloatAsState(
-        targetValue = if (playbackError || isPlaying || isBuffering || kotlin.math.abs(animatedOffsetX) > 0.5f) {
-            if (playbackError) 0.9f else 0.5f
+        targetValue = if (hasVisiblePlaybackError || isPlaying || isBuffering || kotlin.math.abs(animatedOffsetX) > 0.5f) {
+            if (hasVisiblePlaybackError) 0.9f else 0.5f
         } else 0f,
         animationSpec = AnimationSystem.relaxedTween(),
         label = "miniPlayerBorderAlpha"
@@ -366,7 +368,7 @@ fun MiniPlayer(
                         },
                         label = "playPauseIcon"
                     ) { (hasError, buffering, playing) ->
-                        if (hasError) {
+                        if (hasError && !buffering) {
                             Icon(
                                 Icons.Rounded.Warning,
                                 contentDescription = null,
@@ -376,7 +378,7 @@ fun MiniPlayer(
                         } else if (buffering) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(if (isLandscape) 24.dp else 32.dp),
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = MaterialTheme.colorScheme.primary,
                                 strokeWidth = 3.dp,
                             )
                         } else {

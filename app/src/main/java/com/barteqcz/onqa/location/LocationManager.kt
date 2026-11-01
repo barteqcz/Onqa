@@ -166,6 +166,10 @@ class LocationManager @Inject constructor(
         }
     }
 
+    fun refreshLocationInfo() {
+        _currentLocation.value?.let { handleGeocoding(it) }
+    }
+
     private fun handleGeocoding(location: Location) {
         if (!isAppInForeground || currentLocationSource == LocationSource.MANUAL) {
             return
@@ -179,40 +183,26 @@ class LocationManager @Inject constructor(
             }
 
             val addresses = (result as? NetworkResult.Success)?.data
-            val refinedInfo = AddressRefiner.refineLocation(addresses, location.latitude, location.longitude)
-
-            val newCity = refinedInfo.city
-
-            if (newCity == null && refinedInfo.country == null) {
-                updateToUnknownLocation()
+            if (addresses.isNullOrEmpty()) {
+                // Keep the cached city when the system geocoder has no offline result.
                 return@launch
             }
 
-            if (newCity != _locationInfo.value.city ||
-                refinedInfo.countryCode != _locationInfo.value.countryCode) {
+            val refinedInfo = AddressRefiner.refineLocation(addresses, location.latitude, location.longitude)
+            val newCity = refinedInfo.city
+            if (newCity == null && refinedInfo.country == null) return@launch
 
-                val newInfo = refinedInfo.copy(
-                    city = newCity ?: _locationInfo.value.city
-                )
-                _locationInfo.value = newInfo
-
-                settingsRepository.updateLastLocation(
-                    city = newInfo.city,
-                    code = newInfo.countryCode,
-                    latitude = location.latitude,
-                    longitude = location.longitude
-                )
-            }
+            val newInfo = refinedInfo.copy(city = newCity ?: _locationInfo.value.city)
+            _locationInfo.value = newInfo
+            settingsRepository.updateLastLocation(
+                city = newInfo.city,
+                code = newInfo.countryCode,
+                latitude = location.latitude,
+                longitude = location.longitude,
+                updatedAt = System.currentTimeMillis(),
+            )
         }
     }
 
-    private fun updateToUnknownLocation() {
-        val unknownInfo = LocationInfo(
-            city = null,
-            countryCode = null
-        )
-        if (_locationInfo.value != unknownInfo) {
-            _locationInfo.value = unknownInfo
-        }
-    }
+
 }

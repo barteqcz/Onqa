@@ -36,6 +36,7 @@ open class SettingsRepository @Inject constructor(
         val ACCENT_COLOR = intPreferencesKey("accent_color")
         val LAST_CITY = stringPreferencesKey("last_city")
         val LAST_COUNTRY_CODE = stringPreferencesKey("last_country_code")
+        val LAST_LOCATION_UPDATED_AT = longPreferencesKey("last_location_updated_at")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val FAVORITE_STATIONS = stringSetPreferencesKey("favorite_stations")
         val USE_HQ_STREAM = booleanPreferencesKey("use_hq_stream")
@@ -92,6 +93,7 @@ open class SettingsRepository @Inject constructor(
                     accentColor = Color(preferences[PreferencesKeys.ACCENT_COLOR] ?: OnqaGreen.toArgb()),
                     lastCity = preferences[PreferencesKeys.LAST_CITY],
                     lastCountryCode = preferences[PreferencesKeys.LAST_COUNTRY_CODE],
+                    lastLocationUpdatedAt = preferences[PreferencesKeys.LAST_LOCATION_UPDATED_AT],
                     isOnboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
                     favoriteStations = preferences[PreferencesKeys.FAVORITE_STATIONS]?.toPersistentSet() ?: kotlinx.collections.immutable.persistentSetOf(),
                     useHqStream = preferences[PreferencesKeys.USE_HQ_STREAM] ?: true,
@@ -196,12 +198,19 @@ open class SettingsRepository @Inject constructor(
         }
     }
 
-    suspend fun updateLastLocation(city: String?, code: String?, latitude: Double? = null, longitude: Double? = null) {
+    suspend fun updateLastLocation(
+        city: String?,
+        code: String?,
+        latitude: Double? = null,
+        longitude: Double? = null,
+        updatedAt: Long? = null,
+    ) {
         context.dataStore.edit { preferences ->
             city?.let { preferences[PreferencesKeys.LAST_CITY] = it }
             code?.let { preferences[PreferencesKeys.LAST_COUNTRY_CODE] = it }
             latitude?.let { preferences[PreferencesKeys.LAST_LATITUDE] = it }
             longitude?.let { preferences[PreferencesKeys.LAST_LONGITUDE] = it }
+            updatedAt?.let { preferences[PreferencesKeys.LAST_LOCATION_UPDATED_AT] = it }
         }
     }
 
