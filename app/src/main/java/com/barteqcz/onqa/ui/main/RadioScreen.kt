@@ -6,7 +6,6 @@ package com.barteqcz.onqa.ui.main
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -169,8 +168,6 @@ fun RadioScreen(
                                 }
                             } else {
                                 val gridState = rememberLazyGridState()
-                                val density = LocalDensity.current
-
                                 LaunchedEffect(Unit) {
                                     viewModel.events.collect { event ->
                                         when (event) {
@@ -180,25 +177,16 @@ fun RadioScreen(
                                 }
 
                                 var wasMiniPlayerVisible by remember { mutableStateOf(viewState.selectedUrl != null) }
+                                var wasAtListBottomBeforePlayback by remember { mutableStateOf(false) }
                                 LaunchedEffect(viewState.selectedUrl) {
                                     val selectedUrl = viewState.selectedUrl
-                                    if (selectedUrl != null && !wasMiniPlayerVisible) {
+                                    if (selectedUrl != null && !wasMiniPlayerVisible && wasAtListBottomBeforePlayback) {
                                         // Let the new bottom padding and mini-player layout take effect first.
                                         withFrameNanos { }
 
-                                        val layoutInfo = gridState.layoutInfo
-                                        val lastItem = layoutInfo.visibleItemsInfo.firstOrNull {
-                                            it.index == layoutInfo.totalItemsCount - 1
-                                        }
-                                        if (lastItem != null) {
-                                            val miniPlayerHeight = with(density) {
-                                                (if (isLandscape) 84.dp else 100.dp).roundToPx()
-                                            }
-                                            val unobscuredBottom = layoutInfo.viewportEndOffset - miniPlayerHeight
-                                            val overlap = lastItem.offset.y + lastItem.size.height - unobscuredBottom
-                                            if (overlap > 0) {
-                                                gridState.animateScrollBy(overlap.toFloat())
-                                            }
+                                        val lastItemIndex = gridState.layoutInfo.totalItemsCount - 1
+                                        if (lastItemIndex >= 0) {
+                                            gridState.animateScrollToItem(lastItemIndex)
                                         }
                                     }
                                     wasMiniPlayerVisible = selectedUrl != null
@@ -258,6 +246,9 @@ fun RadioScreen(
                                                 ),
                                                 onClick = {
                                                     focusManager.clearFocus()
+                                                    if (viewState.selectedUrl == null) {
+                                                        wasAtListBottomBeforePlayback = !gridState.canScrollForward
+                                                    }
                                                     val url = station.streamUrl ?: station.streamUrlHq
                                                     url?.let { viewModel.toggleStation(it) }
                                                 },
