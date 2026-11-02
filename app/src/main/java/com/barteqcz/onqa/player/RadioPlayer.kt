@@ -112,19 +112,15 @@ class RadioPlayer @Inject constructor(
                 }
 
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                    val metadata = player.playlistMetadata.takeIf { !it.title.isNullOrBlank() }
-                        ?: player.mediaMetadata
-                    syncWithMediaItem(mediaItem, metadata)
+                    syncWithMediaItem(mediaItem)
                 }
 
                 override fun onPlaylistMetadataChanged(playlistMetadata: MediaMetadata) {
-                    syncWithMediaItem(player.currentMediaItem, playlistMetadata)
+                    syncWithMediaItem(player.currentMediaItem)
                 }
 
                 override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                    val metadata = player.playlistMetadata.takeIf { !it.title.isNullOrBlank() }
-                        ?: mediaMetadata
-                    syncWithMediaItem(player.currentMediaItem, metadata)
+                    syncWithMediaItem(player.currentMediaItem)
                 }
             },
         )
@@ -135,19 +131,12 @@ class RadioPlayer @Inject constructor(
                 isBuffering = player.playbackState == Player.STATE_BUFFERING,
             )
         }
-        val initialMetadata = player.playlistMetadata.takeIf { !it.title.isNullOrBlank() }
-            ?: player.mediaMetadata
-        syncWithMediaItem(player.currentMediaItem, initialMetadata)
+        syncWithMediaItem(player.currentMediaItem)
     }
 
-    private fun syncWithMediaItem(
-        item: MediaItem?,
-        currentMetadata: MediaMetadata? = controller?.playlistMetadata?.takeIf { !it.title.isNullOrBlank() }
-            ?: controller?.mediaMetadata
-            ?: item?.mediaMetadata,
-    ) {
+    private fun syncWithMediaItem(item: MediaItem?) {
         val stationMetadata = item?.mediaMetadata
-        val title = currentMetadata?.title?.toString()
+        val title = stationMetadata?.title?.toString()
         val stationName = stationMetadata?.albumArtist?.toString()
             ?.takeIf { it.isNotBlank() }
             ?: stationMetadata?.artist?.toString()?.takeIf { it.isNotBlank() }
