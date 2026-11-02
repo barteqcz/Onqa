@@ -125,6 +125,16 @@ object AddressRefiner {
             }
         }
 
+        val isSanMarinoByCoordinates = lat != null && lon != null &&
+            lat in 43.89..43.99 && lon in 12.39..12.52
+        val mentionsSanMarino = listOf(area, country, locality).any {
+            it.contains("San Marino", ignoreCase = true)
+        }
+
+        if (isSanMarinoByCoordinates || mentionsSanMarino) {
+            return info.copy(country = "San Marino", countryCode = "SM")
+        }
+
         val mentionsKosovo = listOf(area, country, locality).any {
             it.contains("Kosovo", ignoreCase = true)
         }
