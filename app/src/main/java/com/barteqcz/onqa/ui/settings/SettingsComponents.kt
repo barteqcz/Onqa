@@ -4,6 +4,8 @@
 package com.barteqcz.onqa.ui.settings
 
 import androidx.compose.animation.*
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -42,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -524,56 +527,77 @@ internal fun CatalogFrequencySwitcherCard(
         CatalogUpdateFrequency.MONTHLY
     )
 
+    val selectedIndex = options.indexOf(currentFrequency).coerceAtLeast(0)
+    val isLightMode = MaterialTheme.colorScheme.surface.luminance() > 0.5f
+    val activeColor = MaterialTheme.colorScheme.primary
+    val selectedContentColor = if (isLightMode) Color.White else Color.Black
+
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(6.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(6.dp)
         ) {
-            options.forEach { freq ->
-                val isSelected = currentFrequency == freq
-                val label = stringResource(freq.labelRes)
+            val itemSpacing = 4.dp
+            val itemWidth = (maxWidth - itemSpacing * (options.size - 1)) / options.size
+            val selectionOffset by animateDpAsState(
+                targetValue = (itemWidth + itemSpacing) * selectedIndex.toFloat(),
+                animationSpec = tween(durationMillis = 250),
+                label = "catalogFrequencySelectionOffset"
+            )
 
-                val isLightMode = MaterialTheme.colorScheme.surface.luminance() > 0.5f
-                val activeColor = MaterialTheme.colorScheme.primary
+            Box(
+                modifier = Modifier
+                    .offset { IntOffset(x = selectionOffset.roundToPx(), y = 0) }
+                    .width(itemWidth)
+                    .height(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(activeColor)
+            )
 
-                val containerColor = if (isSelected) activeColor else Color.Transparent
-                val contentColor = if (isSelected) {
-                    if (isLightMode) Color.White else Color.Black
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(itemSpacing),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                options.forEach { freq ->
+                    val isSelected = currentFrequency == freq
+                    val label = stringResource(freq.labelRes)
+                    val contentColor by animateColorAsState(
+                        targetValue = if (isSelected) selectedContentColor else MaterialTheme.colorScheme.onSurfaceVariant,
+                        animationSpec = tween(durationMillis = 180),
+                        label = "catalogFrequencyContentColor"
+                    )
 
-                Surface(
-                    onClick = { onFrequencySelect(freq) },
-                    shape = RoundedCornerShape(12.dp),
-                    color = containerColor,
-                    contentColor = contentColor,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(44.dp)
-                ) {
-                    Box(
+                    Surface(
+                        onClick = { onFrequencySelect(freq) },
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color.Transparent,
+                        contentColor = contentColor,
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 2.dp),
-                        contentAlignment = Alignment.Center
+                            .weight(1f)
+                            .height(44.dp)
                     ) {
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            maxLines = 1,
-                            softWrap = false,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 2.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = label,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                maxLines = 1,
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
             }

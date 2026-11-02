@@ -11,3 +11,9 @@ data class LocationInfo(
     val country: String? = null,
     val countryCode: String? = null,
 )
+
+enum class CityResolutionStatus {
+    UNKNOWN,
+    RESOLVED,
+    UNRESOLVED,
+}

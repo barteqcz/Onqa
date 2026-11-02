@@ -9,6 +9,7 @@ import android.location.Location
 import androidx.annotation.RequiresPermission
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.db.CatalogDatabaseManager
+import com.barteqcz.onqa.data.model.CityResolutionStatus
 import com.barteqcz.onqa.data.model.LocationInfo
 import com.barteqcz.onqa.data.model.RadioStation
 import com.barteqcz.onqa.data.util.NetworkResult
@@ -43,6 +44,7 @@ class RadioRepository @Inject constructor(
 
     val currentLocation: StateFlow<Location?> = locationManager.currentLocation
     val locationInfo: StateFlow<LocationInfo> = locationManager.locationInfo
+    val cityResolutionStatus: StateFlow<CityResolutionStatus> = locationManager.cityResolutionStatus
 
     private val _hasPendingCatalogUpdate = MutableStateFlow(catalogDatabaseManager.hasPendingUpdate())
     val hasPendingCatalogUpdate: StateFlow<Boolean> = _hasPendingCatalogUpdate.asStateFlow()

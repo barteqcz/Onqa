@@ -93,6 +93,8 @@ class PlaybackService : MediaSessionService() {
     private var currentArtworkData: ByteArray? = null
     private var lastRdsTitle: String? = null
     private var isUpdatingMetadata = false
+    private var metadataUpdateJob: Job? = null
+    private var pendingRdsTitle: String? = null
 
     private var reconnectAfterPause = false
 
@@ -140,6 +142,7 @@ class PlaybackService : MediaSessionService() {
         const val EXTRA_NETWORK = "network"
 
         private const val RETRY_DELAY_MS = 5000L
+        private const val METADATA_UPDATE_INTERVAL_MS = 250L
 
         private const val FADE_IN_MS = 400L
         private const val FADE_OUT_MS = 500L
@@ -352,12 +355,12 @@ class PlaybackService : MediaSessionService() {
                         if ((player.isPlaying) || (player.playbackState == Player.STATE_BUFFERING)) {
                             processMetadata(mediaMetadata)
                         } else {
-                            updateRdsAndNotification(null)
+                            updateRdsAndNotification()
                         }
                     }
 
                     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-                        updateRdsAndNotification(null)
+                        updateRdsAndNotification()
                     }
                 },
             )
@@ -483,7 +486,7 @@ class PlaybackService : MediaSessionService() {
 
             if (currentStationUrl == stationUrlAtPause && reconnectAfterPause) {
                 player.pause()
-                updateRdsAndNotification(null)
+                updateRdsAndNotification()
             }
         }
     }
@@ -551,7 +554,7 @@ class PlaybackService : MediaSessionService() {
             streamArtist = null,
             stationName = currentStationName,
         )
-        updateRdsAndNotification(displayTitle)
+        scheduleMetadataUpdate(displayTitle)
     }
 
     private fun processMetadata(mediaMetadata: MediaMetadata) {
@@ -565,20 +568,42 @@ class PlaybackService : MediaSessionService() {
             streamArtist = artist,
             stationName = currentStationName,
         )
-        updateRdsAndNotification(displayTitle)
+        scheduleMetadataUpdate(displayTitle)
     }
 
-    private fun updateRdsAndNotification(info: String?) {
+    /** Coalesces noisy stream metadata before publishing it through the MediaSession. */
+    private fun scheduleMetadataUpdate(title: String?) {
+        val stationUrl = currentStationUrl ?: return
+        if (title == lastRdsTitle) return
+
+        pendingRdsTitle = title
+        if (metadataUpdateJob?.isActive == true) return
+
+        metadataUpdateJob = serviceScope.launch {
+            delay(METADATA_UPDATE_INTERVAL_MS.milliseconds)
+            if (currentStationUrl != stationUrl) {
+                pendingRdsTitle = null
+                return@launch
+            }
+
+            val titleToPublish = pendingRdsTitle
+            pendingRdsTitle = null
+            if (titleToPublish != lastRdsTitle) {
+                lastRdsTitle = titleToPublish
+                updateRdsAndNotification()
+            }
+
+            pendingRdsTitle?.let(::scheduleMetadataUpdate)
+        }
+    }
+
+    private fun updateRdsAndNotification() {
         val stationName = currentStationName?.trim()
         val stationUrl = currentStationUrl ?: return
         val player = exoPlayer ?: return
 
-        info?.let {
-            lastRdsTitle = it
-        }
-
         val isActuallyPlaying = (player.playWhenReady) || (player.playbackState == Player.STATE_BUFFERING)
-        val titleToProcess = if (isActuallyPlaying) (lastRdsTitle ?: info) else null
+        val titleToProcess = if (isActuallyPlaying) lastRdsTitle else null
 
         val allStations = (repository.stations.value as? NetworkResult.Success)?.data
         val (displayTitle, displaySubtitle) = MediaMetadataMapper.getEffectiveMetadata(
@@ -641,6 +666,9 @@ class PlaybackService : MediaSessionService() {
         currentStationNetwork = network
         currentArtworkData = null
         lastRdsTitle = null
+        pendingRdsTitle = null
+        metadataUpdateJob?.cancel()
+        metadataUpdateJob = null
 
         initializePlayer()
         loadArtwork(logo)
@@ -690,11 +718,11 @@ class PlaybackService : MediaSessionService() {
                 player.volume = 0f
                 player.prepare()
                 player.play()
-                updateRdsAndNotification(null)
+                updateRdsAndNotification()
                 fadeIn()
             } else {
                 if (player.volume < 1f) fadeIn()
-                updateRdsAndNotification(null)
+                updateRdsAndNotification()
             }
         }
     }
@@ -738,6 +766,9 @@ class PlaybackService : MediaSessionService() {
         currentStationNetwork = null
         currentArtworkData = null
         lastRdsTitle = null
+        pendingRdsTitle = null
+        metadataUpdateJob?.cancel()
+        metadataUpdateJob = null
 
         playbackJob = serviceScope.launch {
             try {
@@ -776,7 +807,7 @@ class PlaybackService : MediaSessionService() {
                         val outputStream = ByteArrayOutputStream()
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
                         currentArtworkData = outputStream.toByteArray()
-                        updateRdsAndNotification(null)
+                        updateRdsAndNotification()
                     }
                     is coil.request.ErrorResult -> {
                         Timber.e(result.throwable, "Failed to load artwork from $url")

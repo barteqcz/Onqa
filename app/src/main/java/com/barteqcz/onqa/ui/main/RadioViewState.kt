@@ -6,6 +6,7 @@ package com.barteqcz.onqa.ui.main
 import androidx.compose.runtime.Immutable
 import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.AppSettings
+import com.barteqcz.onqa.data.model.CityResolutionStatus
 import com.barteqcz.onqa.data.model.LocationInfo
 import com.barteqcz.onqa.data.model.RadioStation
 import com.barteqcz.onqa.data.model.ThemeMode
@@ -20,6 +21,7 @@ data class RadioViewState(
     val isBuffering: Boolean = false,
     val playbackError: Boolean = false,
     val locationInfo: LocationInfo = LocationInfo(),
+    val cityResolutionStatus: CityResolutionStatus = CityResolutionStatus.UNKNOWN,
     val settings: AppSettings = AppSettings(
         themeMode = ThemeMode.DARK,
         isMaterialYouEnabled = false,

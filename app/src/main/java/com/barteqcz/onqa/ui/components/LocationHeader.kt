@@ -9,7 +9,6 @@ import android.icu.text.RelativeDateTimeFormatter
 import android.os.Build
 import android.text.format.DateUtils
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.minutes
 import androidx.compose.runtime.LaunchedEffect
@@ -31,16 +30,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.barteqcz.onqa.R
+import com.barteqcz.onqa.data.model.CityResolutionStatus
 import com.barteqcz.onqa.data.model.LocationInfo
 
 @Composable
 fun LocationHeader(
     info: LocationInfo,
-    isNetworkAvailable: Boolean,
+    isGpsLocation: Boolean,
+    cityResolutionStatus: CityResolutionStatus,
     lastUpdatedAt: Long?,
 ) {
     val cityText = info.city ?: stringResource(R.string.unknown_location)
-    val relativeTime = rememberRelativeLocationTime(lastUpdatedAt, isNetworkAvailable)
+    val relativeTime = if (isGpsLocation && cityResolutionStatus == CityResolutionStatus.UNRESOLVED) {
+        rememberRelativeLocationTime(lastUpdatedAt)
+    } else {
+        null
+    }
 
     Column(
         modifier = Modifier
@@ -80,14 +85,11 @@ fun LocationHeader(
                 }
 
                 flagEmoji?.let {
-                    Text(
-                        text = it,
-                        fontSize = 20.sp
-                    )
+                    Text(text = it, fontSize = 20.sp)
                 }
                 Text(
                     text = targetCity,
-                    color = if (isNetworkAvailable) {
+                    color = if (!isGpsLocation || cityResolutionStatus != CityResolutionStatus.UNRESOLVED) {
                         MaterialTheme.colorScheme.onSurface
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
@@ -110,12 +112,17 @@ fun LocationHeader(
 @Composable
 fun CompactLocationHeader(
     info: LocationInfo,
-    isNetworkAvailable: Boolean,
+    isGpsLocation: Boolean,
+    cityResolutionStatus: CityResolutionStatus,
     lastUpdatedAt: Long?,
     modifier: Modifier = Modifier
 ) {
     val cityText = info.city ?: stringResource(R.string.unknown_location)
-    val relativeTime = rememberRelativeLocationTime(lastUpdatedAt, isNetworkAvailable)
+    val relativeTime = if (isGpsLocation && cityResolutionStatus == CityResolutionStatus.UNRESOLVED) {
+        rememberRelativeLocationTime(lastUpdatedAt)
+    } else {
+        null
+    }
     val targetCode = info.countryCode
     val flagEmoji = remember(targetCode) {
         if (targetCode?.length == 2) {
@@ -136,14 +143,11 @@ fun CompactLocationHeader(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             flagEmoji?.let {
-                Text(
-                    text = it,
-                    fontSize = 16.sp
-                )
+                Text(text = it, fontSize = 16.sp)
             }
             Text(
                 text = cityText,
-                color = if (isNetworkAvailable) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (!isGpsLocation || cityResolutionStatus != CityResolutionStatus.UNRESOLVED) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1
@@ -161,27 +165,28 @@ fun CompactLocationHeader(
 }
 
 @Composable
-private fun rememberRelativeLocationTime(lastUpdatedAt: Long?, isNetworkAvailable: Boolean): String? {
+private fun rememberRelativeLocationTime(lastUpdatedAt: Long?): String? {
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     val locale = LocalConfiguration.current.locales[0]
-    val context = LocalContext.current
-    LaunchedEffect(lastUpdatedAt, isNetworkAvailable) {
+    LaunchedEffect(lastUpdatedAt) {
+        if (lastUpdatedAt == null) return@LaunchedEffect
         while (true) {
             now = System.currentTimeMillis()
             delay(1.minutes)
         }
     }
-    if (isNetworkAvailable || lastUpdatedAt == null || lastUpdatedAt > now) return null
+    if (lastUpdatedAt == null || lastUpdatedAt > now) return null
 
     val elapsedMillis = now - lastUpdatedAt
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
         return DateUtils.getRelativeTimeSpanString(
-            context,
             lastUpdatedAt,
-            false,
+            now,
+            DateUtils.MINUTE_IN_MILLIS,
         ).toString()
     }
 
+    val formatter = RelativeDateTimeFormatter.getInstance(locale)
     val elapsedMinutes = (elapsedMillis / 60_000L).coerceAtLeast(1L)
     val (amount, unit) = when {
         elapsedMinutes < 60 -> elapsedMinutes to RelativeDateTimeFormatter.RelativeDateTimeUnit.MINUTE
@@ -191,5 +196,5 @@ private fun rememberRelativeLocationTime(lastUpdatedAt: Long?, isNetworkAvailabl
         elapsedMinutes < 525_600 -> elapsedMinutes / 43_200 to RelativeDateTimeFormatter.RelativeDateTimeUnit.MONTH
         else -> elapsedMinutes / 525_600 to RelativeDateTimeFormatter.RelativeDateTimeUnit.YEAR
     }
-    return RelativeDateTimeFormatter.getInstance(locale).formatNumeric(-amount.toDouble(), unit)
+    return formatter.formatNumeric(-amount.toDouble(), unit)
 }

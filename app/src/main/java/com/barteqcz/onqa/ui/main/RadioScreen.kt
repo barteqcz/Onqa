@@ -116,7 +116,8 @@ fun RadioScreen(
             ) {
                 LocationHeader(
                     info = viewState.locationInfo,
-                    isNetworkAvailable = viewState.isNetworkAvailable,
+                    isGpsLocation = viewState.settings.locationSource == LocationSource.GPS,
+                    cityResolutionStatus = viewState.cityResolutionStatus,
                     lastUpdatedAt = viewState.settings.lastLocationUpdatedAt.takeIf {
                         viewState.settings.locationSource == LocationSource.GPS
                     }
@@ -465,7 +466,8 @@ fun RadioScreen(
                     if (visible) {
                         CompactLocationHeader(
                             info = viewState.locationInfo,
-                            isNetworkAvailable = viewState.isNetworkAvailable,
+                            isGpsLocation = viewState.settings.locationSource == LocationSource.GPS,
+                            cityResolutionStatus = viewState.cityResolutionStatus,
                             lastUpdatedAt = viewState.settings.lastLocationUpdatedAt.takeIf {
                         viewState.settings.locationSource == LocationSource.GPS
                     }

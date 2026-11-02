@@ -228,17 +228,9 @@ fun MapPickerScreen(
                                 unfocusedIndicatorColor = Color.Transparent,
                             ),
                             trailingIcon = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    if (state.searchQuery.isNotEmpty()) {
-                                        IconButton(onClick = { mapViewModel.onSearchQueryChanged("") }) {
-                                            Icon(Icons.Rounded.Close, contentDescription = null)
-                                        }
-                                    }
-                                    if (state.isGeocoding) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(24.dp).padding(end = 8.dp),
-                                            strokeWidth = 2.dp
-                                        )
+                                if (state.searchQuery.isNotEmpty()) {
+                                    IconButton(onClick = { mapViewModel.onSearchQueryChanged("") }) {
+                                        Icon(Icons.Rounded.Close, contentDescription = null)
                                     }
                                 }
                             },

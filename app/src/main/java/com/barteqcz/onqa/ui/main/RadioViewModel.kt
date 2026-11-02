@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.barteqcz.onqa.data.db.CatalogDatabaseManager
 import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.AppSettings
+import com.barteqcz.onqa.data.model.CityResolutionStatus
 import com.barteqcz.onqa.data.model.CatalogUpdateFrequency
 import com.barteqcz.onqa.data.model.DistanceUnit
 import com.barteqcz.onqa.data.model.FavoritesBackup
@@ -190,6 +191,7 @@ class RadioViewModel @Inject constructor(
         val currentStation: RadioStation?,
         val player: PlayerState,
         val locationInfo: LocationInfo,
+        val cityResolutionStatus: CityResolutionStatus,
     )
 
     private data class EnvironmentState(
@@ -206,9 +208,11 @@ class RadioViewModel @Inject constructor(
         _selectedStationUrl,
         currentStation,
         radioPlayer.state,
-        repository.locationInfo,
-    ) { uiState, selectedUrl, currentStation, player, locationInfo ->
-        AudioState(uiState, selectedUrl, currentStation, player, locationInfo)
+        combine(repository.locationInfo, repository.cityResolutionStatus) { locationInfo, cityResolutionStatus ->
+            locationInfo to cityResolutionStatus
+        },
+    ) { uiState, selectedUrl, currentStation, player, (locationInfo, cityResolutionStatus) ->
+        AudioState(uiState, selectedUrl, currentStation, player, locationInfo, cityResolutionStatus)
     }
 
     private val environmentStateFlow = combine(
@@ -242,6 +246,7 @@ class RadioViewModel @Inject constructor(
             isBuffering = audio.player.isBuffering,
             playbackError = audio.player.playbackError,
             locationInfo = audio.locationInfo,
+            cityResolutionStatus = audio.cityResolutionStatus,
             settings = env.settings.copy(language = env.lang),
             isNetworkAvailable = env.connectivity is ConnectivityObserver.Status.Available,
             isScrollable = env.isScrollable,
@@ -372,8 +377,11 @@ class RadioViewModel @Inject constructor(
             .map { it.stationInfo }
             .distinctUntilChanged()
             .onEach { info ->
-                info.url?.let { 
-                    _selectedStationUrl.value = it
+                if (info.url == null) {
+                    _selectedStationUrl.value = null
+                    _selectedStationName.value = null
+                } else {
+                    _selectedStationUrl.value = info.url
                     _selectedStationName.value = info.name
                 }
             }

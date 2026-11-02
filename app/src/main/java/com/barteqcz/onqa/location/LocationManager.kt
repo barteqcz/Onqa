@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import androidx.core.content.ContextCompat
+import com.barteqcz.onqa.data.model.CityResolutionStatus
 import com.barteqcz.onqa.data.model.LocationInfo
 import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.repository.SettingsRepository
@@ -35,6 +36,9 @@ class LocationManager @Inject constructor(
     private val _locationInfo = MutableStateFlow(LocationInfo())
     val locationInfo: StateFlow<LocationInfo> = _locationInfo.asStateFlow()
 
+    private val _cityResolutionStatus = MutableStateFlow(CityResolutionStatus.UNKNOWN)
+    val cityResolutionStatus: StateFlow<CityResolutionStatus> = _cityResolutionStatus.asStateFlow()
+
     private val _settings = settingsRepository.settingsFlow
         .stateIn(scope, SharingStarted.Eagerly, null)
 
@@ -47,6 +51,7 @@ class LocationManager @Inject constructor(
                 currentLocationSource = settings.locationSource
                 
                 if (settings.locationSource == LocationSource.MANUAL) {
+                    _cityResolutionStatus.value = CityResolutionStatus.RESOLVED
                     stopTracking()
                     if ((settings.manualLatitude != null) && (settings.manualLongitude != null)) {
                         val manualLoc = Location("manual").apply {
@@ -61,6 +66,9 @@ class LocationManager @Inject constructor(
                         Timber.d("Using manual location: ${settings.manualCity} (${settings.manualLatitude}, ${settings.manualLongitude})")
                     }
                 } else {
+                    if (oldSource == LocationSource.MANUAL) {
+                        _cityResolutionStatus.value = CityResolutionStatus.UNKNOWN
+                    }
                     if ((_currentLocation.value == null) || (oldSource == LocationSource.MANUAL)) {
                         if ((settings.lastLatitude != null) && (settings.lastLongitude != null)) {
                             val savedLoc = Location("saved").apply {
@@ -175,22 +183,34 @@ class LocationManager @Inject constructor(
             return
         }
         geocodingJob?.cancel()
+        _cityResolutionStatus.value = CityResolutionStatus.UNKNOWN
         geocodingJob = scope.launch {
             val result = locationRepository.getAddressesFromLocation(location)
 
             (result as? NetworkResult.Error)?.let {
                 Timber.w("Geocoding failed: ${it.message}")
+                _cityResolutionStatus.value = CityResolutionStatus.UNRESOLVED
+                return@launch
             }
 
             val addresses = (result as? NetworkResult.Success)?.data
             if (addresses.isNullOrEmpty()) {
+                _cityResolutionStatus.value = CityResolutionStatus.UNRESOLVED
                 // Keep the cached city when the system geocoder has no offline result.
                 return@launch
             }
 
             val refinedInfo = AddressRefiner.refineLocation(addresses, location.latitude, location.longitude)
             val newCity = refinedInfo.city
-            if (newCity == null && refinedInfo.country == null) return@launch
+            if (newCity == null && refinedInfo.country == null) {
+                _cityResolutionStatus.value = CityResolutionStatus.UNRESOLVED
+                return@launch
+            }
+            _cityResolutionStatus.value = if (newCity.isNullOrBlank()) {
+                CityResolutionStatus.UNRESOLVED
+            } else {
+                CityResolutionStatus.RESOLVED
+            }
 
             val newInfo = refinedInfo.copy(city = newCity ?: _locationInfo.value.city)
             _locationInfo.value = newInfo
@@ -199,7 +219,7 @@ class LocationManager @Inject constructor(
                 code = newInfo.countryCode,
                 latitude = location.latitude,
                 longitude = location.longitude,
-                updatedAt = System.currentTimeMillis(),
+                updatedAt = System.currentTimeMillis().takeIf { !newCity.isNullOrBlank() },
             )
         }
     }
