@@ -17,11 +17,11 @@ Due to the recent policies changes from Google, .apk sideloading is about to be 
 
 ## Features
 
-- **Location-Based Discovery**: Automatically finds and prioritizes radio stations near your current location using background location services.
-- **High-Quality Streaming**: Support for HQ audio streams to provide a crystal-clear listening experience.
-- **Material UI**: A beautiful UI that can also adapt to your device's wallpaper and theme colors.
-- **Adaptive Themes**: Full support for Light and Dark modes, with customizable accent colors.
-- **Seamless Media Experience**: Built with Android Media3 for robust background playback, lock screen controls, and system integration.
-- **Favorites**: Save your most-listened-to stations for instant access.
-- **Modern Mini Player**: Control your music effortlessly while navigating the app.
-- **Intelligent Connectivity**: Monitoring network status to ensure smooth playback transitions between Wi-Fi and mobile data.
+- Automatically finds and prioritizes radio stations near your current location using background location services.
+- Support for HQ audio streams to provide a crystal-clear listening experience.
+- A beautiful UI that can also adapt to your device's wallpaper and theme colors.
+- Full support for Light and Dark modes, with customizable accent colors.
+- Built with Android Media3 for robust background playback, lock screen controls, and system integration.
+- Save your most-listened-to stations for instant access.
+- Control your music effortlessly while navigating the app.
+- Monitoring network status to ensure smooth playback transitions between Wi-Fi and mobile data.
