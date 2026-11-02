@@ -182,15 +182,23 @@ fun RadioScreen(
                                 var wasMiniPlayerVisible by remember { mutableStateOf(viewState.selectedUrl != null) }
                                 LaunchedEffect(viewState.selectedUrl) {
                                     val selectedUrl = viewState.selectedUrl
-                                    if (selectedUrl != null) {
-                                        val layoutInfo = gridState.layoutInfo
-                                        val isLastItemVisible = layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
+                                    if (selectedUrl != null && !wasMiniPlayerVisible) {
+                                        // Let the new bottom padding and mini-player layout take effect first.
+                                        withFrameNanos { }
 
-                                        if (isLastItemVisible && !wasMiniPlayerVisible) {
-                                            val scrollAmount = with(density) { 
-                                                (if (isLandscape) 84.dp else 100.dp).toPx() 
+                                        val layoutInfo = gridState.layoutInfo
+                                        val lastItem = layoutInfo.visibleItemsInfo.firstOrNull {
+                                            it.index == layoutInfo.totalItemsCount - 1
+                                        }
+                                        if (lastItem != null) {
+                                            val miniPlayerHeight = with(density) {
+                                                (if (isLandscape) 84.dp else 100.dp).roundToPx()
                                             }
-                                            gridState.animateScrollBy(scrollAmount)
+                                            val unobscuredBottom = layoutInfo.viewportEndOffset - miniPlayerHeight
+                                            val overlap = lastItem.offset.y + lastItem.size.height - unobscuredBottom
+                                            if (overlap > 0) {
+                                                gridState.animateScrollBy(overlap.toFloat())
+                                            }
                                         }
                                     }
                                     wasMiniPlayerVisible = selectedUrl != null
