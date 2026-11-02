@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Anulo shkarkimin</string>
     <string name="catalog_download_cancel_desc">Shkarkimi do të vazhdojë në nisjen tjetër të aplikacionit.</string>
     <string name="catalog_missing_message">Baza e të dhënave të stacioneve nuk është shkarkuar.</string>
+    <string name="donate_banner_title">Të pëlqen Onqa?</string>
+    <string name="donate_banner_message">Nëse të pëlqen aplikacioni, mendo të mbështesësh zhvillimin e tij.</string>
+    <string name="donate_banner_action">Më bli një kafe</string>
 </resources>

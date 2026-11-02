@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Annuller download</string>
     <string name="catalog_download_cancel_desc">Download genoptages ved næste app-start.</string>
     <string name="catalog_missing_message">Stationsdatabasen er ikke blevet downloadet.</string>
+    <string name="donate_banner_title">Kan du lide Onqa?</string>
+    <string name="donate_banner_message">Hvis du kan lide appen, kan du overveje at støtte dens udvikling.</string>
+    <string name="donate_banner_action">Giv mig en kop kaffe</string>
 </resources>

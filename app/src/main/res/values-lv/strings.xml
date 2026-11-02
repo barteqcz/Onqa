@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Atcelt lejupielādi</string>
     <string name="catalog_download_cancel_desc">Lejupielāde tiks atsākta nākamajā lietotnes palaišanas reizē.</string>
     <string name="catalog_missing_message">Staciju datubāze nav lejupielādēta.</string>
+    <string name="donate_banner_title">Vai tev patīk Onqa?</string>
+    <string name="donate_banner_message">Ja tev patīk šī lietotne, apsver tās izstrādes atbalstīšanu.</string>
+    <string name="donate_banner_action">Nopērc man kafiju</string>
 </resources>

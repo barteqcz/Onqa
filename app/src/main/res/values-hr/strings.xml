@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Prekini preuzimanje</string>
     <string name="catalog_download_cancel_desc">Preuzimanje će se nastaviti pri sljedećem pokretanju aplikacije.</string>
     <string name="catalog_missing_message">Baza podataka postaja nije preuzeta.</string>
+    <string name="donate_banner_title">Sviđa li vam se Onqa?</string>
+    <string name="donate_banner_message">Ako vam se aplikacija sviđa, razmislite o podršci njezinu razvoju.</string>
+    <string name="donate_banner_action">Počastite me kavom</string>
 </resources>

@@ -141,4 +141,7 @@
     <string name="catalog_download_cancel_action">Cancel download</string>
     <string name="catalog_download_cancel_desc">Download will resume on next app launch.</string>
     <string name="catalog_missing_message">Station database has not been downloaded.</string>
+    <string name="donate_banner_title">Enjoying Onqa?</string>
+    <string name="donate_banner_message">If you like this app, consider supporting its development.</string>
+    <string name="donate_banner_action">Buy me a coffee</string>
 </resources>

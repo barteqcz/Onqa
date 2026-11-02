@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Скасувати завантаження</string>
     <string name="catalog_download_cancel_desc">Завантаження відновиться під час наступного запуску програми.</string>
     <string name="catalog_missing_message">База даних станцій не завантажена.</string>
+    <string name="donate_banner_title">Вам подобається Onqa?</string>
+    <string name="donate_banner_message">Якщо вам подобається цей застосунок, підтримайте його розвиток.</string>
+    <string name="donate_banner_action">Пригостіть мене кавою</string>
 </resources>

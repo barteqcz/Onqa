@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Спыніць спампоўванне</string>
     <string name="catalog_download_cancel_desc">Спампоўванне адновіцца пры наступным запуску праграмы.</string>
     <string name="catalog_missing_message">База даных станцый не спампавана.</string>
+    <string name="donate_banner_title">Ці падабаецца вам Onqa?</string>
+    <string name="donate_banner_message">Калі вам падабаецца гэтае прыкладанне, падумайце пра падтрымку яго распрацоўкі.</string>
+    <string name="donate_banner_action">Пачастуйце мяне кавай</string>
 </resources>

@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Letöltés megszakítása</string>
     <string name="catalog_download_cancel_desc">A letöltés az alkalmazás következő indításakor folytatódik.</string>
     <string name="catalog_missing_message">A rádióállomások adatbázisa nem lett letöltve.</string>
+    <string name="donate_banner_title">Tetszik az Onqa?</string>
+    <string name="donate_banner_message">Ha tetszik az alkalmazás, fontold meg a fejlesztés támogatását.</string>
+    <string name="donate_banner_action">Vegyél nekem egy kávét</string>
 </resources>

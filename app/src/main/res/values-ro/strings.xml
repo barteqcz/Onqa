@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Anulează descărcarea</string>
     <string name="catalog_download_cancel_desc">Descărcarea se va relua la următoarea lansare a aplicației.</string>
     <string name="catalog_missing_message">Baza de date a posturilor nu a fost descărcată.</string>
+    <string name="donate_banner_title">Îți place Onqa?</string>
+    <string name="donate_banner_message">Dacă îți place aplicația, ia în considerare să-i susții dezvoltarea.</string>
+    <string name="donate_banner_action">Fă-mi cinste cu o cafea</string>
 </resources>

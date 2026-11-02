@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Hætta við niðurhal</string>
     <string name="catalog_download_cancel_desc">Halds verður áfram við næstu ræsingu forritsins.</string>
     <string name="catalog_missing_message">Gagnagrunnur stöðva hefur ekki verið sóttur.</string>
+    <string name="donate_banner_title">Líkar þér Onqa?</string>
+    <string name="donate_banner_message">Ef þér líkar við appið skaltu íhuga að styðja þróun þess.</string>
+    <string name="donate_banner_action">Bjóddu mér upp á kaffi</string>
 </resources>

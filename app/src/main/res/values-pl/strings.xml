@@ -105,4 +105,7 @@
     <string name="catalog_download_cancel_action">Przerwij pobieranie</string>
     <string name="catalog_download_cancel_desc">Pobieranie zostanie wznowione przy kolejnym uruchomieniu aplikacji.</string>
     <string name="catalog_missing_message">Baza stacji radiowych nie została pobrana.</string>
+    <string name="donate_banner_title">Podoba Ci się Onqa?</string>
+    <string name="donate_banner_message">Jeśli lubisz tę aplikację, rozważ wsparcie jej rozwoju.</string>
+    <string name="donate_banner_action">Postaw mi kawę</string>
 </resources>

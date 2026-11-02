@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Peruuta lataus</string>
     <string name="catalog_download_cancel_desc">Latausta jatketaan, kun sovellus käynnistetään seuraavan kerran.</string>
     <string name="catalog_missing_message">Asematietokantaa ei ole ladattu.</string>
+    <string name="donate_banner_title">Pidätkö Onqasta?</string>
+    <string name="donate_banner_message">Jos pidät tästä sovelluksesta, harkitse sen kehityksen tukemista.</string>
+    <string name="donate_banner_action">Tarjoa minulle kahvi</string>
 </resources>

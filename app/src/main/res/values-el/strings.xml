@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Ακύρωση λήψης</string>
     <string name="catalog_download_cancel_desc">Η λήψη θα συνεχιστεί στην επόμενη εκκίνηση της εφαρμογής.</string>
     <string name="catalog_missing_message">Η βάση δεδομένων σταθμών δεν έχει ληφθεί.</string>
+    <string name="donate_banner_title">Σας αρέσει το Onqa;</string>
+    <string name="donate_banner_message">Αν σας αρέσει η εφαρμογή, σκεφτείτε να στηρίξετε την ανάπτυξή της.</string>
+    <string name="donate_banner_action">Κεράστε μου έναν καφέ</string>
 </resources>

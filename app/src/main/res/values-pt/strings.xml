@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Cancelar transferência</string>
     <string name="catalog_download_cancel_desc">A transferência será retomada na próxima inicialização da aplicação.</string>
     <string name="catalog_missing_message">A base de dados de estações não foi descarregada.</string>
+    <string name="donate_banner_title">Gosta do Onqa?</string>
+    <string name="donate_banner_message">Se gosta desta aplicação, considere apoiar o seu desenvolvimento.</string>
+    <string name="donate_banner_action">Ofereça-me um café</string>
 </resources>

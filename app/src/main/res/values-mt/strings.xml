@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Ikkanċella t-tniżżil</string>
     <string name="catalog_download_cancel_desc">It-tniżżil se jkompli meta terġa\' tiftaħ l-app.</string>
     <string name="catalog_missing_message">Id-database tal-istazzjonijiet ma ġietx imniżżla.</string>
+    <string name="donate_banner_title">Jogħġbok Onqa?</string>
+    <string name="donate_banner_message">Jekk tħobb din l-app, ikkunsidra li tappoġġa l-iżvilupp tagħha.</string>
+    <string name="donate_banner_action">Ixtrili kafè</string>
 </resources>

@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Download annuleren</string>
     <string name="catalog_download_cancel_desc">Het downloaden wordt hervat bij de volgende start van de app.</string>
     <string name="catalog_missing_message">Zenderdatabase is niet gedownload.</string>
+    <string name="donate_banner_title">Vind je Onqa leuk?</string>
+    <string name="donate_banner_message">Als je deze app fijn vindt, overweeg dan de ontwikkeling ervan te steunen.</string>
+    <string name="donate_banner_action">Trakteer me op koffie</string>
 </resources>

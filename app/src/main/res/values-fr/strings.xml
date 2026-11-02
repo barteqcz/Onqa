@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Annuler le téléchargement</string>
     <string name="catalog_download_cancel_desc">Le téléchargement reprendra au prochain lancement de l\'application.</string>
     <string name="catalog_missing_message">La base de données des stations n\'a pas été téléchargée.</string>
+    <string name="donate_banner_title">Vous aimez Onqa ?</string>
+    <string name="donate_banner_message">Si cette application vous plaît, pensez à soutenir son développement.</string>
+    <string name="donate_banner_action">Offrez-moi un café</string>
 </resources>

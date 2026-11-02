@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Atšaukti atsisiuntimą</string>
     <string name="catalog_download_cancel_desc">Atsisiuntimas bus pratęstas kitą kartą paleidus programėlę.</string>
     <string name="catalog_missing_message">Stočių duomenų bazė nebuvo atsisiūsta.</string>
+    <string name="donate_banner_title">Patinka Onqa?</string>
+    <string name="donate_banner_message">Jei jums patinka ši programėlė, apsvarstykite galimybę paremti jos kūrimą.</string>
+    <string name="donate_banner_action">Pavaišinkite mane kava</string>
 </resources>

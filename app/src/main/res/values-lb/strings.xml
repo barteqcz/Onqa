@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Eroflueden ofbriechen</string>
     <string name="catalog_download_cancel_desc">D\'Eroflueden gëtt beim nächste Start vun der App fortgesat.</string>
     <string name="catalog_missing_message">D\'Senderdatebank gouf net erofgelueden.</string>
+    <string name="donate_banner_title">Gefält Iech Onqa?</string>
+    <string name="donate_banner_message">Wann Iech dës App gefält, denkt drun, hir Weiderentwécklung ze ënnerstëtzen.</string>
+    <string name="donate_banner_action">Gitt mir e Kaffi aus</string>
 </resources>

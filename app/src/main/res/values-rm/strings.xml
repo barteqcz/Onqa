@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Annullar il telechargiament</string>
     <string name="catalog_download_cancel_desc">Il telechargiament vegn cuntinuà tar la proxima partenza da l\'app.</string>
     <string name="catalog_missing_message">La banca da datas d\'emischuns n\'è betg vegnida telechargiada.</string>
+    <string name="donate_banner_title">Ti plascha Onqa?</string>
+    <string name="donate_banner_message">Sche ti plascha l’app, consideres da sustegnair ses svilup.</string>
+    <string name="donate_banner_action">Paja mai in café</string>
 </resources>

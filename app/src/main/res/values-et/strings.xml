@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Tühista allalaadimine</string>
     <string name="catalog_download_cancel_desc">Allalaadimist jätkatakse rakenduse järgmisel käivitamisel.</string>
     <string name="catalog_missing_message">Jaamade andmebaasi pole alla laaditud.</string>
+    <string name="donate_banner_title">Kas sulle meeldib Onqa?</string>
+    <string name="donate_banner_message">Kui sulle see rakendus meeldib, kaalu selle arendamise toetamist.</string>
+    <string name="donate_banner_action">Tee mulle kohvi välja</string>
 </resources>

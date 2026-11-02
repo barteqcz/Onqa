@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Zrušiť sťahovanie</string>
     <string name="catalog_download_cancel_desc">Sťahovanie sa obnoví pri nasledujúcom spustení aplikácie.</string>
     <string name="catalog_missing_message">Databáza staníc nebola stiahnutá.</string>
+    <string name="donate_banner_title">Páči sa vám Onqa?</string>
+    <string name="donate_banner_message">Ak sa vám aplikácia páči, zvážte podporu jej vývoja.</string>
+    <string name="donate_banner_action">Pozvite ma na kávu</string>
 </resources>

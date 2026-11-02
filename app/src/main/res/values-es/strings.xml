@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Cancelar descarga</string>
     <string name="catalog_download_cancel_desc">La descarga se reanudará en el próximo inicio de la aplicación.</string>
     <string name="catalog_missing_message">No se ha descargado la base de datos de emisoras.</string>
+    <string name="donate_banner_title">¿Te gusta Onqa?</string>
+    <string name="donate_banner_message">Si te gusta la aplicación, considera apoyar su desarrollo.</string>
+    <string name="donate_banner_action">Invítame a un café</string>
 </resources>

@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Cealaigh an t-íoslódáil</string>
     <string name="catalog_download_cancel_desc">Athoslófar an t-íoslódáil ag an gcéad seoladh eile den aip.</string>
     <string name="catalog_missing_message">Níor íoslódáladh bunachar sonraí na stáisiún.</string>
+    <string name="donate_banner_title">An maith leat Onqa?</string>
+    <string name="donate_banner_message">Má thaitníonn an aip leat, smaoinigh ar thacú lena forbairt.</string>
+    <string name="donate_banner_action">Ceannaigh caife dom</string>
 </resources>

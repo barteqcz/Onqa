@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Download abbrechen</string>
     <string name="catalog_download_cancel_desc">Der Download wird beim nächsten App-Start fortgesetzt.</string>
     <string name="catalog_missing_message">Die Senderdatenbank wurde nicht heruntergeladen.</string>
+    <string name="donate_banner_title">Gefällt dir Onqa?</string>
+    <string name="donate_banner_message">Wenn dir die App gefällt, unterstütze gern ihre Weiterentwicklung.</string>
+    <string name="donate_banner_action">Spendier mir einen Kaffee</string>
 </resources>

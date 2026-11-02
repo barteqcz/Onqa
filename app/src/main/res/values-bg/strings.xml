@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Отказ от изтеглянето</string>
     <string name="catalog_download_cancel_desc">Изтеглянето ще се възобнови при следващото стартиране на приложението.</string>
     <string name="catalog_missing_message">Базата данни със станции не е изтеглена.</string>
+    <string name="donate_banner_title">Харесва ли ви Onqa?</string>
+    <string name="donate_banner_message">Ако харесвате приложението, помислете дали да подкрепите развитието му.</string>
+    <string name="donate_banner_action">Почерпете ме с кафе</string>
 </resources>

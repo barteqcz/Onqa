@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">İndirmeyi iptal et</string>
     <string name="catalog_download_cancel_desc">İndirme, uygulamanın bir sonraki başlatılışında devam edecektir.</string>
     <string name="catalog_missing_message">İstasyon veri tabanı indirilmedi.</string>
+    <string name="donate_banner_title">Onqa uygulamasını beğendiniz mi?</string>
+    <string name="donate_banner_message">Uygulamayı beğendiyseniz geliştirilmesini desteklemeyi düşünebilirsiniz.</string>
+    <string name="donate_banner_action">Bana bir kahve ısmarlayın</string>
 </resources>

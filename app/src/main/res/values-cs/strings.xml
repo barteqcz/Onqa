@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Zrušit stahování</string>
     <string name="catalog_download_cancel_desc">Stahování bude obnoveno při příštím spuštění aplikace.</string>
     <string name="catalog_missing_message">Databáze stanic nebyla stažena.</string>
+    <string name="donate_banner_title">Líbí se vám Onqa?</string>
+    <string name="donate_banner_message">Pokud se vám aplikace líbí, zvažte podporu jejího vývoje.</string>
+    <string name="donate_banner_action">Pozvěte mě na kávu</string>
 </resources>

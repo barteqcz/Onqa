@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Avbryt nedlasting</string>
     <string name="catalog_download_cancel_desc">Nedlastingen gjenopptas ved neste appstart.</string>
     <string name="catalog_missing_message">Stasjonsdatabasen er ikke lastet ned.</string>
+    <string name="donate_banner_title">Liker du Onqa?</string>
+    <string name="donate_banner_message">Hvis du liker appen, kan du vurdere å støtte videreutviklingen.</string>
+    <string name="donate_banner_action">Kjøp en kaffe til meg</string>
 </resources>

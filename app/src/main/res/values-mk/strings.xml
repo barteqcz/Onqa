@@ -102,4 +102,7 @@
     <string name="catalog_download_cancel_action">Откажи го преземањето</string>
     <string name="catalog_download_cancel_desc">Преземањето ќе продолжи при следното стартување на апликацијата.</string>
     <string name="catalog_missing_message">Базата на податоци за станиците не е преземена.</string>
+    <string name="donate_banner_title">Ви се допаѓа Onqa?</string>
+    <string name="donate_banner_message">Ако ви се допаѓа апликацијата, размислете да го поддржите нејзиниот развој.</string>
+    <string name="donate_banner_action">Почестете ме со кафе</string>
 </resources>
