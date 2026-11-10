@@ -549,6 +549,11 @@ class PlaybackService : MediaSessionService() {
     }
 
     private fun processStreamTitle(rawTitle: String) {
+        if (rawTitle.isNonTrackMetadata()) {
+            Timber.d("Ignoring non-track stream metadata for $currentStationName: $rawTitle")
+            return
+        }
+
         val (displayTitle, _) = MediaMetadataMapper.getEffectiveMetadata(
             streamTitle = rawTitle,
             streamArtist = null,
@@ -562,6 +567,10 @@ class PlaybackService : MediaSessionService() {
         val artist = mediaMetadata.artist?.toString()
 
         if (title.isNullOrBlank() && artist.isNullOrBlank()) return
+        if (title?.isNonTrackMetadata() == true || artist?.isNonTrackMetadata() == true) {
+            Timber.d("Ignoring non-track media metadata for $currentStationName: $title / $artist")
+            return
+        }
 
         val (displayTitle, _) = MediaMetadataMapper.getEffectiveMetadata(
             streamTitle = title,
@@ -569,6 +578,27 @@ class PlaybackService : MediaSessionService() {
             stationName = currentStationName,
         )
         scheduleMetadataUpdate(displayTitle)
+    }
+
+    /** Broadcasters can send ad markers or transport fields instead of a song title. */
+    private fun String.isNonTrackMetadata(): Boolean {
+        val normalized = lowercase()
+        if (normalized.contains("spot block end") ||
+            normalized.contains("spot block start") ||
+            normalized.contains("amgtrackid") ||
+            normalized.contains("text=\"")
+        ) {
+            return true
+        }
+
+        // Some streams publish JSON-like transport metadata in ICY title slots, for example
+        // ":timestamp:1794341051238,\"sequenceId\":\"32\"".
+        val transportFields = listOf("timestamp", "sequenceid", "length", "eventid", "streamid")
+        val fieldCount = transportFields.count { field ->
+            Regex("""(?:^|[\s:;,"'])$field["']?\s*[:=]""").containsMatchIn(normalized)
+        }
+        return fieldCount >= 2 ||
+            (normalized.contains("timestamp") && normalized.contains("sequenceid"))
     }
 
     /** Coalesces noisy stream metadata before publishing it through the MediaSession. */

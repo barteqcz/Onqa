@@ -378,7 +378,7 @@ fun MiniPlayer(
                         } else if (buffering) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(if (isLandscape) 24.dp else 32.dp),
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 strokeWidth = 3.dp,
                             )
                         } else {
